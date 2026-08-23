@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 8 — Proofs I: Instantiation and Detachment</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+function guidedProof(el, api) {
+  var knowns = [
+    "(1)  (∀x)(M(x) → F(Fafnir, x))",
+    "(2)  (∀x)(S(x) → M(x))",
+    "(3)  S(Scrat)"
+  ];
+  var goal = "F(Fafnir, Scrat)";
+  var steps = [
+    { q: "Goal: F(Fafnir, Scrat). Start from what you know. Which rule applies first?",
+      options: ["Universal instantiation of (2) at Scrat", "Detachment", "Make-believe"],
+      correct: 0, derive: "(4)  S(Scrat) → M(Scrat)     [instantiate (2) at Scrat]" },
+    { q: "You now have (3) S(Scrat) and (4) S(Scrat) → M(Scrat). Which rule?",
+      options: ["Detachment on (4) using (3)", "Universal generalization", "Name a witness"],
+      correct: 0, derive: "(5)  M(Scrat)     [detach (4) with (3)]" },
+    { q: "Bring in Fafnir using known (1). Which rule?",
+      options: ["Universal instantiation of (1) at Scrat", "Make-believe", "Existential generalization"],
+      correct: 0, derive: "(6)  M(Scrat) → F(Fafnir, Scrat)     [instantiate (1) at Scrat]" },
+    { q: "You have (5) M(Scrat) and (6) M(Scrat) → F(Fafnir, Scrat). Finish the proof.",
+      options: ["Detachment on (6) using (5)", "Proof by cases", "Universal generalization"],
+      correct: 0, derive: "(7)  F(Fafnir, Scrat)     ✓ goal reached" }
+  ];
+  var i = 0;
+  el.innerHTML =
+    '<div class="r-gp-state">' +
+      '<div class="r-gp-col"><h4>Known</h4><ul>' + knowns.map(function (k) { return "<li>" + k + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="r-gp-col"><h4>Goal</h4><div class="r-gp-goal">' + goal + "</div></div>" +
+    "</div>" +
+    '<h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--r-muted);margin:0 0 6px">Derived</h4>' +
+    '<ul class="r-gp-derived" id="gp-derived"><li style="color:var(--r-muted)">(nothing yet — pick the first rule below)</li></ul>' +
+    '<div id="gp-step"></div>';
+  var derivedEl = el.querySelector("#gp-derived");
+  var stepEl = el.querySelector("#gp-step");
+  var started = false;
+  function shuffleLocal(a) { a = a.slice(); for (var k = a.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var t = a[k]; a[k] = a[j]; a[j] = t; } return a; }
+  function renderStep() {
+    if (i >= steps.length) {
+      stepEl.innerHTML = '<p class="r-feedback ok" style="margin-top:14px">Proof complete — every step followed from a rule, and you reached the goal.</p>';
+      api.complete(); return;
+    }
+    var s = steps[i]; stepEl.innerHTML = "";
+    var q = document.createElement("p"); q.className = "r-gp-q"; q.textContent = s.q;
+    var wrap = document.createElement("div"); wrap.className = "r-choices";
+    var fb = document.createElement("p"); fb.className = "r-feedback";
+    shuffleLocal(s.options.map(function (_, idx) { return idx; })).forEach(function (idx) {
+      var btn = document.createElement("button"); btn.className = "r-choice"; btn.type = "button";
+      btn.innerHTML = '<span class="r-tick"></span><span>' + s.options[idx] + "</span>";
+      btn.onclick = function () {
+        if (idx === s.correct) {
+          Array.prototype.forEach.call(wrap.children, function (c) { c.disabled = true; });
+          btn.classList.add("correct");
+          if (!started) { derivedEl.innerHTML = ""; started = true; }
+          var li = document.createElement("li"); li.textContent = s.derive; derivedEl.appendChild(li);
+          i++; setTimeout(renderStep, 180);
+        } else {
+          btn.classList.add("wrong");
+          fb.className = "r-feedback no"; fb.textContent = "Not that rule — look for a known you can act on right now (a ∀ to instantiate, or an implication whose hypothesis you already have).";
+        }
+      };
+      wrap.appendChild(btn);
+    });
+    stepEl.appendChild(q); stepEl.appendChild(wrap); stepEl.appendChild(fb);
+  }
+  renderStep();
+}
+
+Reading.init({
+  id: "08-proofs-1",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 8',
+  title: "Reading 8 — Proofs I: Instantiation and Detachment",
+  subtitle: "A proof transforms what you know until it reaches your goal. Start with the two rules that use what you know.",
+  prev: { href: "reading-07-implication.html", label: "Reading 7 — Implication" },
+  next: { href: "reading-09-proofs-2.html", label: "Reading 9 — Proofs II" },
+  blocks: [
+    { type: "prose", html:
+      "<p>We track a proof in two columns: what is <strong>Known</strong> on the left, and the current <strong>Goal</strong> on the right. This reading covers the two rules that act on what you <em>know</em>.</p>"
+    },
+    { type: "def", title: "Two rules for using what you know", html:
+      "<ul>" +
+      "<li><strong>Universal instantiation</strong> (using $(\\forall x)P(x)$): substitute any specific object for $x$ to get an instance $P(a)$.</li>" +
+      "<li><strong>Detachment</strong> / modus ponens (using $P \\rightarrow Q$): if you also know $P$, conclude $Q$.</li>" +
+      "</ul>"
+    },
+    { type: "prose", html:
+      "<p>A few points to keep straight when applying these rules:</p>" +
+      "<ul>" +
+      "<li>Everything you are given — axioms and hypotheses — starts in the <strong>Known</strong> column; the <strong>Goal</strong> is what you must reach.</li>" +
+      "<li>Instantiating $(\\forall x)(P(x) \\rightarrow Q(x))$ gives an <em>implication instance</em> $P(a) \\rightarrow Q(a)$, not a bare fact. To obtain $Q(a)$ you must separately have $P(a)$ and then detach.</li>" +
+      "<li>Detachment runs one direction only: from $P$ and $P \\rightarrow Q$ to $Q$. Having $Q$ together with $P \\rightarrow Q$ does <strong>not</strong> give $P$ — that would be the invalid converse.</li>" +
+      "<li>Order matters: you cannot detach an implication until you already have its hypothesis in hand.</li>" +
+      "<li>You may instantiate a known $\\forall$ at any object you like, but to make progress choose the object you actually have facts about.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "You know $(\\forall x)\\,P(x)$ and want the specific fact $P(\\text{Scrat})$. Which rule?",
+      choices: ["Universal instantiation", "Detachment", "Make-believe", "Universal generalization"],
+      answer: 0,
+      choiceFeedback: [null,
+        "Detachment needs an implication and its hypothesis, not a bare $\\forall$.",
+        "Make-believe is for proving an implication goal (a later rule).",
+        "Generalization proves a $\\forall$ goal; here you already have the $\\forall$."],
+      explain: "Instantiation substitutes a specific object for the bound variable."
+    },
+    { type: "mc", id: "q2",
+      prompt: "You know $P$ and you know $P \\rightarrow Q$. Which rule concludes $Q$?",
+      choices: ["Detachment (modus ponens)", "Universal instantiation", "Make-believe", "Universal generalization"],
+      answer: 0,
+      choiceFeedback: [null,
+        "There's no $\\forall$ here to instantiate.",
+        "Make-believe assumes a hypothesis to prove an implication goal — not this situation.",
+        "There's no $\\forall$ goal to prove."],
+      explain: "Detachment combines an implication with its hypothesis to give the consequent."
+    },
+    { type: "prose", html:
+      "<h2>Build a proof, one rule at a time</h2>" +
+      "<p>Here are the squirrel axioms. Prove Fafnir fears Scrat — this proof needs only instantiation and detachment. Choose the rule at each step.</p>"
+    },
+    { type: "custom", id: "guided", activity: true, render: guidedProof },
+    { type: "selectall", id: "q3",
+      prompt: "You know $(\\forall x)(S(x) \\rightarrow M(x))$ and $S(\\text{Scrat})$. Select <strong>all</strong> statements you can validly derive.",
+      choices: [
+        "$S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$",
+        "$M(\\text{Scrat})$",
+        "$(\\forall x)\\,M(x)$",
+        "$M(\\text{Fafnir})$"
+      ],
+      answers: [0, 1],
+      hint: "Instantiate the known $\\forall$ at Scrat, then detach. You know nothing about objects other than Scrat.",
+      explain: "Instantiate at Scrat to get $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$, then detach to get $M(\\text{Scrat})$. You cannot conclude anything about all objects, nor about a different object like Fafnir."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Run the two rules ahead in your head across a two-link chain — no single step gives the answer.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "You know $(\\forall x)(P(x) \\rightarrow Q(x))$, $(\\forall x)(Q(x) \\rightarrow R(x))$, and $P(a)$. Which statement can you validly derive?",
+      choices: ["$R(a)$", "$(\\forall x)\\,R(x)$", "$R(b)$ for some other object $b$", "Nothing — $P(a)$ alone is not enough"],
+      answer: 0,
+      choiceFeedback: [null,
+        "You only have $P$ for $a$, so you reach $R$ for $a$ — not for all $x$.",
+        "No information lets you reach $R$ for a different $b$.",
+        "It is enough: instantiate both implications at $a$ and detach twice."],
+      explain: "Instantiate both universals at $a$, detach with $P(a)$ to get $Q(a)$, then detach again to get $R(a)$."
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "selectall", id: "e1", practice: true,
+      prompt: "Select <strong>all</strong> rules that act on what you already <em>know</em> (rather than attacking the goal).",
+      choices: ["Universal instantiation", "Detachment", "Make-believe", "Universal generalization"],
+      answers: [0, 1],
+      hint: "This reading covers exactly two rules for using knowns.",
+      explain: "Universal instantiation (using a known $\\forall$) and detachment (using a known implication together with its hypothesis) both act on knowns. Make-believe and universal generalization attack the goal instead."
+    },
+    { type: "shorttext", id: "e5", practice: true,
+      prompt: "Detachment is also known by what two-word Latin name? (write it in English letters)",
+      answer: "modus ponens", accept: ["modusponens"],
+      explain: "Detachment is modus ponens: from $P$ and $P \\rightarrow Q$, conclude $Q$."
+    },
+    { type: "matching", id: "e6", practice: true,
+      prompt: "Match each rule to what it requires as input.",
+      pairs: [
+        { left: "Universal instantiation", right: "a known ∀-statement" },
+        { left: "Detachment", right: "an implication and its hypothesis" }
+      ],
+      explain: "Instantiation needs a $\\forall$; detachment needs $P \\rightarrow Q$ together with $P$."
+    },
+    { type: "mc", id: "e7", practice: true,
+      prompt: "In the Known/Goal method, where do the given axioms and hypotheses go?",
+      choices: ["The Known column", "The Goal column", "Neither — they are derived", "Both columns at once"],
+      answer: 0,
+      explain: "Everything you are given to work from lives in the Known column; the Goal is what you must reach."
+    },
+    { type: "selectall", id: "e8", practice: true,
+      prompt: "From $(\\forall x)(S(x) \\rightarrow M(x))$ <strong>alone</strong>, select all statements you can get by a single universal instantiation.",
+      choices: [
+        "$S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$",
+        "$S(\\text{Fafnir}) \\rightarrow M(\\text{Fafnir})$",
+        "$M(\\text{Scrat})$",
+        "$S(\\text{Scrat})$"
+      ],
+      answers: [0, 1],
+      hint: "Instantiation gives an implication instance, not a bare fact.",
+      explain: "Instantiating at any object gives that object's implication instance. Getting $M(\\text{Scrat})$ or $S(\\text{Scrat})$ would need more than this one known."
+    },
+    { type: "mc", id: "e9", practice: true,
+      prompt: "Instantiate $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ at Scrat. What do you get?",
+      choices: [
+        "$M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$",
+        "$F(\\text{Fafnir}, \\text{Scrat})$",
+        "$M(\\text{Scrat})$",
+        "$M(\\text{Fafnir}) \\rightarrow F(\\text{Fafnir}, \\text{Fafnir})$"
+      ],
+      answer: 0,
+      explain: "Substitute Scrat for $x$ throughout the body of the $\\forall$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "parsons", id: "m1", practice: true,
+      prompt: "Known: $(\\forall x)(S(x) \\rightarrow M(x))$, $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$, $S(\\text{Scrat})$. Prove $F(\\text{Fafnir}, \\text{Scrat})$. Put the steps in order.",
+      steps: [
+        "Instantiate $(\\forall x)(S(x) \\rightarrow M(x))$ at Scrat: $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$.",
+        "Detach with $S(\\text{Scrat})$ to get $M(\\text{Scrat})$.",
+        "Instantiate $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ at Scrat: $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$.",
+        "Detach with $M(\\text{Scrat})$ to get $F(\\text{Fafnir}, \\text{Scrat})$."
+      ],
+      hint: "You can only detach an implication once you already have its hypothesis.",
+      explain: "Instantiate to get the squirrel-to-mammal instance, detach with $S(\\text{Scrat})$, instantiate the mammal-to-fear instance, then detach again."
+    },
+    { type: "mc", id: "m5", practice: true,
+      prompt: "You know $(\\forall x)(S(x) \\rightarrow M(x))$ and $M(\\text{Scrat})$. Can you conclude $S(\\text{Scrat})$?",
+      choices: ["No — that would use the converse", "Yes — by detachment", "Yes — by instantiation", "Yes — by generalization"],
+      answer: 0,
+      explain: "Detachment needs the hypothesis $S(\\text{Scrat})$ to give $M(\\text{Scrat})$ — not the other way around. Going from $M$ to $S$ is the invalid converse."
+    },
+    { type: "mc", id: "m6", practice: true,
+      prompt: "You know $(\\forall x)(S(x) \\rightarrow M(x))$ but you do <strong>not</strong> know $S(\\text{Scrat})$. Can you derive $M(\\text{Scrat})$?",
+      choices: ["No — detachment needs $S(\\text{Scrat})$ first", "Yes — instantiate at Scrat", "Yes — generalize", "Yes — it holds vacuously"],
+      answer: 0,
+      explain: "Instantiation only gives the implication $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$; without $S(\\text{Scrat})$ you cannot detach $M(\\text{Scrat})$."
+    },
+    { type: "parsons", id: "m7", practice: true,
+      prompt: "Known: $(\\forall x)(A(x) \\rightarrow B(x))$, $(\\forall x)(B(x) \\rightarrow C(x))$, $(\\forall x)(C(x) \\rightarrow D(x))$, $A(k)$. Prove $D(k)$. Order the steps.",
+      steps: [
+        "Instantiate the first known at $k$: $A(k) \\rightarrow B(k)$.",
+        "Detach with $A(k)$ to get $B(k)$.",
+        "Instantiate the second known at $k$: $B(k) \\rightarrow C(k)$.",
+        "Detach with $B(k)$ to get $C(k)$.",
+        "Instantiate the third known at $k$: $C(k) \\rightarrow D(k)$.",
+        "Detach with $C(k)$ to get $D(k)$."
+      ],
+      hint: "Work down the chain: each detachment needs the fact produced by the previous one.",
+      explain: "Instantiate and detach three times, feeding each derived fact into the next implication."
+    },
+    { type: "selectall", id: "m8", practice: true,
+      prompt: "You know $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ and $M(\\text{Scrat})$. Select <strong>all</strong> statements that follow.",
+      choices: [
+        "$M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$",
+        "$F(\\text{Fafnir}, \\text{Scrat})$",
+        "$F(\\text{Fafnir}, \\text{Fafnir})$",
+        "$(\\forall x)\\,F(\\text{Fafnir}, x)$"
+      ],
+      answers: [0, 1],
+      hint: "You only have $M$ for Scrat.",
+      explain: "Instantiate at Scrat, then detach with $M(\\text{Scrat})$. Nothing is known about Fafnir being a mammal or about all objects."
+    },
+    { type: "mc", id: "m9", practice: true,
+      prompt: "Goal: $F(\\text{Fafnir}, \\text{Scrat})$. You know $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$. What is the most useful next move?",
+      choices: [
+        "Derive $M(\\text{Scrat})$, then detach the instance $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$",
+        "Instantiate at Fafnir",
+        "Assume $F(\\text{Fafnir}, \\text{Scrat})$",
+        "Generalize the goal"
+      ],
+      answer: 0,
+      explain: "Instantiating at Scrat gives $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$; detaching it requires $M(\\text{Scrat})$, so that becomes the sub-goal."
+    },
+    { type: "selectall", id: "m10", practice: true,
+      prompt: "Select <strong>all</strong> moves that are <strong>invalid</strong>.",
+      choices: [
+        "Detach $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$ before deriving $S(\\text{Scrat})$",
+        "From $M(\\text{Scrat})$ and $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$, detach $S(\\text{Scrat})$",
+        "Instantiate $(\\forall x)(S(x) \\rightarrow M(x))$ at Scrat, giving $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$",
+        "From $S(\\text{Scrat})$ and $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$, detach $M(\\text{Scrat})$"
+      ],
+      answers: [0, 1],
+      hint: "Detachment needs the hypothesis in hand first, and it runs only from hypothesis to conclusion.",
+      explain: "Detaching before you have the hypothesis is invalid, and detaching a hypothesis from its conclusion is the invalid converse. The other two moves are legitimate instantiation and detachment."
+    },
+    { type: "matching", id: "m11", practice: true,
+      prompt: "Match each derivation to the rule it uses.",
+      pairs: [
+        { left: "From $(\\forall x)P(x)$, get $P(a)$", right: "universal instantiation" },
+        { left: "From $P$ and $P \\rightarrow Q$, get $Q$", right: "detachment" },
+        { left: "From $(\\forall x)(S(x) \\rightarrow M(x))$, get $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$", right: "universal instantiation" },
+        { left: "From $S(\\text{Scrat})$ and $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$, get $M(\\text{Scrat})$", right: "detachment" }
+      ],
+      explain: "Stripping a $\\forall$ by substituting an object is instantiation; combining an implication with its hypothesis is detachment."
+    },
+    { type: "shortnum", id: "m12", practice: true,
+      prompt: "To prove $F(\\text{Fafnir}, \\text{Scrat})$ from the three squirrel axioms $(\\forall x)(S(x) \\rightarrow M(x))$, $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$, $S(\\text{Scrat})$, how many rule applications (each instantiation or detachment counts as one) are needed?",
+      answer: 4,
+      explain: "Two instantiations and two detachments: $4$ applications in all."
+    },
+    { type: "selectall", id: "m14", practice: true,
+      prompt: "You know $(\\forall x)(P(x) \\rightarrow Q(x))$, $(\\forall x)(Q(x) \\rightarrow R(x))$, $P(a)$, and $P(b)$. Select <strong>all</strong> statements that follow.",
+      choices: ["$R(a)$", "$R(b)$", "$(\\forall x)\\,R(x)$", "$R(c)$ for a third object $c$"],
+      answers: [0, 1],
+      hint: "You have $P$ at $a$ and at $b$ — and nowhere else.",
+      explain: "Chain the implications at $a$ and at $b$ to reach $R(a)$ and $R(b)$. Nothing establishes $R$ for other objects, so no universal claim follows."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Write a complete proof, with justifications, that Fafnir fears Scrat from the three squirrel axioms: $(\\forall x)(S(x) \\rightarrow M(x))$, $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$, $S(\\text{Scrat})$.",
+      solution: "<br>(1) $(\\forall x)(S(x) \\rightarrow M(x))$ &mdash; known.<br>(2) $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ &mdash; known.<br>(3) $S(\\text{Scrat})$ &mdash; known.<br>(4) $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$ &mdash; instantiate (1) at Scrat.<br>(5) $M(\\text{Scrat})$ &mdash; detach (4) with (3).<br>(6) $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$ &mdash; instantiate (2) at Scrat.<br>(7) $F(\\text{Fafnir}, \\text{Scrat})$ &mdash; detach (6) with (5). $\\checkmark$"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "A student writes: “From $(\\forall x)(S(x) \\rightarrow M(x))$ and $M(\\text{Scrat})$, by detachment, $S(\\text{Scrat}).$” Find the flaw.",
+      solution: "Detachment takes an implication $P \\rightarrow Q$ together with its <em>hypothesis</em> $P$ and yields the <em>conclusion</em> $Q$. Instantiating gives $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$, whose hypothesis is $S(\\text{Scrat})$ and conclusion is $M(\\text{Scrat})$. The student has the conclusion $M(\\text{Scrat})$ and tries to recover the hypothesis $S(\\text{Scrat})$ — that is using the converse, which detachment does not license."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "From $(\\forall x)(S(x) \\rightarrow M(x))$ alone, a student concludes $M(\\text{Scrat})$. What is missing, and what can actually be derived?",
+      solution: "Universal instantiation yields only the implication $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$ — not the bare fact $M(\\text{Scrat})$. To detach $M(\\text{Scrat})$ the student would also need the hypothesis $S(\\text{Scrat})$, which is not among the knowns. So the most that follows is $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Prove $T(a)$ from $(\\forall x)(P(x) \\rightarrow Q(x))$, $(\\forall x)(Q(x) \\rightarrow R(x))$, $(\\forall x)(R(x) \\rightarrow T(x))$, and $P(a)$. Give the full derivation.",
+      solution: "<br>(1) $P(a) \\rightarrow Q(a)$ &mdash; instantiate the first known at $a$.<br>(2) $Q(a)$ &mdash; detach (1) with $P(a)$.<br>(3) $Q(a) \\rightarrow R(a)$ &mdash; instantiate the second known at $a$.<br>(4) $R(a)$ &mdash; detach (3) with (2).<br>(5) $R(a) \\rightarrow T(a)$ &mdash; instantiate the third known at $a$.<br>(6) $T(a)$ &mdash; detach (5) with (4). $\\checkmark$"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "A proof needs to reach $F(\\text{Fafnir}, \\text{Scrat})$ using $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ and $M(\\text{Scrat})$, but the writer instantiates the $\\forall$ at Fafnir instead of Scrat. Why does the proof fail?",
+      solution: "Instantiating at Fafnir gives $M(\\text{Fafnir}) \\rightarrow F(\\text{Fafnir}, \\text{Fafnir})$. To detach this you would need $M(\\text{Fafnir})$, which you do not have, and it produces $F(\\text{Fafnir}, \\text{Fafnir})$, not the goal. Detachment requires the hypothesis to match exactly, so the object chosen in instantiation must be Scrat — the one you actually have a fact about."
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "The following proof of $M(\\text{Scrat})$ is broken. Repair it. Knowns: $(\\forall x)(S(x) \\rightarrow M(x))$, $S(\\text{Scrat})$. Broken: “(1) detach to get $M(\\text{Scrat})$; (2) instantiate at Scrat.”",
+      solution: "The steps are in the wrong order — you cannot detach an implication you have not yet produced. Corrected:<br>(1) $S(\\text{Scrat}) \\rightarrow M(\\text{Scrat})$ &mdash; instantiate $(\\forall x)(S(x) \\rightarrow M(x))$ at Scrat.<br>(2) $M(\\text{Scrat})$ &mdash; detach (1) with the known $S(\\text{Scrat})$. $\\checkmark$"
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "You know $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ and $F(\\text{Fafnir}, \\text{Scrat})$. Can you conclude $M(\\text{Scrat})$? Name the rule such a step would require and say whether it is valid.",
+      solution: "No. Instantiating gives $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$. Concluding $M(\\text{Scrat})$ from this implication plus its conclusion $F(\\text{Fafnir}, \\text{Scrat})$ would be affirming the consequent — using the converse — which is not a valid rule. Detachment only runs from hypothesis to conclusion, so $M(\\text{Scrat})$ does not follow."
+    },
+    { type: "challenge", id: "ch8",
+      prompt: "Explain why universal instantiation lets you substitute <em>any</em> object, and write the instance of $(\\forall x)(S(x) \\rightarrow M(x))$ at Fafnir.",
+      solution: "$(\\forall x)\\,\\varphi(x)$ asserts $\\varphi$ holds for <em>every</em> object in the domain, so it holds in particular for any constant you name; that is exactly what instantiation extracts. The instance at Fafnir is $S(\\text{Fafnir}) \\rightarrow M(\\text{Fafnir})$ — a valid implication even though, as it happens, Fafnir is not a squirrel (which merely makes its hypothesis false)."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>So far we can only <em>use</em> what we know. Reading 9 adds the two rules that let us attack the <em>goal</em> — and prove universal and conditional statements.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

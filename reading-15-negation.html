@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 15 — Negation and Refutation</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "15-negation",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 15',
+  title: "Reading 15 — Negation and Refutation",
+  subtitle: "To refute a claim, state its negation cleanly. The skill is pushing ¬ inward, flipping quantifiers and connectives as it goes.",
+  prev: { href: "reading-14-eventuality.html", label: "Reading 14 — Eventuality" },
+  next: { href: "reading-16-disjunction.html", label: "Reading 16 — Disjunction & Cases" },
+  blocks: [
+    { type: "def", title: "Pushing negation inward", html:
+      "<ul>" +
+      "<li>$\\neg(\\forall x)P(x) \\equiv (\\exists x)\\neg P(x)$ &nbsp;and&nbsp; $\\neg(\\exists x)P(x) \\equiv (\\forall x)\\neg P(x)$</li>" +
+      "<li>$\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$</li>" +
+      "<li>$\\neg(\\neg P) \\equiv P$</li>" +
+      "</ul>" +
+      "<p>To <strong>refute</strong> a universal claim, exhibit a single counterexample — an object satisfying the negation.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Negating everyday statements</h2>" +
+      "<p><strong>“All $A$ are $B$.”</strong> A statement like “all squirrels are mammals” is $(\\forall x)(S(x) \\rightarrow M(x))$. Its negation flips the $\\forall$ and negates the implication:</p>" +
+      "<p>$$\\neg(\\forall x)(S(x) \\rightarrow M(x)) \\equiv (\\exists x)(S(x) \\wedge \\neg M(x)).$$</p>" +
+      "<p>In words: “some $A$ is not $B$” — one counterexample (an $A$ that fails to be $B$) suffices. Note the negation is <em>not</em> “no $A$ is $B$,” which would be far stronger.</p>" +
+      "<p><strong>“No $A$ is $B$.”</strong> This is $(\\forall x)(A(x) \\rightarrow \\neg B(x))$, and its negation is $(\\exists x)(A(x) \\wedge B(x))$ — “some $A$ is $B$.”</p>" +
+      "<h2>Chains of quantifiers</h2>" +
+      "<p>To negate several nested quantifiers, push $\\neg$ through them one at a time: each $\\forall$ becomes $\\exists$ and each $\\exists$ becomes $\\forall$ as the $\\neg$ passes it, until the negation lands on the innermost statement. For example, $\\neg(\\forall x)(\\exists y)\\,R(x, y) \\equiv (\\exists x)(\\forall y)\\,\\neg R(x, y)$.</p>" +
+      "<h2>Refuting by counterexample</h2>" +
+      "<p>Because $\\neg(\\forall x)\\,P(x) \\equiv (\\exists x)\\,\\neg P(x)$, you refute a universal claim by exhibiting one object where it fails. Finding a counterexample uses the usual number vocabulary: $n$ is <strong>even</strong> if it is a multiple of $2$ and <strong>odd</strong> otherwise, and $n$ is a <strong>perfect square</strong> if $n = k^2$ for some whole number $k$ ($1, 4, 9, 16, 25, \\dots$). To refute a claim like “every perfect square is even,” look for a perfect square that is odd.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "$\\neg(\\forall x)\\,P(x)$ is equivalent to:",
+      choices: ["$(\\exists x)\\,\\neg P(x)$", "$(\\forall x)\\,\\neg P(x)$", "$\\neg(\\exists x)\\,P(x)$", "$(\\exists x)\\,P(x)$"],
+      answer: 0,
+      choiceFeedback: [null, "That says <em>everything</em> lacks $P$ — far stronger.", "That's “nothing has $P$,” different from “not everything.”", "That drops the negation."],
+      explain: "“Not everything has $P$” means “something lacks $P$.”"
+    },
+    { type: "mc", id: "q2",
+      prompt: "$\\neg(\\exists x)\\,P(x)$ is equivalent to:",
+      choices: ["$(\\forall x)\\,\\neg P(x)$", "$(\\exists x)\\,\\neg P(x)$", "$(\\forall x)\\,P(x)$", "$\\neg(\\forall x)\\,\\neg P(x)$"],
+      answer: 0,
+      choiceFeedback: [null, "“Something lacks $P$” is weaker than “nothing has $P$.”", "That drops the negation.", "A double negation — simplify it."],
+      explain: "“Nothing has $P$” means “everything lacks it.”"
+    },
+    { type: "mc", id: "q4",
+      prompt: "What is the negation of “all squirrels are mammals”?",
+      choices: ["There is a squirrel that is not a mammal", "There is a mammal that is not a squirrel", "No squirrel is a mammal", "All squirrels are non-mammals"],
+      answer: 0,
+      choiceFeedback: [null, "That negates the wrong direction.", "Far stronger than the negation, which needs one counterexample.", "Too strong — one non-mammal squirrel already suffices."],
+      explain: "$\\neg(\\forall x)(S(x) \\rightarrow M(x)) \\equiv (\\exists x)(S(x) \\wedge \\neg M(x))$."
+    },
+    { type: "matching", id: "q5",
+      prompt: "Match each statement to its negation.",
+      pairs: [
+        { left: "$(\\forall x)\\,P(x)$", right: "(∃x)¬P(x)" },
+        { left: "$(\\exists x)\\,P(x)$", right: "(∀x)¬P(x)" },
+        { left: "$P \\rightarrow Q$", right: "P ∧ ¬Q" },
+        { left: "$\\neg(\\neg P)$", right: "¬P" }
+      ],
+      hint: "Under negation ∀↔∃; $P \\rightarrow Q$ becomes “P and not Q”; and the negation of ¬¬P is just ¬P.",
+      explain: "∀ flips to ∃, → becomes “and-not,” and $\\neg(\\neg(\\neg P)) = \\neg P$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>This one needs two moves: negate the quantifier, then negate the implication inside.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Push the negation all the way in: $\\neg(\\forall x)(P(x) \\rightarrow Q(x))$ is equivalent to:",
+      choices: [
+        "$(\\exists x)(P(x) \\wedge \\neg Q(x))$",
+        "$(\\forall x)(P(x) \\wedge \\neg Q(x))$",
+        "$(\\exists x)(\\neg P(x) \\wedge Q(x))$",
+        "$(\\exists x)(P(x) \\rightarrow \\neg Q(x))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "The $\\forall$ must flip to $\\exists$.", "You negated the wrong part of the implication.", "Negating $P \\rightarrow Q$ gives $P \\wedge \\neg Q$, not another implication."],
+      explain: "$\\neg\\forall$ becomes $\\exists\\neg$, and $\\neg(P \\rightarrow Q)$ becomes $P \\wedge \\neg Q$: $(\\exists x)(P(x) \\wedge \\neg Q(x))$."
+    },
+    { type: "prose", html:
+      "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>"
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "selectall", id: "e3", practice: true,
+      prompt: "Select <strong>all</strong> statements equivalent to the negation of “some squirrel fears Fafnir.”",
+      choices: ["No squirrel fears Fafnir", "$(\\forall x)(S(x) \\rightarrow \\neg F(x,\\text{Fafnir}))$", "Some squirrel does not fear Fafnir", "Every squirrel fears Fafnir"],
+      answers: [0, 1],
+      hint: "$\\neg\\exists$ becomes $\\forall\\neg$: nothing has the property.",
+      explain: "$\\neg(\\exists x)(S(x) \\wedge F(x,\\text{Fafnir})) \\equiv (\\forall x)(S(x) \\rightarrow \\neg F(x,\\text{Fafnir}))$ — no squirrel fears Fafnir. The other options are different, weaker claims."
+    },
+    { type: "mc", id: "e4", practice: true,
+      prompt: "$\\neg(\\neg P)$ is equivalent to:",
+      choices: ["$P$", "$\\neg P$", "$P \\wedge \\neg P$", "$\\neg\\neg\\neg P$"],
+      answer: 0,
+      choiceFeedback: [null, "Two negations cancel, leaving $P$, not $\\neg P$.", "That is always false — it cannot equal $P$.", "Three negations reduce to a single $\\neg P$, not $P$."],
+      explain: "Double negation cancels: $\\neg\\neg P \\equiv P$."
+    },
+    { type: "selectall", id: "e5", practice: true,
+      prompt: "Select <strong>all</strong> statements equivalent to the negation of “all natural numbers are even.”",
+      choices: ["Some natural number is not even", "$(\\exists n)\\,\\neg E(n)$", "No natural number is even", "All natural numbers are odd"],
+      answers: [0, 1],
+      hint: "$\\neg\\forall$ becomes $\\exists\\neg$ — you only need one odd number.",
+      explain: "$\\neg(\\forall n)\\,E(n) \\equiv (\\exists n)\\,\\neg E(n)$ — some natural number is not even. “No natural number is even” and “all are odd” are far stronger."
+    },
+    { type: "mc", id: "e6", practice: true,
+      prompt: "To refute a universal claim $(\\forall x)\\,P(x)$, what do you exhibit?",
+      choices: ["A single counterexample: an object with $\\neg P$", "A proof that $P$ holds for one object", "Two objects with $P$", "A threshold $N$"],
+      answer: 0,
+      choiceFeedback: [null, "That supports the claim, it doesn't refute it.", "Examples where $P$ holds never refute a universal.", "Thresholds are for eventuality, not refutation."],
+      explain: "$\\neg(\\forall x)\\,P(x) \\equiv (\\exists x)\\,\\neg P(x)$ — one witness of the negation suffices."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "selectall", id: "m1", practice: true,
+      prompt: "Select <strong>all</strong> statements equivalent to $\\neg(\\forall x)(S(x) \\rightarrow M(x))$.",
+      choices: ["$(\\exists x)(S(x) \\wedge \\neg M(x))$", "There is a squirrel that is not a mammal", "$(\\forall x)(S(x) \\wedge \\neg M(x))$", "No squirrel is a mammal"],
+      answers: [0, 1],
+      hint: "Flip $\\forall$ to $\\exists$; an implication fails when the hypothesis holds and the conclusion fails.",
+      explain: "$\\neg\\forall$ becomes $\\exists\\neg$ and $\\neg(S \\rightarrow M)$ becomes $S \\wedge \\neg M$: some squirrel is not a mammal. The $\\forall$ version and “no squirrel is a mammal” are stronger, different claims."
+    },
+    { type: "mc", id: "m4", practice: true,
+      prompt: "$\\neg(\\forall x)(\\exists y)\\,F(x,y)$ is equivalent to:",
+      choices: ["$(\\exists x)(\\forall y)\\,\\neg F(x,y)$", "$(\\forall x)(\\exists y)\\,\\neg F(x,y)$", "$(\\exists x)(\\exists y)\\,\\neg F(x,y)$", "$(\\forall x)(\\forall y)\\,\\neg F(x,y)$"],
+      answer: 0,
+      choiceFeedback: [null, "Only the outer $\\forall$ flipped; the inner $\\exists$ must flip too.", "Both quantifiers must flip as $\\neg$ passes each.", "The outer quantifier should become $\\exists$."],
+      explain: "Push $\\neg$ through both: $\\forall \\to \\exists$, $\\exists \\to \\forall$, giving $(\\exists x)(\\forall y)\\,\\neg F(x,y)$."
+    },
+    { type: "mc", id: "m6", practice: true,
+      prompt: "The negation of “$f$ is eventually greater than $g$,” $\\neg(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > g(n))$, is:",
+      choices: [
+        "$(\\forall N)(\\exists n)(n \\ge N \\ \\wedge\\ f(n) \\le g(n))$",
+        "$(\\exists N)(\\forall n)(n \\ge N \\ \\wedge\\ f(n) \\le g(n))$",
+        "$(\\forall N)(\\exists n)(n \\ge N \\rightarrow f(n) \\le g(n))$",
+        "$(\\forall N)(\\forall n)(n \\ge N \\ \\wedge\\ f(n) \\le g(n))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "The outer $\\exists N$ must flip to $\\forall N$.", "Negating an implication gives $\\wedge$, not another $\\rightarrow$.", "The inner $\\forall n$ must flip to $\\exists n$."],
+      explain: "$\\neg\\exists \\to \\forall\\neg$, $\\neg\\forall \\to \\exists\\neg$, and $\\neg(n \\ge N \\rightarrow f > g) \\equiv (n \\ge N) \\wedge (f \\le g)$."
+    },
+    { type: "selectall", id: "m9", practice: true,
+      prompt: "Select <strong>all</strong> values that are counterexamples refuting “every perfect square is even.”",
+      choices: ["$9$", "$25$", "$16$", "$8$"],
+      answers: [0, 1],
+      hint: "You need a perfect square that is odd.",
+      explain: "A counterexample must be a perfect square that is odd. $9 = 3^2$ and $25 = 5^2$ are odd squares; $16 = 4^2$ is even, and $8$ is not a perfect square."
+    },
+    { type: "selectall", id: "m11", practice: true,
+      prompt: "Select <strong>all</strong> statements equivalent to the negation of “no squirrel fears Fafnir,” i.e. $\\neg(\\forall x)(S(x) \\rightarrow \\neg F(x,\\text{Fafnir}))$.",
+      choices: ["Some squirrel fears Fafnir", "$(\\exists x)(S(x) \\wedge F(x,\\text{Fafnir}))$", "Every squirrel fears Fafnir", "No squirrel fears Fafnir"],
+      answers: [0, 1],
+      hint: "$\\neg\\forall$ becomes $\\exists\\neg$, and $\\neg(S \\rightarrow \\neg F)$ becomes $S \\wedge F$.",
+      explain: "$\\neg(\\forall x)(S(x) \\rightarrow \\neg F(x,\\text{Fafnir})) \\equiv (\\exists x)(S(x) \\wedge F(x,\\text{Fafnir}))$ — some squirrel fears Fafnir. The last two options are stronger or unchanged claims."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Negate $(\\forall x)(\\exists y)(P(x) \\rightarrow Q(y))$ and simplify fully (push $\\neg$ all the way in).",
+      solution: "$\\neg(\\forall x)(\\exists y)(P(x) \\rightarrow Q(y))$\n$\\equiv (\\exists x)\\neg(\\exists y)(P(x) \\rightarrow Q(y))$\n$\\equiv (\\exists x)(\\forall y)\\neg(P(x) \\rightarrow Q(y))$\n$\\equiv (\\exists x)(\\forall y)(P(x) \\wedge \\neg Q(y))$.\nSince $P(x)$ does not depend on $y$, this equals $(\\exists x)(P(x) \\wedge (\\forall y)\\neg Q(y))$: there is an $x$ with $P(x)$, and $Q$ holds of nothing."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Refute the claim “every natural number is the sum of two primes” with a counterexample, and explain.",
+      solution: "The negation is $(\\exists n \\in \\mathbb{N})\\neg(\\exists p, q \\text{ prime})(n = p + q)$. Take $n = 1$. The smallest prime is $2$, so the smallest sum of two primes is $2 + 2 = 4$; hence $1$ cannot be written as $p + q$ with $p, q$ prime. Thus $n = 1$ witnesses the negation and refutes the universal. (The value $n = 0$ works too; and note Goldbach's conjecture is only about even numbers $\\ge 4$.)"
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Negate “$f$ is eventually greater than $g$” fully and explain in words what the negation asserts.",
+      solution: "Start from $(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > g(n))$. Negating: $(\\forall N)(\\exists n)\\neg(n \\ge N \\rightarrow f(n) > g(n)) \\equiv (\\forall N)(\\exists n)(n \\ge N \\wedge f(n) \\le g(n))$. In words: for every threshold $N$, no matter how large, there is still some input $n \\ge N$ at which $f$ fails to exceed $g$. So $f$ never permanently overtakes $g$ — the failures recur past every threshold."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Refute “for all $n \\in \\mathbb{N}$, if $n$ is prime then $n$ is odd” with a counterexample, and explain.",
+      solution: "The negation is $(\\exists n)(n \\text{ is prime} \\wedge \\neg(n \\text{ is odd})) = (\\exists n)(n \\text{ is prime} \\wedge n \\text{ is even})$. Take $n = 2$: it is prime (its only divisors are $1$ and $2$) and it is even. So $2$ satisfies the hypothesis (prime) but not the conclusion (odd), refuting the implication for all $n$. Indeed $2$ is the unique even prime."
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Negate $(\\forall x)((P(x) \\wedge Q(x)) \\rightarrow R(x))$ and simplify fully.",
+      solution: "$\\neg(\\forall x)((P(x) \\wedge Q(x)) \\rightarrow R(x))$\n$\\equiv (\\exists x)\\neg((P(x) \\wedge Q(x)) \\rightarrow R(x))$\n$\\equiv (\\exists x)((P(x) \\wedge Q(x)) \\wedge \\neg R(x))$\n$\\equiv (\\exists x)(P(x) \\wedge Q(x) \\wedge \\neg R(x))$.\nThe hypothesis $P \\wedge Q$ is kept intact (an implication fails when its hypothesis holds), and the conclusion $R$ is negated: some object satisfies $P$ and $Q$ but not $R$."
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "Refute “every function $f : \\mathbb{N} \\to \\mathbb{N}$ is eventually greater than $g(n) = n^2$.” Exhibit an $f$ and justify using the negation of eventuality.",
+      solution: "Take $f(n) = n$. To refute we must show $f$ is not eventually greater than $g$, i.e. $(\\forall N)(\\exists n)(n \\ge N \\wedge f(n) \\le g(n))$. For $n \\ge 1$, $f(n) = n \\le n^2 = g(n)$ (since $n^2 - n = n(n-1) \\ge 0$). So given any threshold $N$, pick $n = \\max(N, 1)$: then $n \\ge N$ and $f(n) \\le g(n)$. Hence $f(n) = n$ is never eventually greater than $n^2$, so the universal claim is false."
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "Negate $(\\exists x)(\\forall y)(\\exists z)\\,R(x,y,z)$ and push $\\neg$ all the way in.",
+      solution: "Push $\\neg$ through each quantifier, flipping it: $\\neg(\\exists x)(\\forall y)(\\exists z)\\,R(x,y,z)$\n$\\equiv (\\forall x)\\neg(\\forall y)(\\exists z)\\,R(x,y,z)$\n$\\equiv (\\forall x)(\\exists y)\\neg(\\exists z)\\,R(x,y,z)$\n$\\equiv (\\forall x)(\\exists y)(\\forall z)\\,\\neg R(x,y,z)$.\nEach quantifier flips ($\\exists \\to \\forall$, $\\forall \\to \\exists$, $\\exists \\to \\forall$) and the negation lands on $R$."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>Negation is the key that unlocks the last connective, disjunction, and the reasoning it supports — the subject of Reading 16.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

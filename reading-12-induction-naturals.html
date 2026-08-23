@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 12 — Induction on the Natural Numbers</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+function recursionUnfolder(el, api) {
+  var frames = ["f(3)", "= f(2) + f(2)", "= f(1) + f(1) + f(1) + f(1)",
+    "= f(0) + f(0) + f(0) + f(0) + f(0) + f(0) + f(0) + f(0)",
+    "= 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1", "= 8"];
+  var i = 0;
+  el.innerHTML =
+    '<div class="r-controls">' +
+      '<button class="r-btn" id="ru-next" type="button">Unfold one step</button>' +
+      '<button class="r-btn ghost" id="ru-reset" type="button">Reset</button>' +
+      '<span class="r-stat">step <b id="ru-step" style="display:inline">0</b></span>' +
+    '</div><div class="r-frame" id="ru-frame"></div>' +
+    '<p style="font-size:14px;color:var(--r-muted);margin:.6rem 0 0">Each step applies f(n) = f(n−1) + f(n−1). Every f(n) becomes two copies of f(n−1) — the count doubles.</p>';
+  var frame = el.querySelector("#ru-frame"), stepOut = el.querySelector("#ru-step");
+  function draw() { frame.innerHTML = frames.slice(0, i + 1).join("<br>"); stepOut.textContent = i; }
+  el.querySelector("#ru-next").onclick = function () { if (i < frames.length - 1) i++; draw(); };
+  el.querySelector("#ru-reset").onclick = function () { i = 0; draw(); };
+  draw();
+}
+
+Reading.init({
+  id: "12-induction-naturals",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 12',
+  title: "Reading 12 — Induction on the Natural Numbers",
+  subtitle: "ℕ is the simplest inductive structure of all — one base object and one building rule. Everything from Reading 11 specializes to it.",
+  prev: { href: "reading-11-structural-induction.html", label: "Reading 11 — Structural Induction" },
+  next: { href: "reading-13-existentials.html", label: "Reading 13 — Existentials & Conjunction" },
+  blocks: [
+    { type: "prose", html:
+      "<p>The natural numbers are built exactly like strings and trees, with the fewest possible constructors: start at $0$, and the only building rule is “add one” ($n \\mapsto n+1$). In fact ℕ is just strings over a one-letter alphabet — $n$ is a run of $n$ tally marks. So the structural induction you just learned specializes here to its most familiar form.</p>"
+    },
+    { type: "def", title: "Recursive definition on ℕ", html:
+      "<p>Give a value at the base $0$ and a value at $n$ in terms of smaller inputs, e.g. $f(0) = 1,\\ f(n) = f(n-1) + f(n-1)$. Unfold until you bottom out at $0$.</p>"
+    },
+    { type: "custom", id: "unfold", activity: false, render: recursionUnfolder },
+    { type: "shortnum", id: "q1", badge: "Challenge",
+      prompt: "For $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$, compute $f(3)$.",
+      answer: 8, placeholder: "a whole number",
+      hint: "Unfold once — $f(3)=f(2)+f(2)$ — and keep going, or note the values double.",
+      explain: "$1, 2, 4, 8$: $f(n) = 2^n$."
+    },
+    { type: "shortnum", id: "q2", badge: "Challenge",
+      prompt: "For $h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$, compute $h(3)$.",
+      answer: 15, placeholder: "a whole number",
+      hint: "Compute $h(0),h(1),h(2),h(3)$ — each is twice the previous plus one.",
+      explain: "$1, 3, 7, 15$: $h(n) = 2^{n+1}-1$."
+    },
+    { type: "def", title: "Proof by induction on ℕ", html:
+      "<p>To prove $(\\forall n \\in \\mathbb{N})\\,P(n)$: prove the <strong>base case</strong> $P(0)$, and the <strong>inductive step</strong> $(\\forall n)(P(n) \\rightarrow P(n+1))$. This is the tree rule with one base ($0$ instead of $\\mathrm{leaf}$) and one subpart ($n$ instead of two subtrees). A property with $P(n) \\rightarrow P(n+1)$ always holding is <strong>hereditary</strong>.</p>" +
+      "<p>Why this reaches everything: the base gives $P(0)$, and the hereditary step then hands you $P(0) \\rightarrow P(1) \\rightarrow P(2) \\rightarrow \\cdots$, so climbing one rung at a time you reach <em>every</em> natural number (like a line of dominoes). The step must advance by exactly one. A step that jumps by $2$ from base $0$ would only reach the even numbers, leaving $P(1), P(3), \\ldots$ unproved — to cover the odds you would also need $P(1)$ as a second base case.</p>"
+    },
+    { type: "mc", id: "q3",
+      prompt: "To prove $(\\forall n \\in \\mathbb{N})\\,P(n)$, what is the base case?",
+      choices: ["$P(0)$", "$P(1)$", "$P(n) \\rightarrow P(n+1)$", "$(\\forall n)\\,P(n)$"],
+      answer: 0,
+      choiceFeedback: [null, "ℕ's base object is $0$, not $1$.", "That's the inductive step.", "That's the whole statement to prove."],
+      explain: "The base object of ℕ is $0$, so the base case is $P(0)$."
+    },
+    { type: "mc", id: "q4",
+      prompt: "Which statement is the inductive step?",
+      choices: ["$(\\forall n)\\,(P(n) \\rightarrow P(n+1))$", "$(\\forall n)\\,P(n+1)$", "$P(0) \\rightarrow P(1)$", "$(\\exists n)\\,(P(n) \\rightarrow P(n+1))$"],
+      answer: 0,
+      choiceFeedback: [null,
+        "That asserts $P(n+1)$ outright; the step only needs $P(n)$ to <em>imply</em> $P(n+1)$.",
+        "That's a single instance; the step is for every $n$.",
+        "The step is universal, not existential."],
+      explain: "The step says the property is hereditary: $P(n) \\rightarrow P(n+1)$ for every $n$."
+    },
+    { type: "selectall", id: "q5",
+      prompt: "Select <strong>all</strong> hereditary properties (those with $P(n) \\rightarrow P(n+1)$ for every $n$).",
+      choices: ["$P(n):\\ n \\ge 3$", "$P(n):\\ n \\le 3$", "$P(n):\\ n$ is odd", "$P(n):\\ n^2 \\ge 0$"],
+      answers: [0, 3],
+      hint: "If it holds at $n$, must it hold at $n+1$? Try the boundary and a parity flip; an always-true property counts.",
+      explain: "“$n \\ge 3$” survives $+1$, and “$n^2 \\ge 0$” is always true. “$n \\le 3$” breaks at $3\\to4$; parity flips each step."
+    },
+    { type: "prose", html:
+      "<h2>Assemble an induction proof</h2>" +
+      "<p>Put the pieces of a proof that $f(n) = 2^n$ (the doubling function above) in order.</p>"
+    },
+    { type: "parsons", id: "q6",
+      prompt: "Order the steps to prove $(\\forall n)\\,f(n) = 2^n$.",
+      steps: [
+        "Let $P(n)$ be the statement $f(n) = 2^n$.",
+        "Base case: $f(0) = 1 = 2^0$, so $P(0)$ holds.",
+        "Inductive step: assume $P(n)$, that is, $f(n) = 2^n$.",
+        "Then $f(n+1) = f(n) + f(n) = 2\\,f(n)$.",
+        "$= 2 \\cdot 2^n = 2^{n+1}$, which is $P(n+1)$.",
+        "By induction, $f(n) = 2^n$ for all $n$."
+      ],
+      hint: "Name $P$, prove the base, assume the hypothesis before using it, simplify the recursion, then conclude.",
+      explain: "State $P$, base case, assume $P(n)$, apply the recursion, simplify to $P(n+1)$, conclude by induction."
+    },
+    { type: "shortnum", id: "q7", badge: "Challenge",
+      prompt: "Using $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$, what is $0 + 1 + \\cdots + 10$?",
+      answer: 55, placeholder: "a whole number",
+      hint: "Substitute $n = 10$.",
+      explain: "$\\frac{10 \\cdot 11}{2} = 55$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>A recursion you haven’t seen — unfold it from the base case; the pattern differs from $f$ and $h$.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "Let $t(0) = 2$ and $t(n) = 3 \\cdot t(n-1)$. Compute $t(3)$.",
+      answer: 54, placeholder: "a whole number",
+      hint: "From $t(0)=2$, multiply by 3 each step.",
+      explain: "$2, 6, 18, 54$: $t(n) = 2 \\cdot 3^n$."
+    },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3><p>Recurrences used below: $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$; $\\ h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$; $\\ g(0)=0,\\ g(n)=g(n-1)+2$; $\\ t(0)=2,\\ t(n)=3\\cdot t(n-1)$.</p>" },
+    { type:"shortnum", id:"e1", practice:true,
+      prompt:"For $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$, compute $f(4)$.",
+      answer:16, placeholder:"a whole number",
+      hint:"Each value doubles: $1, 2, 4, 8, \\ldots$",
+      explain:"$f(n)=2^n$, so $f(4)=2^4=16$."
+    },
+    { type:"selectall", id:"e2", practice:true,
+      prompt:"Select <strong>all</strong> true statements about the base case of induction on $\\mathbb{N}$.",
+      choices:[
+        "The base case is $P(0)$",
+        "$0$ is the base object of $\\mathbb{N}$",
+        "The base case is $P(1)$",
+        "The base case is $P(\\mathrm{leaf})$"
+      ],
+      answers:[0,1],
+      hint:"$\\mathbb{N}$ starts at $0$; $1$ is not the base, and $\\mathrm{leaf}$ belongs to trees.",
+      explain:"The base object of $\\mathbb{N}$ is $0$, so the base case is $P(0)$. $P(1)$ skips the true base, and $P(\\mathrm{leaf})$ is the tree base."
+    },
+    { type:"selectall", id:"e3", practice:true,
+      prompt:"Select <strong>all</strong> obligations you must discharge to prove $(\\forall n \\in \\mathbb{N})\\,P(n)$ by induction.",
+      choices:[
+        "Prove the base case $P(0)$",
+        "Prove the inductive step $(\\forall n)\\,(P(n)\\rightarrow P(n+1))$",
+        "Prove $(\\forall n)\\,P(n+1)$ outright",
+        "Prove $P(n)$ for one specific $n$ of your choosing"
+      ],
+      answers:[0,1],
+      hint:"An induction proof has exactly two parts; the step only needs $P(n)$ to <em>imply</em> $P(n+1)$, and one instance never suffices.",
+      explain:"You must prove the base case $P(0)$ and the hereditary step $(\\forall n)(P(n)\\rightarrow P(n+1))$. Asserting $P(n+1)$ outright skips the hypothesis, and a single instance cannot cover all $n$."
+    },
+    { type:"shortnum", id:"e4", practice:true,
+      prompt:"For $g(0)=0,\\ g(n)=g(n-1)+2$, compute $g(5)$.",
+      answer:10, placeholder:"a whole number",
+      hint:"Add $2$ five times starting from $0$.",
+      explain:"$g(n)=2n$, so $g(5)=10$."
+    },
+    { type:"mc", id:"e5", practice:true,
+      prompt:"A property $P$ is called <strong>hereditary</strong> when:",
+      choices:[
+        "$P(n)\\rightarrow P(n+1)$ holds for every $n$",
+        "$P(0)$ holds",
+        "$P(n)$ holds for some $n$",
+        "$P(n)\\rightarrow P(n-1)$ holds for every $n$"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "That's just the base case, not what hereditary means.",
+        "Hereditary is about passing from $n$ to $n+1$ for all $n$, not one instance.",
+        "Induction passes <em>upward</em>, from $n$ to $n+1$."],
+      explain:"Hereditary means the property is inherited by each successor: $P(n)\\rightarrow P(n+1)$ for all $n$."
+    },
+    { type:"shortnum", id:"e6", practice:true,
+      prompt:"For $h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$, compute $h(2)$.",
+      answer:7, placeholder:"a whole number",
+      hint:"$h(1) = 1+1+1 = 3$; then $h(2) = 3+3+1$.",
+      explain:"$h(0)=1,\\ h(1)=3,\\ h(2)=7$ (the pattern is $2^{n+1}-1$)."
+    },
+    { type:"selectall", id:"e9", practice:true,
+      prompt:"Select <strong>all</strong> hereditary properties (those with $P(n)\\rightarrow P(n+1)$ for every $n$).",
+      choices:[
+        "$P(n):\\ n \\ge 5$",
+        "$P(n):\\ n \\le 5$",
+        "$P(n):\\ n$ is even",
+        "$P(n):\\ n^2 \\ge 0$"
+      ],
+      answers:[0,3],
+      hint:"If it holds at $n$, must it hold at $n+1$? Check the boundary and a parity flip.",
+      explain:"“$n\\ge 5$” survives $+1$, and “$n^2\\ge 0$” is always true (so trivially hereditary). “$n\\le 5$” breaks at $5\\to 6$; parity flips every step."
+    },
+    { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
+    { type:"parsons", id:"m2", practice:true,
+      prompt:"Order the induction proof that $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$ for all $n$.",
+      steps:[
+        "Let $P(n)$ be: $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$.",
+        "Base case: the left side is $0$ and $\\dfrac{0\\cdot 1}{2} = 0$, so $P(0)$ holds.",
+        "Inductive step: assume $P(n)$, i.e. $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$.",
+        "Then $0 + 1 + \\cdots + n + (n+1) = \\dfrac{n(n+1)}{2} + (n+1)$.",
+        "$= \\dfrac{n(n+1) + 2(n+1)}{2} = \\dfrac{(n+1)(n+2)}{2}$, which is $P(n+1)$.",
+        "By induction, the formula holds for all $n$."
+      ],
+      hint:"Add $(n+1)$ to both sides of the hypothesis, put over a common denominator, and factor.",
+      explain:"$\\frac{n(n+1)}{2} + (n+1) = \\frac{(n+1)(n+2)}{2}$, matching $P(n+1)$."
+    },
+    { type:"mc", id:"m3", practice:true,
+      prompt:"In proving $(\\forall n)\\,f(n) = 2^n$ (with $f(n) = f(n-1)+f(n-1)$), which is the correct inductive step calculation?",
+      choices:[
+        "$f(n+1) = f(n) + f(n) = 2f(n) = 2\\cdot 2^n = 2^{n+1}$",
+        "$f(n+1) = f(n) + 1 = 2^n + 1$",
+        "$f(n+1) = f(n)\\cdot f(n) = (2^n)^2$",
+        "$f(n+1) = 2^{n} = f(n)$"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "The recurrence adds $f(n)$ to itself; it doesn't add $1$.",
+        "The recurrence is a sum, not a product.",
+        "That claims $f$ never changes, contradicting the recurrence."],
+      explain:"Using $f(n+1) = f(n)+f(n) = 2f(n)$ and the hypothesis $f(n)=2^n$ gives $2^{n+1}$."
+    },
+    { type:"shortnum", id:"m4", practice:true,
+      prompt:"Using $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$, compute $0 + 1 + \\cdots + 20$.",
+      answer:210, placeholder:"a whole number",
+      hint:"$\\frac{20\\cdot 21}{2}$.",
+      explain:"$\\frac{20\\cdot 21}{2} = 210$."
+    },
+    { type:"shortnum", id:"m5", practice:true,
+      prompt:"The sum of the first $n$ odd numbers has the closed form $1 + 3 + 5 + \\cdots + (2n-1) = n^2$. What is $1 + 3 + 5 + \\cdots + 11$?",
+      answer:36, placeholder:"a whole number",
+      hint:"$11 = 2n-1$ gives $n = 6$; the sum is $n^2$.",
+      explain:"There are $6$ odd terms up to $11$, so the sum is $6^2 = 36$."
+    },
+    { type:"shortnum", id:"m6", practice:true,
+      prompt:"Using $1 + 2 + 4 + \\cdots + 2^n = 2^{n+1}-1$, compute $1 + 2 + 4 + 8 + 16$.",
+      answer:31, placeholder:"a whole number",
+      hint:"The last term is $2^4$, so $n = 4$; the sum is $2^{5}-1$.",
+      explain:"$2^{4+1}-1 = 32 - 1 = 31$."
+    },
+    { type:"shortnum", id:"m7", practice:true,
+      prompt:"Using $1^2 + 2^2 + \\cdots + n^2 = \\dfrac{n(n+1)(2n+1)}{6}$, compute $1^2 + 2^2 + 3^2 + 4^2 + 5^2$.",
+      answer:55, placeholder:"a whole number",
+      hint:"$\\frac{5\\cdot 6\\cdot 11}{6}$.",
+      explain:"$\\frac{5\\cdot 6\\cdot 11}{6} = 55$."
+    },
+    { type:"mc", id:"m8", practice:true,
+      prompt:"For $h(0)=1,\\ h(n)=2h(n-1)+1$, which closed form is correct?",
+      choices:["$h(n) = 2^{n+1}-1$", "$h(n) = 2^n$", "$h(n) = 2n+1$", "$h(n) = 2^{n}-1$"],
+      answer:0,
+      choiceFeedback:[null,
+        "That's $f(n)$; check $h(1)=3\\ne 2$.",
+        "That grows linearly, but $h$ roughly doubles each step.",
+        "Check $h(0)$: this gives $0$, but $h(0)=1$."],
+      explain:"$h$ is $1, 3, 7, 15, \\ldots = 2^{n+1}-1$."
+    },
+    { type:"selectall", id:"m9", practice:true,
+      prompt:"Select <strong>all</strong> hereditary properties (those with $P(n)\\rightarrow P(n+1)$ for every $n$).",
+      choices:[
+        "$P(n):\\ n \\ge 0$",
+        "$P(n):\\ n < 100$",
+        "$P(n):\\ n$ is a multiple of $3$",
+        "$P(n):\\ 2^n \\ge 1$"
+      ],
+      answers:[0,3],
+      hint:"Always-true properties are trivially hereditary. Watch the boundary at $99\\to 100$ and the step $3 \\to 4$.",
+      explain:"“$n\\ge 0$” and “$2^n\\ge 1$” are always true, hence hereditary. “$n<100$” fails at $99\\to 100$; multiples of $3$ fail at $3\\to 4$."
+    },
+    { type:"matching", id:"m10", practice:true,
+      prompt:"Match each recurrence (with base as given) to its closed form.",
+      pairs:[
+        { left:"$f(0)=1,\\ f(n)=2f(n-1)$", right:"2 to the n" },
+        { left:"$g(0)=0,\\ g(n)=g(n-1)+2$", right:"2n" },
+        { left:"$h(0)=1,\\ h(n)=2h(n-1)+1$", right:"2 to the (n+1), minus 1" },
+        { left:"$t(0)=2,\\ t(n)=3t(n-1)$", right:"2 times 3 to the n" }
+      ],
+      explain:"Pure doubling gives $2^n$; add-2 gives $2n$; double-plus-one gives $2^{n+1}-1$; triple from base $2$ gives $2\\cdot 3^n$."
+    },
+    { type:"mc", id:"m12", practice:true,
+      prompt:"A student proves $P(0)$ and proves $(\\forall n)(P(n)\\rightarrow P(n+2))$, then claims $(\\forall n)\\,P(n)$. What is wrong?",
+      choices:[
+        "The step jumps by $2$, so only even $n$ are reached; odd $n$ (e.g. $P(1)$) are never established",
+        "Nothing — this is a valid induction",
+        "The base case should be $P(1)$",
+        "You may never use a step larger than $1$ under any circumstances"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "The chain $P(0)\\to P(2)\\to P(4)\\to\\cdots$ never reaches $P(1)$.",
+        "The base for $\\mathbb{N}$ is $0$; changing it wouldn't fix the gap.",
+        "Step-2 induction is fine if you also prove $P(1)$ as a second base — the flaw here is the missing odd base, not the step size itself."],
+      explain:"With base $P(0)$ and step $+2$, only even numbers are covered. To reach every $n$ you'd also need $P(1)$ as a base (or a $+1$ step)."
+    },
+    { type:"shortnum", id:"m13", practice:true,
+      prompt:"For $t(0)=2,\\ t(n)=3\\cdot t(n-1)$, compute $t(4)$.",
+      answer:162, placeholder:"a whole number",
+      hint:"$t(n)=2\\cdot 3^n$, so $t(4)=2\\cdot 81$.",
+      explain:"$t(4)=2\\cdot 3^4 = 2\\cdot 81 = 162$."
+    },
+    { type:"parsons", id:"m14", practice:true,
+      prompt:"Order the induction proof that $g(n)=2n$ for $g(0)=0,\\ g(n)=g(n-1)+2$.",
+      steps:[
+        "Let $P(n)$ be the statement $g(n) = 2n$.",
+        "Base case: $g(0) = 0 = 2\\cdot 0$, so $P(0)$ holds.",
+        "Inductive step: assume $P(n)$, that is, $g(n) = 2n$.",
+        "Then $g(n+1) = g(n) + 2 = 2n + 2$.",
+        "$= 2(n+1)$, which is $P(n+1)$.",
+        "By induction, $g(n) = 2n$ for all $n$."
+      ],
+      hint:"Name $P$, base, assume $P(n)$, apply the recurrence, factor out $2$.",
+      explain:"$g(n+1) = g(n)+2 = 2n+2 = 2(n+1)$."
+    },
+    { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
+    { type:"challenge", id:"ch1",
+      prompt:"Prove by induction that $f(n) = 2^n$ for all $n$, where $f(0)=1$ and $f(n)=f(n-1)+f(n-1)$.",
+      solution:"Let $P(n)$ be $f(n) = 2^n$. <em>Base</em>: $f(0) = 1 = 2^0$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $f(n) = 2^n$. Then $f(n+1) = f(n) + f(n) = 2\\,f(n) = 2\\cdot 2^n = 2^{n+1}$, which is $P(n+1)$. By induction, $f(n) = 2^n$ for all $n \\in \\mathbb{N}$."
+    },
+    { type:"challenge", id:"ch2",
+      prompt:"Prove by induction that $0 + 1 + 2 + \\cdots + n = \\dfrac{n(n+1)}{2}$ for all $n$.",
+      solution:"Let $P(n)$ be $0 + 1 + \\cdots + n = \\frac{n(n+1)}{2}$. <em>Base</em>: for $n=0$ the sum is $0$ and $\\frac{0\\cdot 1}{2} = 0$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$. Then $0 + 1 + \\cdots + n + (n+1) = \\frac{n(n+1)}{2} + (n+1) = \\frac{n(n+1) + 2(n+1)}{2} = \\frac{(n+1)(n+2)}{2}$, which is exactly $P(n+1)$. By induction, the formula holds for all $n$."
+    },
+    { type:"challenge", id:"ch3",
+      prompt:"Prove by induction that $1 + 3 + 5 + \\cdots + (2n-1) = n^2$ for all $n \\ge 1$ (the sum of the first $n$ odd numbers). Take the empty sum at $n=0$ to be $0 = 0^2$ for the base.",
+      solution:"Let $P(n)$ be “the sum of the first $n$ odd numbers equals $n^2$.” <em>Base</em>: for $n=0$ the (empty) sum is $0 = 0^2$; equivalently for $n=1$ the sum is $1 = 1^2$. <em>Step</em>: assume $P(n)$, i.e. $1 + 3 + \\cdots + (2n-1) = n^2$. The next odd number is $2(n+1)-1 = 2n+1$. Adding it: $1 + 3 + \\cdots + (2n-1) + (2n+1) = n^2 + (2n+1) = (n+1)^2$, which is $P(n+1)$. By induction, the sum of the first $n$ odd numbers is $n^2$ for all $n$."
+    },
+    { type:"challenge", id:"ch4",
+      prompt:"Prove by induction that $h(n) = 2^{n+1} - 1$ for all $n$, where $h(0)=1$ and $h(n) = h(n-1) + h(n-1) + 1$.",
+      solution:"Let $P(n)$ be $h(n) = 2^{n+1} - 1$. <em>Base</em>: $h(0) = 1 = 2^{1} - 1$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $h(n) = 2^{n+1} - 1$. Then $h(n+1) = h(n) + h(n) + 1 = 2\\,h(n) + 1 = 2(2^{n+1} - 1) + 1 = 2^{n+2} - 2 + 1 = 2^{n+2} - 1 = 2^{(n+1)+1} - 1$, which is $P(n+1)$. By induction, $h(n) = 2^{n+1} - 1$ for all $n$."
+    },
+    { type:"challenge", id:"ch5",
+      prompt:"Prove by induction that $1 + 2 + 4 + \\cdots + 2^n = 2^{n+1} - 1$ for all $n$ (the geometric sum of powers of two).",
+      solution:"Let $P(n)$ be $\\sum_{k=0}^{n} 2^k = 2^{n+1} - 1$. <em>Base</em>: for $n=0$ the sum is $2^0 = 1$ and $2^{1} - 1 = 1$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $\\sum_{k=0}^{n} 2^k = 2^{n+1} - 1$. Then $\\sum_{k=0}^{n+1} 2^k = \\left(\\sum_{k=0}^{n} 2^k\\right) + 2^{n+1} = (2^{n+1} - 1) + 2^{n+1} = 2\\cdot 2^{n+1} - 1 = 2^{n+2} - 1$, which is $P(n+1)$. By induction, the identity holds for all $n$."
+    },
+    { type:"challenge", id:"ch6",
+      prompt:"Prove by induction that $1^2 + 2^2 + \\cdots + n^2 = \\dfrac{n(n+1)(2n+1)}{6}$ for all $n \\ge 0$ (empty sum $=0$ at $n=0$).",
+      solution:"Let $P(n)$ be $\\sum_{k=1}^{n} k^2 = \\frac{n(n+1)(2n+1)}{6}$. <em>Base</em>: at $n=0$ the sum is $0$ and $\\frac{0\\cdot 1\\cdot 1}{6} = 0$. <em>Step</em>: assume $P(n)$. Then $\\sum_{k=1}^{n+1} k^2 = \\frac{n(n+1)(2n+1)}{6} + (n+1)^2 = \\frac{n(n+1)(2n+1) + 6(n+1)^2}{6} = \\frac{(n+1)\\big[n(2n+1) + 6(n+1)\\big]}{6}$. The bracket is $2n^2 + n + 6n + 6 = 2n^2 + 7n + 6 = (n+2)(2n+3)$. So the sum is $\\frac{(n+1)(n+2)(2n+3)}{6} = \\frac{(n+1)\\big((n+1)+1\\big)\\big(2(n+1)+1\\big)}{6}$, which is $P(n+1)$. By induction, the formula holds for all $n$."
+    },
+    { type:"challenge", id:"ch7",
+      prompt:"Prove by induction that $2^n > n$ for all $n \\in \\mathbb{N}$.",
+      solution:"Let $P(n)$ be $2^n > n$. <em>Base</em>: $2^0 = 1 > 0$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $2^n > n$. Then $2^{n+1} = 2\\cdot 2^n > 2n$. Now compare $2n$ with $n+1$: if $n \\ge 1$ then $2n = n + n \\ge n + 1$, so $2^{n+1} > 2n \\ge n+1$. The only remaining case is $n = 0$, where $2^{n+1} = 2^1 = 2 > 1 = n+1$ directly. In both cases $2^{n+1} > n+1$, which is $P(n+1)$. By induction, $2^n > n$ for all $n$."
+    },
+    { type:"challenge", id:"ch8",
+      prompt:"Find the error. A student “proves” that $2^n \\le 100$ for all $n$: Base — $2^0 = 1 \\le 100$. Step — “assume $2^n \\le 100$; since powers grow slowly, $2^{n+1} \\le 100$ too.” Therefore $2^n \\le 100$ for all $n$. What is wrong, and give a counterexample.",
+      solution:"The base case is fine, but the <strong>inductive step is unjustified and in fact false</strong>. From $2^n \\le 100$ you get $2^{n+1} = 2\\cdot 2^n \\le 200$, not $\\le 100$; the hand-wave “powers grow slowly” proves nothing. The step $P(n)\\rightarrow P(n+1)$ genuinely fails: e.g. $P(6)$ is true ($2^6 = 64 \\le 100$) but $P(7)$ is false ($2^7 = 128 > 100$), so the implication $P(6)\\rightarrow P(7)$ is false. A concrete counterexample to the claim itself is $n = 7$: $2^7 = 128 > 100$. A valid induction needs an inductive step that actually holds for <em>every</em> $n$; here no such step exists because the statement is not hereditary (and not even true)."
+    },
+    { type:"challenge", id:"ch9",
+      prompt:"Prove by induction that $n(n+1)$ is even for every $n \\in \\mathbb{N}$.",
+      solution:"Let $P(n)$ be “$n(n+1)$ is even,” i.e. $n(n+1) = 2m$ for some integer $m \\ge 0$. <em>Base</em>: $0\\cdot 1 = 0 = 2\\cdot 0$, even. <em>Step</em>: assume $n(n+1) = 2m$. Consider $(n+1)(n+2)$. Expand relative to the hypothesis: $(n+1)(n+2) = (n+1)n + (n+1)\\cdot 2 = n(n+1) + 2(n+1) = 2m + 2(n+1) = 2\\big(m + n + 1\\big)$, which is even. So $P(n+1)$ holds. By induction, $n(n+1)$ is even for every $n$. (Intuitively, of two consecutive integers one is always even.)"
+    },
+    { type:"challenge", id:"ch10",
+      prompt:"Induction loading. We want to show the partial sums $\\sum_{k=1}^{n} \\frac{1}{2^k}$ stay below $1$. A direct induction on “$\\sum_{k=1}^{n} \\frac{1}{2^k} < 1$” stalls. Strengthen the claim to an equality and prove $\\sum_{k=1}^{n} \\frac{1}{2^k} = 1 - \\frac{1}{2^n}$ for all $n \\ge 1$, then explain why the stronger statement is what makes the induction go through.",
+      solution:"Let $P(n)$ be $\\sum_{k=1}^{n} \\frac{1}{2^k} = 1 - \\frac{1}{2^n}$. <em>Base</em> ($n=1$): the sum is $\\frac{1}{2}$ and $1 - \\frac{1}{2^1} = \\frac{1}{2}$, so $P(1)$ holds. <em>Step</em>: assume $P(n)$, i.e. $\\sum_{k=1}^{n} \\frac{1}{2^k} = 1 - \\frac{1}{2^n}$. Then $\\sum_{k=1}^{n+1} \\frac{1}{2^k} = \\left(1 - \\frac{1}{2^n}\\right) + \\frac{1}{2^{n+1}} = 1 - \\frac{2}{2^{n+1}} + \\frac{1}{2^{n+1}} = 1 - \\frac{1}{2^{n+1}}$, which is $P(n+1)$. By induction, $\\sum_{k=1}^{n} \\frac{1}{2^k} = 1 - \\frac{1}{2^n}$ for all $n\\ge 1$; since $\\frac{1}{2^n} > 0$, this is always $< 1$. <em>Why loading helps</em>: trying to prove only “$\\text{sum} < 1$” gives the hypothesis $\\text{sum}_n < 1$, from which $\\text{sum}_{n+1} = \\text{sum}_n + \\frac{1}{2^{n+1}} < 1 + \\frac{1}{2^{n+1}}$ — too weak to conclude $< 1$. The exact value $1 - \\frac{1}{2^n}$ carries precisely how much room is left below $1$, so the next term fits; a stronger, more informative hypothesis is easier to propagate."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>That completes induction. We return to the connectives — starting with the existential quantifier and “and.”</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

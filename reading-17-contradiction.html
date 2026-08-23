@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 17 — Proof by Contradiction</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "17-contradiction",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 17',
+  title: "Reading 17 — Proof by Contradiction",
+  subtitle: "Assume your goal is false, derive an impossibility, and conclude the goal must be true.",
+  prev: { href: "reading-16-disjunction.html", label: "Reading 16 — Disjunction & Cases" },
+  next: { href: "reading-18-minmax.html", label: "Reading 18 — Max, Min & Tree Height" },
+  blocks: [
+    { type: "def", title: "Proof by contradiction", html:
+      "<p>To prove a goal $G$: assume $\\neg G$, and derive a <strong>known-false statement</strong> (a contradiction, such as $5 < 5$, $1 = 0$, or $n$ both even and odd). Since the assumption led to an impossibility, $\\neg G$ cannot hold, so $G$ must be true. A merely surprising statement is not enough — only a genuine impossibility rules out $\\neg G$. Negating the goal cleanly (Reading 15) is the first move.</p>" +
+      "<p>Negating common goals:</p>" +
+      "<ul>" +
+      "<li><strong>Implication:</strong> $\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$ — keep the hypothesis, deny the conclusion.</li>" +
+      "<li><strong>Disjunction (DeMorgan):</strong> $\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$; e.g. the negation of the goal “$x > 50$ or $y > 50$” is “$x \\le 50$ and $y \\le 50$.”</li>" +
+      "<li><strong>Universal:</strong> $\\neg(\\forall n)\\,P(n) \\equiv (\\exists n)\\,\\neg P(n)$.</li>" +
+      "<li><strong>Existence / non-existence:</strong> the negation of “there is no $X$” is “some $X$ exists,” so you <em>assume such an $X$ exists</em>. To attack goals like “there is no largest integer” or “there are infinitely many primes,” assume the opposite: a largest integer $N$ exists, or only finitely many primes exist.</li>" +
+      "</ul>"
+    },
+    { type: "prose", html:
+      "<h2>Facts these proofs use</h2>" +
+      "<p>Contradiction proofs often finish with a parity or divisibility fact:</p>" +
+      "<ul>" +
+      "<li>An <strong>even</strong> number squared is a multiple of $4$: $(2k)^2 = 4k^2$, so remainder $0$ when divided by $4$.</li>" +
+      "<li>An <strong>odd</strong> number squared has the form $4k + 1$: $(2k+1)^2 = 4k^2 + 4k + 1 = 4(k^2 + k) + 1$, so remainder $1$ when divided by $4$. More sharply, an odd square has the form $8m + 1$ (remainder $1$ when divided by $8$).</li>" +
+      "</ul>" +
+      "<p>Two more setups worth recognizing:</p>" +
+      "<ul>" +
+      "<li><strong>Irrationality (e.g. $\\sqrt{2}$):</strong> assume it is rational, $= a/b$ in lowest terms (no common factor), then derive that $a$ and $b$ share a factor — contradicting lowest terms. This relies on rationals being closed under $+$ and $-$: if $r$ is rational and $r + x$ were rational, then $x = (r + x) - r$ would be rational too.</li>" +
+      "<li><strong>Strict prefixes:</strong> a strict prefix of a string has strictly smaller length. So if a string were a strict prefix of itself, its length would be strictly less than itself — impossible.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "To prove a goal $G$ by contradiction, you:",
+      choices: ["assume $\\neg G$ and derive a known-false statement", "assume $G$ and derive a known-false statement", "prove $G$ directly with no assumptions", "find one example where $G$ holds"],
+      answer: 0,
+      choiceFeedback: [null, "Assuming $G$ and reaching a falsehood proves nothing — assume its <em>negation</em>.", "That's a direct proof.", "One example can't establish a general goal."],
+      explain: "Assuming the goal is false and reaching an impossibility forces the goal to be true."
+    },
+    { type: "mc", id: "q2",
+      prompt: "To prove “if $n^2$ is even then $n$ is even” by contradiction, you assume:",
+      choices: ["$n^2$ is even <strong>and</strong> $n$ is odd", "$n^2$ is odd <strong>and</strong> $n$ is even", "$n$ is even", "$n^2$ is odd"],
+      answer: 0,
+      choiceFeedback: [null, "That negates the wrong implication.", "That's just the conclusion.", "That's only half — keep the hypothesis too."],
+      explain: "Negating “if $P$ then $Q$” gives “$P$ and not $Q$”: keep $n^2$ even, deny that $n$ is even."
+    },
+    { type: "prose", html:
+      "<h2>Assemble a proof by contradiction</h2>" +
+      "<p>Order the steps to prove: for all real $x, y$, if $x + y > 100$ then $x > 50$ or $y > 50$.</p>"
+    },
+    { type: "parsons", id: "q3",
+      prompt: "Order the steps for the proof by contradiction.",
+      steps: [
+        "Assume $x + y > 100$; we must show $x > 50 \\vee y > 50$.",
+        "Suppose for contradiction that neither holds: $x \\le 50$ and $y \\le 50$.",
+        "Adding those two inequalities gives $x + y \\le 100$.",
+        "But we assumed $x + y > 100$ — a contradiction.",
+        "Therefore $x > 50 \\vee y > 50$."
+      ],
+      hint: "Assume the hypothesis, negate the disjunctive goal (DeMorgan → both $\\le 50$), add the inequalities, reach the contradiction, then conclude.",
+      explain: "Assume the hypothesis, negate the goal to “both $\\le 50$,” add to get $x+y \\le 100$, contradicting $x+y>100$."
+    },
+    { type: "mc", id: "q4",
+      prompt: "To prove “no string is a strict prefix of itself” by contradiction, you assume:",
+      choices: [
+        "some string is a strict prefix of itself, then compare lengths",
+        "every string is a strict prefix of itself",
+        "no string is a strict prefix of itself",
+        "the empty string is a prefix of everything"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "Too strong — the negation of “no string …” is just “<em>some</em> string …”.",
+        "That's the goal itself; assume its negation instead.",
+        "True, but irrelevant to setting up this contradiction."],
+      explain: "Negating “no string …” gives “some string is a strict prefix of itself”; a strict prefix has strictly smaller length, so that length would be smaller than itself — a contradiction."
+    },
+    { type: "shortnum", id: "q5", badge: "Challenge",
+      prompt: "In the parity argument, an odd number squared is $4k + 1$. What is the remainder when $7^2$ is divided by $4$?",
+      answer: 1,
+      hint: "Compute $7^2$ and divide by 4, or use the $4k+1$ form.",
+      explain: "$7^2 = 49 = 4 \\cdot 12 + 1$, remainder $1$ — consistent with odd squares being $4k+1$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Set up a contradiction for a statement you haven’t seen — a claim that something does <em>not</em> exist.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "To prove “there is no largest integer” by contradiction, what do you assume?",
+      choices: [
+        "Assume there is a largest integer $N$, then consider $N + 1$",
+        "Assume there is no largest integer",
+        "Check $n = 0, 1, 2, \\dots$ one at a time",
+        "Assume every integer equals the largest one"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "That's the goal itself; assume its <em>negation</em>.", "Checking examples can't establish a statement about all integers.", "That isn't the negation of the goal."],
+      explain: "Assume a largest integer $N$ exists; then $N + 1$ is larger, contradicting that $N$ was largest."
+    },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3>" },
+    { type:"mc", id:"e1", practice:true,
+      prompt:"To prove a goal $G$ by contradiction, you begin by assuming:",
+      choices:["$\\neg G$","$G$","nothing at all","a single example of $G$"],
+      answer:0,
+      explain:"Assume the goal is false, then derive an impossibility." },
+    { type:"mc", id:"e2", practice:true,
+      prompt:"The negation of “if $P$ then $Q$” is:",
+      choices:["$P$ and $\\neg Q$","$\\neg P$ and $Q$","$\\neg P$ or $Q$","$P$ or $\\neg Q$"],
+      answer:0,
+      explain:"$\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$: the hypothesis holds but the conclusion fails." },
+    { type:"shortnum", id:"e5", practice:true,
+      prompt:"Even squares are multiples of $4$. What is the remainder when $6^2$ is divided by $4$?",
+      answer:0,
+      explain:"$6^2 = 36 = 4 \\cdot 9$, remainder $0$." },
+    { type:"selectall", id:"e6", practice:true,
+      prompt:"Select <strong>all</strong> correct ways to <em>begin</em> a proof by contradiction.",
+      choices:[
+        "To prove “if $n^2$ is even then $n$ is even,” assume $n^2$ is even and $n$ is odd",
+        "To prove “there is no largest integer,” assume a largest integer $N$ exists",
+        "To prove “if $P$ then $Q$,” assume $\\neg P$ and $Q$",
+        "To prove “$\\sqrt{2}$ is irrational,” assume $\\sqrt{2} = a/b$ in lowest terms"
+      ],
+      answers:[0,1,3],
+      explain:"Each correct setup assumes the negation of the goal. “Assume $\\neg P$ and $Q$” wrongly negates “if $P$ then $Q$” — the correct negation is $P \\wedge \\neg Q$." },
+    { type:"selectall", id:"e8", practice:true,
+      prompt:"Select <strong>all</strong> true statements about $n^2$ when $n$ is odd.",
+      choices:["$n^2$ has the form $4k + 1$","$n^2$ has the form $8m + 1$","$n^2$ is even","$n^2$ has the form $4k$"],
+      answers:[0,1],
+      explain:"$(2k+1)^2 = 4(k^2 + k) + 1$, so an odd square is $4k+1$ — in fact $8m+1$. It is never even and never a multiple of $4$." },
+    { type:"shortnum", id:"e9", practice:true,
+      prompt:"An odd square actually has the form $8m + 1$. What is the remainder when $15^2$ is divided by $8$?",
+      answer:1,
+      explain:"$15^2 = 225 = 8 \\cdot 28 + 1$, remainder $1$." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
+    { type:"parsons", id:"m1", practice:true,
+      prompt:"Order the proof by contradiction that if $n^2$ is even then $n$ is even.",
+      steps:[
+        "Suppose for contradiction that $n^2$ is even but $n$ is odd.",
+        "Since $n$ is odd, write $n = 2k + 1$.",
+        "Then $n^2 = 4k^2 + 4k + 1 = 2(2k^2 + 2k) + 1$, which is odd.",
+        "So $n^2$ is both even and odd — a contradiction.",
+        "Therefore if $n^2$ is even then $n$ is even."
+      ],
+      explain:"Assume the negation ($n^2$ even, $n$ odd), compute $n^2$ as odd, and contradict evenness." },
+    { type:"mc", id:"m2", practice:true,
+      prompt:"To prove “if $x + y > 100$ then $x > 50$ or $y > 50$” by contradiction, the negated goal is:",
+      choices:["$x \\le 50$ and $y \\le 50$","$x \\le 50$ or $y \\le 50$","$x > 50$ and $y > 50$","$x + y \\le 100$"],
+      answer:0,
+      explain:"DeMorgan turns “not ($x>50$ or $y>50$)” into “$x \\le 50$ and $y \\le 50$.”" },
+    { type:"shortnum", id:"m3", practice:true,
+      prompt:"Continuing that proof: assuming $x \\le 50$ and $y \\le 50$, adding the inequalities gives $x + y \\le$ what number?",
+      answer:100,
+      explain:"$x \\le 50$ and $y \\le 50$ add to $x + y \\le 100$, contradicting $x+y>100$." },
+    { type:"selectall", id:"m4", practice:true,
+      prompt:"Select <strong>all</strong> goals whose proof by contradiction begins by assuming the object <em>exists</em>.",
+      choices:[
+        "there is no largest integer",
+        "no string is a strict prefix of itself",
+        "there is no smallest positive real number",
+        "$\\sqrt{2}$ is irrational"
+      ],
+      answers:[0,1,2],
+      explain:"Negating “there is no $X$” gives “some $X$ exists,” so you assume such an object exists. Irrationality instead assumes $\\sqrt{2}$ is rational." },
+    { type:"parsons", id:"m5", practice:true,
+      prompt:"Order the proof by contradiction that there is no largest integer.",
+      steps:[
+        "Suppose for contradiction there is a largest integer $N$.",
+        "Consider the integer $N + 1$.",
+        "Then $N + 1 > N$, so $N+1$ is a larger integer.",
+        "This contradicts $N$ being the largest.",
+        "Therefore there is no largest integer."
+      ],
+      explain:"Assume a largest $N$, produce the larger $N+1$, and reach a contradiction." },
+    { type:"selectall", id:"m6", practice:true,
+      prompt:"Select <strong>all</strong> statements that count as a contradiction (a known-false statement).",
+      choices:["$5 < 5$","some integer is both even and odd","$5 \\le 5$","$1 = 0$"],
+      answers:[0,1,3],
+      explain:"$5 < 5$, an even-and-odd integer, and $1 = 0$ are all impossible. $5 \\le 5$ is true, so not a contradiction." },
+    { type:"selectall", id:"m9", practice:true,
+      prompt:"Select <strong>all</strong> correct logical equivalences used to negate a goal.",
+      choices:[
+        "$\\neg(\\forall n)\\,P(n) \\equiv (\\exists n)\\,\\neg P(n)$",
+        "$\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$",
+        "$\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$",
+        "$\\neg(P \\wedge Q) \\equiv \\neg P \\wedge \\neg Q$"
+      ],
+      answers:[0,1,2],
+      explain:"The first three are correct. DeMorgan for a conjunction gives $\\neg(P \\wedge Q) \\equiv \\neg P \\vee \\neg Q$ (an OR), so the last is wrong." },
+    { type:"matching", id:"m10", practice:true,
+      prompt:"Match each claim to the assumption you make to prove it by contradiction.",
+      pairs:[
+        { left:"There is no largest integer", right:"there is a largest integer N" },
+        { left:"$\\sqrt{2}$ is irrational", right:"√2 = a/b for integers a, b" },
+        { left:"if $n^2$ is even then $n$ is even", right:"n squared is even and n is odd" },
+        { left:"there are infinitely many primes", right:"there are only finitely many primes" }
+      ],
+      explain:"Each assumption is the negation of the corresponding goal." },
+    { type:"selectall", id:"m13", practice:true,
+      prompt:"Select <strong>all</strong> true statements about proof by contradiction.",
+      choices:[
+        "To prove a goal $G$, you assume $\\neg G$",
+        "The statement you derive must be genuinely impossible",
+        "A merely surprising statement is enough to finish",
+        "You assume $G$ and derive a falsehood"
+      ],
+      answers:[0,1],
+      explain:"You assume $\\neg G$ and must reach a genuine impossibility; a surprising-but-true statement proves nothing, and you never assume $G$ itself." },
+    { type:"parsons", id:"m14", practice:true,
+      prompt:"Order the proof by contradiction that the sum of a rational and an irrational number is irrational.",
+      steps:[
+        "Let $r$ be rational and $x$ irrational; suppose for contradiction $r + x$ is rational.",
+        "Then $x = (r + x) - r$ is a difference of two rationals.",
+        "A difference of rationals is rational, so $x$ is rational.",
+        "But $x$ is irrational — a contradiction.",
+        "Therefore $r + x$ is irrational."
+      ],
+      explain:"If $r+x$ were rational, then $x = (r+x)-r$ would be rational, contradicting its irrationality." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
+    { type:"challenge", id:"ch1",
+      prompt:"Prove by contradiction: there is no smallest positive real number.",
+      solution:"Suppose for contradiction there is a smallest positive real $\\varepsilon > 0$. Consider $\\varepsilon/2$. Since $\\varepsilon > 0$, we have $\\varepsilon/2 > 0$, so $\\varepsilon/2$ is positive; and $\\varepsilon/2 < \\varepsilon$. So $\\varepsilon/2$ is a positive real smaller than $\\varepsilon$, contradicting that $\\varepsilon$ was smallest. Hence no smallest positive real exists. $\\blacksquare$" },
+    { type:"challenge", id:"ch2",
+      prompt:"Prove by contradiction that $\\sqrt{2}$ is irrational.",
+      solution:"Suppose $\\sqrt 2$ is rational, so $\\sqrt 2 = a/b$ with integers $a, b$ having no common factor (lowest terms). Then $2 = a^2/b^2$, so $a^2 = 2b^2$, making $a^2$ even, hence $a$ even. Write $a = 2c$; then $2b^2 = 4c^2$, so $b^2 = 2c^2$, making $b^2$ even, hence $b$ even. But then $a$ and $b$ share the factor $2$, contradicting lowest terms. So $\\sqrt 2$ is irrational. $\\blacksquare$" },
+    { type:"challenge", id:"ch3",
+      prompt:"Prove by contradiction: for every integer $n$, if $n^2$ is odd then $n$ is odd.",
+      solution:"Suppose $n^2$ is odd but $n$ is even. Then $n = 2k$, so $n^2 = 4k^2 = 2(2k^2)$, which is even. So $n^2$ is both odd and even — a contradiction. Therefore if $n^2$ is odd then $n$ is odd. $\\blacksquare$" },
+    { type:"challenge", id:"ch4",
+      prompt:"Prove by contradiction that there are infinitely many primes.",
+      solution:"Suppose there are only finitely many primes, $p_1, p_2, \\dots, p_n$. Let $N = p_1 p_2 \\cdots p_n + 1$. Each $p_i$ divides the product $p_1\\cdots p_n$, so dividing $N$ by any $p_i$ leaves remainder $1$; thus no $p_i$ divides $N$. But $N > 1$, so it has a prime factor, which must be a prime not in our list — contradicting that the list was complete. Hence there are infinitely many primes. $\\blacksquare$" },
+    { type:"challenge", id:"ch5",
+      prompt:"Prove by contradiction that no string is a strict prefix of itself.",
+      solution:"Suppose some string $w$ is a strict prefix of itself. A strict prefix of a string has strictly smaller length, so $\\mathrm{length}(w) < \\mathrm{length}(w)$. But no number is strictly less than itself — a contradiction. Therefore no string is a strict prefix of itself. $\\blacksquare$" },
+    { type:"challenge", id:"ch6",
+      prompt:"A student writes: “Claim: no integer equals its own square. Proof by contradiction: assume some integer $n$ satisfies $n = n^2$. Then $n^2 - n = 0$, so $n(n-1) = 0$. Contradiction. $\\blacksquare$” Why does this proof fail?",
+      solution:"No contradiction is ever derived — $n(n-1) = 0$ is not false; it is <em>satisfied</em> by $n = 0$ and $n = 1$. In fact the claim is false: $0 = 0^2$ and $1 = 1^2$. The “proof” stops at a true equation and mislabels it a contradiction. A valid proof by contradiction must reach a genuinely impossible statement, which cannot happen here because the claim itself is false. $\\blacksquare$" },
+    { type:"challenge", id:"ch7",
+      prompt:"Prove by contradiction: for every real $x$, if $x^2 < 1$ then $-1 < x < 1$.",
+      solution:"Suppose $x^2 < 1$ but $-1 < x < 1$ fails. Negating the conjunction, $x \\ge 1$ or $x \\le -1$. <strong>If $x \\ge 1$:</strong> then $x^2 \\ge 1$. <strong>If $x \\le -1$:</strong> then $x^2 \\ge 1$ as well. Either way $x^2 \\ge 1$, contradicting $x^2 < 1$. Therefore $-1 < x < 1$. $\\blacksquare$" },
+    { type:"challenge", id:"ch8",
+      prompt:"Prove by contradiction that there is no rational number whose square is $3$.",
+      solution:"Suppose $a/b$ in lowest terms satisfies $(a/b)^2 = 3$, so $a^2 = 3b^2$. Then $3 \\mid a^2$, and since $3$ is prime, $3 \\mid a$; write $a = 3c$. Then $9c^2 = 3b^2$, so $b^2 = 3c^2$, giving $3 \\mid b^2$ and hence $3 \\mid b$. Now $3$ divides both $a$ and $b$, contradicting lowest terms. So no rational squares to $3$. $\\blacksquare$" },
+    { type:"challenge", id:"ch9",
+      prompt:"Prove by contradiction: for all integers $a, b$, if $a + b \\ge 19$ then $a \\ge 10$ or $b \\ge 10$.",
+      solution:"Assume $a + b \\ge 19$ but neither $a \\ge 10$ nor $b \\ge 10$. Then $a \\le 9$ and $b \\le 9$ (integers), so $a + b \\le 18$. This contradicts $a + b \\ge 19$. Therefore $a \\ge 10$ or $b \\ge 10$. $\\blacksquare$" },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>One last toolkit reading: reasoning about the larger and smaller of two numbers — which, pleasingly, is exactly what tree height is made of.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

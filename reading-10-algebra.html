@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 10 — Algebra in Proofs</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "10-algebra",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 10',
+  title: "Reading 10 — Algebra in Proofs",
+  subtitle: "Proving mathematical facts: ordinary algebra and known facts join the logical rules as legal steps.",
+  prev: { href: "reading-09-proofs-2.html", label: "Reading 9 — Proofs II" },
+  next: { href: "reading-11-structural-induction.html", label: "Reading 11 — Structural Induction" },
+  blocks: [
+    { type: "def", title: "Two extra moves", html:
+      "<ul>" +
+      "<li><strong>Algebra.</strong> Any valid algebraic step — distributing, combining like terms, manipulating an inequality — is a legal step in a proof.</li>" +
+      "<li><strong>Equational reasoning.</strong> Once you've established $s = t$, you may replace $s$ by $t$ (or vice versa) wherever it appears.</li>" +
+      "</ul>" +
+      "<p>We also help ourselves to basic <em>known facts</em> as axioms, e.g. “the product of two positives is positive”: $(\\forall a)(\\forall b)\\big(0 < a \\rightarrow (0 < b \\rightarrow 0 < a\\cdot b)\\big)$.</p>"
+    },
+    { type: "prose", html:
+      "<h2>The logical moves, in brief</h2>" +
+      "<p>The algebra above joins the logical proof moves from earlier readings. Since the proofs below combine them, here is a quick recap:</p>" +
+      "<ul>" +
+      "<li><strong>Universal generalization.</strong> To prove $(\\forall x)\\,P(x)$, introduce a fresh <em>arbitrary</em> $x$ (assume nothing special about it) and prove $P(x)$. Because $x$ was arbitrary, the result holds for every $x$. Picking one convenient value would not do — a single case cannot establish a claim about all $x$.</li>" +
+      "<li><strong>Conditional proof (“make-believe”).</strong> To prove an implication $A \\rightarrow B$, temporarily <em>assume</em> the hypothesis $A$ and derive the conclusion $B$. Each nested arrow you open adds one assumption: to prove $A \\rightarrow (B \\rightarrow (C \\rightarrow D))$ you assume $A$, then $B$, then $C$, and prove $D$ — three hypotheses for three arrows.</li>" +
+      "<li><strong>Detachment (modus ponens).</strong> From $A$ together with $A \\rightarrow B$ you may conclude $B$: you “detach” the arrow using the hypothesis. An axiom with several stacked arrows must be detached once for each arrow.</li>" +
+      "</ul>"
+    },
+    { type: "def", title: "Algebra you may cite", html:
+      "<p>Any true algebraic identity is a legal step, and the ones used below have standard names:</p>" +
+      "<ul>" +
+      "<li><strong>Distributivity:</strong> $a(b+c) = ab + ac$.</li>" +
+      "<li><strong>Commutativity:</strong> $a + b = b + a$ and $a\\cdot b = b\\cdot a$.</li>" +
+      "<li><strong>Associativity:</strong> $(a+b)+c = a+(b+c)$ and $(a\\cdot b)\\cdot c = a\\cdot(b\\cdot c)$.</li>" +
+      "<li><strong>Combining like terms:</strong> e.g. $x + x = 2x$ and $ab + ab = 2ab$.</li>" +
+      "<li><strong>Binomial squares:</strong> $(a+b)^2 = a^2 + 2ab + b^2$ and $(a-b)^2 = a^2 - 2ab + b^2$.</li>" +
+      "<li><strong>Difference of squares:</strong> $a^2 - b^2 = (a+b)(a-b)$.</li>" +
+      "</ul>" +
+      "<p>Beware of non-identities: $a - b = b - a$ is false in general (try $a=3,\\ b=1$), $x + x = 2x$ is <em>not</em> $x^2$, and $x^2 = 4$ does not give $x = 2$ (it could be $-2$, since squaring loses the sign). For ordering facts, $x < 0$ is equivalent to $0 < -x$, and beyond the product-of-positives axiom the product of two <em>negatives</em> is positive.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Which of these is a legitimate algebra step inside a proof?",
+      choices: [
+        "Replacing $a(b + c)$ by $ab + ac$",
+        "Replacing $a + b$ by $a \\cdot b$",
+        "Concluding $a < b$ from $a \\ne b$",
+        "Concluding $x = 2$ from $x^2 = 4$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's not a valid identity — addition and multiplication aren't interchangeable.",
+        "$a \\ne b$ doesn't tell you which is larger.",
+        "$x$ could be $-2$; squaring loses the sign."],
+      explain: "Distributivity, $a(b+c) = ab + ac$, is a valid algebraic identity you may apply anywhere."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Equational reasoning lets you do what, once you've proven $s = t$?",
+      choices: [
+        "Replace $s$ by $t$ (or $t$ by $s$) wherever it occurs later",
+        "Conclude $s < t$",
+        "Assume $s = t$ was false and continue",
+        "Replace $s$ by any expression you like"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "Equality gives no ordering information.",
+        "You proved the equality — you don't get to negate it.",
+        "Only by the specific $t$ you proved equal to $s$, not an arbitrary expression."],
+      explain: "A proven equality $s = t$ lets you substitute one side for the other anywhere it's valid."
+    },
+    { type: "prose", html:
+      "<h2>A mathematical proof</h2>" +
+      "<p>Using the product-of-positives axiom above, the steps below prove $(\\forall x)(0 < x \\rightarrow 0 < x \\cdot x)$ — “the square of a positive is positive.” Put them in order.</p>"
+    },
+    { type: "parsons", id: "q3",
+      prompt: "Order the steps to prove $(\\forall x)(0 < x \\rightarrow 0 < x \\cdot x)$.",
+      steps: [
+        "Universal generalization: let $x$ be arbitrary. Goal: $0 < x \\rightarrow 0 < x \\cdot x$.",
+        "Make-believe: assume $0 < x$. Goal: $0 < x \\cdot x$.",
+        "Instantiate the product axiom at $a = x,\\ b = x$: $0 < x \\rightarrow (0 < x \\rightarrow 0 < x \\cdot x)$.",
+        "Detach with $0 < x$: $\\ 0 < x \\rightarrow 0 < x \\cdot x$.",
+        "Detach with $0 < x$ again: $\\ 0 < x \\cdot x$."
+      ],
+      hint: "Open the goal (generalize, then assume the hypothesis) before you instantiate the axiom; then you must detach twice — once for each copy of $0 < x$.",
+      explain: "Generalize and assume $0 < x$, instantiate the curried axiom at $x,x$, then detach twice using the assumption."
+    },
+    { type: "shortnum", id: "q4", badge: "Challenge",
+      prompt: "In that proof, how many times is the assumption $0 < x$ used to detach?",
+      answer: 2,
+      placeholder: "a whole number",
+      hint: "The curried axiom has two arrows; stripping each one needs $0 < x$.",
+      explain: "Twice — once to strip each of the two arrows in $0 < x \\rightarrow (0 < x \\rightarrow 0 < x\\cdot x)$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>The proof adapts to a related claim — but which known fact does it need?</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "To prove $(\\forall x)(x < 0 \\rightarrow 0 < x \\cdot x)$ — the square of a negative is positive — which known fact do you need?",
+      choices: [
+        "The product of two negatives is positive",
+        "The product of two positives is positive",
+        "The product of a positive and a negative is negative",
+        "Zero times anything is zero"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's for the positive case; here $x$ is negative, so $x \\cdot x$ is a product of two negatives.",
+        "That gives the wrong sign — you'd need this to prove $x\\cdot x$ is negative, which is false.",
+        "That's about a product with zero, not two negatives."],
+      explain: "If $x < 0$ then $x \\cdot x$ is a product of two negatives, which is positive — so that's the fact the proof relies on."
+    },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3>" },
+    { type:"selectall", id:"e1", practice:true,
+      prompt:"Select <strong>all</strong> legal algebra steps inside a proof.",
+      choices:[
+        "Replace $x + x$ by $2x$",
+        "Replace $x \\cdot x$ by $x^2$",
+        "Replace $x + x$ by $x^2$",
+        "Replace $x - x$ by $x$"
+      ],
+      answers:[0,1],
+      hint:"Doubling is not squaring, and $x - x = 0$.",
+      explain:"$x + x = 2x$ and $x\\cdot x = x^2$ are valid identities. But $x + x$ is $2x$ (not $x^2$), and $x - x = 0$ (not $x$)."
+    },
+    { type:"selectall", id:"e3", practice:true,
+      prompt:"Select <strong>all</strong> of the following that are valid algebraic identities (true for all real $a,b$).",
+      choices:[
+        "$a(b + c) = ab + ac$",
+        "$a + b = b + a$",
+        "$(a + b)^2 = a^2 + 2ab + b^2$",
+        "$a - b = b - a$"
+      ],
+      answers:[0,1,2],
+      hint:"Test a case for the doubtful ones. Is $a - b$ really the same as $b - a$?",
+      explain:"Distributivity, commutativity of $+$, and the binomial square are identities; $a - b = b - a$ fails (e.g. $a=3,b=1$)."
+    },
+    { type:"mc", id:"e4", practice:true,
+      prompt:"Which formula states the known fact “the product of two positives is positive”?",
+      choices:[
+        "$(\\forall a)(\\forall b)\\big(0 < a \\rightarrow (0 < b \\rightarrow 0 < a\\cdot b)\\big)$",
+        "$(\\forall a)(\\forall b)\\big(0 < a\\cdot b \\rightarrow (0 < a \\rightarrow 0 < b)\\big)$",
+        "$(\\exists a)(\\exists b)\\,(0 < a\\cdot b)$",
+        "$(\\forall a)(\\forall b)\\,(a\\cdot b = b\\cdot a)$"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "That reverses the direction — it would conclude positivity of a factor from the product.",
+        "That only claims some product is positive, not the general rule.",
+        "That's commutativity of multiplication, a different fact."],
+      explain:"The axiom curries the two hypotheses: from $0 < a$ and $0 < b$ you may conclude $0 < a\\cdot b$."
+    },
+    { type:"shorttext", id:"e6", practice:true,
+      prompt:"What is the name of the proof move that lets you substitute equals for equals?",
+      answer:"equational reasoning",
+      accept:["equational substitution","substitution of equals","substitution"],
+      placeholder:"two words",
+      hint:"It's the move justified by a proven equality $s = t$.",
+      explain:"Equational reasoning: given $s = t$, replace one side by the other."
+    },
+    { type:"mc", id:"e7", practice:true,
+      prompt:"To prove a statement of the form $(\\forall x)\\,P(x)$, what is the standard first move?",
+      choices:[
+        "Let $x$ be arbitrary, then prove $P(x)$ (universal generalization)",
+        "Pick one convenient value of $x$ and check $P(x)$",
+        "Verify $P(x)$ on several example objects",
+        "Replace every $x$ by $0$"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "One value can't establish a claim about all $x$.",
+        "Checking examples, even many, cannot establish a claim about all $x$.",
+        "You may not specialize $x$; it must stand for an arbitrary object."],
+      explain:"Universal generalization: introduce an arbitrary $x$ with no special assumptions, then prove $P(x)$."
+    },
+    { type:"selectall", id:"e8", practice:true,
+      prompt:"To prove an implication $A \\rightarrow B$ by conditional proof (“make-believe”), select <strong>all</strong> correct statements.",
+      choices:[
+        "You assume $A$, then prove $B$",
+        "The assumed $A$ becomes something you may use",
+        "You assume $B$, then prove $A$",
+        "You must prove $A$ and prove $B$ separately"
+      ],
+      answers:[0,1],
+      hint:"Conditional proof assumes the hypothesis and works toward the conclusion.",
+      explain:"Conditional proof temporarily assumes the hypothesis $A$ (which you may then use) and derives the conclusion $B$. Assuming $B$ to prove $A$ would prove the converse instead."
+    },
+    { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
+    { type:"parsons", id:"m1", practice:true,
+      prompt:"Order the proof of $(\\forall x)(x < 0 \\rightarrow 0 < x\\cdot x)$ — “the square of a negative is positive.”",
+      steps:[
+        "Universal generalization: let $x$ be arbitrary. Goal: $x < 0 \\rightarrow 0 < x\\cdot x$.",
+        "Conditional proof: assume $x < 0$. Goal: $0 < x\\cdot x$.",
+        "From $x < 0$, algebra gives $0 < -x$.",
+        "Instantiate the product-of-positives axiom at $a = -x,\\ b = -x$: $0 < -x \\rightarrow (0 < -x \\rightarrow 0 < (-x)\\cdot(-x))$.",
+        "Detach twice using $0 < -x$: $\\ 0 < (-x)\\cdot(-x)$.",
+        "By algebra $(-x)\\cdot(-x) = x\\cdot x$, so $0 < x\\cdot x$."
+      ],
+      hint:"Open the goal, turn $x<0$ into $0<-x$, instantiate the axiom at $-x$, detach twice, then rewrite.",
+      explain:"Convert the negative hypothesis into a positive one ($0<-x$), apply the product axiom to $-x$ and $-x$, then use $(-x)(-x)=x\\cdot x$."
+    },
+    { type:"parsons", id:"m2", practice:true,
+      prompt:"Order the proof of $(\\forall x)(0 < x \\rightarrow 0 < x\\cdot x\\cdot x)$ — “the cube of a positive is positive.”",
+      steps:[
+        "Let $x$ be arbitrary. Assume $0 < x$. Goal: $0 < x\\cdot x\\cdot x$.",
+        "By the product axiom on $a = x,\\ b = x$: $\\ 0 < x\\cdot x$.",
+        "By the product axiom on $a = x\\cdot x,\\ b = x$: $\\ 0 < (x\\cdot x)\\cdot x$.",
+        "By associativity $(x\\cdot x)\\cdot x = x\\cdot x\\cdot x$, so $0 < x\\cdot x\\cdot x$."
+      ],
+      hint:"Get $0 < x\\cdot x$ first, then multiply that positive by the positive $x$.",
+      explain:"Apply the product axiom twice: once to get $0 < x\\cdot x$, again to multiply by $x$; then regroup."
+    },
+    { type:"matching", id:"m3", practice:true,
+      prompt:"Match each proof move to what it accomplishes.",
+      pairs:[
+        { left:"Universal generalization", right:"Introduce an arbitrary object to prove a for-all statement" },
+        { left:"Conditional proof", right:"Assume the hypothesis to prove an implication" },
+        { left:"Detachment (modus ponens)", right:"From A and A-implies-B, conclude B" },
+        { left:"Equational reasoning", right:"Substitute equals for equals" }
+      ],
+      explain:"Each move discharges a different logical shape: for-all, implication, detaching an arrow, and rewriting with an equality."
+    },
+    { type:"selectall", id:"m4", practice:true,
+      prompt:"Select <strong>all</strong> steps that are <strong>not</strong> valid in a proof.",
+      choices:[
+        "Concluding $x = 2$ from $x^2 = 4$",
+        "Concluding $a < b$ from $a \\ne b$",
+        "Concluding $ab + ac$ from $a(b + c)$",
+        "Concluding $b = a$ from $a = b$"
+      ],
+      answers:[0,1],
+      hint:"Squaring loses the sign, and $\\ne$ says nothing about order.",
+      explain:"$x^2 = 4$ gives $x = 2$ or $x = -2$, and $a \\ne b$ gives no ordering. Distributivity and the symmetry of equality are both valid."
+    },
+    { type:"selectall", id:"m5", practice:true,
+      prompt:"Suppose you have established $0 < a$. Select <strong>all</strong> conclusions that follow by a single legal step (algebra or the product-of-positives axiom).",
+      choices:[
+        "$0 < a\\cdot a$",
+        "$0 < a + a$",
+        "$a < 0$",
+        "$0 < a \\cdot a \\cdot a$"
+      ],
+      answers:[0,1],
+      hint:"“One step” means directly. Getting $0 < a^3$ needs the axiom applied twice.",
+      explain:"$0 < a\\cdot a$ is one use of the product axiom; $0 < a+a = 2a$ is algebra. $a < 0$ cannot hold together with $0 < a$, and $0 < a^3$ needs two axiom uses."
+    },
+    { type:"shortnum", id:"m6", practice:true,
+      prompt:"Using the identity $(a+b)^2 = a^2 + 2ab + b^2$, compute $(a+b)^2$ when $a = 2$ and $b = 3$.",
+      answer:25, placeholder:"a whole number",
+      hint:"$(2+3)^2$, or $4 + 12 + 9$.",
+      explain:"$(2+3)^2 = 5^2 = 25 = 4 + 12 + 9$."
+    },
+    { type:"mc", id:"m7", practice:true,
+      prompt:"A proof has reached: “let $x$ be arbitrary; assume $0 < x$; goal $0 < x\\cdot x$.” What is the correct next step?",
+      choices:[
+        "Instantiate the product-of-positives axiom at $a = x,\\ b = x$",
+        "Conclude $x = \\sqrt{x\\cdot x}$",
+        "Instantiate the product-of-positives axiom at $a = 0,\\ b = x$",
+        "Let $x$ be arbitrary again"
+      ],
+      answer:0,
+      choiceFeedback:[null,
+        "That introduces a square root you have no axiom for and doesn't advance the goal.",
+        "Instantiating at $0$ tells you nothing about $x\\cdot x$; you need both factors to be $x$.",
+        "$x$ is already arbitrary; repeating that does nothing."],
+      explain:"You want $0 < x\\cdot x$, which is exactly the product axiom instantiated at $x$ and $x$."
+    },
+    { type:"parsons", id:"m8", practice:true,
+      prompt:"Order these equational-reasoning steps proving $(a+b)^2 = a^2 + 2ab + b^2$.",
+      steps:[
+        "$(a+b)^2 = (a+b)(a+b)$ by the definition of squaring.",
+        "$= a(a+b) + b(a+b)$ by distributivity.",
+        "$= (a\\cdot a + a\\cdot b) + (b\\cdot a + b\\cdot b)$ by distributivity again.",
+        "$= a^2 + ab + ab + b^2$ since $b\\cdot a = a\\cdot b$.",
+        "$= a^2 + 2ab + b^2$ by combining like terms."
+      ],
+      hint:"Expand the square, distribute twice, use commutativity, then combine the two $ab$ terms.",
+      explain:"Each line rewrites the previous by one identity: definition, distribute, distribute, commute, combine."
+    },
+    { type:"shortnum", id:"m9", practice:true,
+      prompt:"Using $a^2 - b^2 = (a+b)(a-b)$, compute $a^2 - b^2$ when $a = 7$ and $b = 3$.",
+      answer:40, placeholder:"a whole number",
+      hint:"$(7+3)(7-3)$.",
+      explain:"$(7+3)(7-3) = 10 \\cdot 4 = 40$."
+    },
+    { type:"matching", id:"m10", practice:true,
+      prompt:"Match each algebraic identity to its name.",
+      pairs:[
+        { left:"$a(b+c) = ab + ac$", right:"Distributivity" },
+        { left:"$a + b = b + a$", right:"Commutativity of addition" },
+        { left:"$(a+b)+c = a+(b+c)$", right:"Associativity of addition" },
+        { left:"$a^2 - b^2 = (a+b)(a-b)$", right:"Difference of squares" }
+      ],
+      explain:"Naming the identity you use makes each equational step auditable."
+    },
+    { type:"mc", id:"m11", practice:true,
+      prompt:"To prove $A \\rightarrow (B \\rightarrow (C \\rightarrow D))$ by conditional proof, how many hypotheses do you assume before proving $D$?",
+      choices:["3", "1", "2", "4"],
+      answer:0,
+      choiceFeedback:[null,
+        "Each arrow you open adds a hypothesis; there are three arrows.",
+        "There are three nested arrows, not two.",
+        "There are only three arrows, so three hypotheses ($A$, $B$, $C$)."],
+      explain:"Open each of the three arrows in turn: assume $A$, then $B$, then $C$, and prove $D$."
+    },
+    { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
+    { type:"challenge", id:"ch1",
+      prompt:"Using only ordering algebra and the product-of-positives axiom, prove $(\\forall a)(\\forall b)\\big(a < 0 \\rightarrow (b < 0 \\rightarrow 0 < a\\cdot b)\\big)$ — the product of two negatives is positive.",
+      solution:"Let $a$ and $b$ be arbitrary (universal generalization). Assume $a < 0$, and then assume $b < 0$ (conditional proof, opening both arrows); the goal is $0 < a\\cdot b$. By ordering algebra, $a < 0$ gives $0 < -a$ and $b < 0$ gives $0 < -b$. Instantiate the product-of-positives axiom at $a = -a,\\ b = -b$: $\\ 0 < -a \\rightarrow (0 < -b \\rightarrow 0 < (-a)\\cdot(-b))$. Detach with $0 < -a$, then detach with $0 < -b$, obtaining $0 < (-a)\\cdot(-b)$. Finally, by the algebra of signs $(-a)\\cdot(-b) = a\\cdot b$, so equational reasoning gives $0 < a\\cdot b$. Discharging the assumptions and the generalization completes the proof."
+    },
+    { type:"challenge", id:"ch3",
+      prompt:"Prove the difference-of-squares identity $a^2 - b^2 = (a+b)(a-b)$ using only distributivity, commutativity, and combining like terms.",
+      solution:"Start from the right side and rewrite with equational reasoning: $(a+b)(a-b) = a(a-b) + b(a-b)$ by distributivity $= (a\\cdot a - a\\cdot b) + (b\\cdot a - b\\cdot b)$ by distributivity again $= a^2 - ab + ab - b^2$ using $b\\cdot a = a\\cdot b$ and $a\\cdot a = a^2$, $b\\cdot b = b^2$. The middle terms $-ab + ab$ cancel to $0$, leaving $a^2 - b^2$. Since $(a+b)(a-b) = a^2 - b^2$, the identity holds for all $a,b$."
+    },
+    { type:"challenge", id:"ch4",
+      prompt:"Prove $(a+b)^3 = a^3 + 3a^2 b + 3ab^2 + b^3$ by equational reasoning.",
+      solution:"Write $(a+b)^3 = (a+b)(a+b)^2$. Using the square identity, $(a+b)^2 = a^2 + 2ab + b^2$, so $(a+b)^3 = (a+b)(a^2 + 2ab + b^2)$. Distribute: $= a(a^2 + 2ab + b^2) + b(a^2 + 2ab + b^2) = (a^3 + 2a^2 b + ab^2) + (a^2 b + 2ab^2 + b^3)$. Combine like terms: the $a^2 b$ terms give $2a^2 b + a^2 b = 3a^2 b$, and the $ab^2$ terms give $ab^2 + 2ab^2 = 3ab^2$. Hence $(a+b)^3 = a^3 + 3a^2 b + 3ab^2 + b^3$."
+    },
+    { type:"challenge", id:"ch5",
+      prompt:"Prove $(\\forall a)(\\forall b)\\big(0 < a \\rightarrow (a < b \\rightarrow a\\cdot a < b\\cdot b)\\big)$ — if $0 < a < b$ then $a^2 < b^2$. (Use that adding the same quantity preserves $<$, and that a positive times a positive is positive.)",
+      solution:"Let $a,b$ be arbitrary; assume $0 < a$ and $a < b$. From $0 < a$ and $a < b$ we also get $0 < b$ by transitivity. From $a < b$, ordering algebra gives $0 < b - a$. Now consider $b\\cdot b - a\\cdot a$. By difference of squares (ch3), $b\\cdot b - a\\cdot a = (b + a)(b - a)$. Since $0 < a$ and $0 < b$, we have $0 < a + b$; and $0 < b - a$. By the product-of-positives axiom at $a+b$ and $b-a$, $0 < (a+b)(b-a) = b\\cdot b - a\\cdot a$. Therefore $a\\cdot a < b\\cdot b$, i.e. $a^2 < b^2$. Discharging the assumptions completes the proof."
+    },
+    { type:"challenge", id:"ch6",
+      prompt:"Find the error in this “proof” that $1 = 2$. Let $a = b$. Then $a\\cdot a = a\\cdot b$, so $a\\cdot a - b\\cdot b = a\\cdot b - b\\cdot b$. Factoring: $(a+b)(a-b) = b(a-b)$. Dividing both sides by $(a-b)$ gives $a + b = b$. With $a = b$ this reads $2b = b$, so $2 = 1$. Which step is illegitimate, and why?",
+      solution:"The illegitimate step is dividing both sides by $(a - b)$. Since $a = b$, we have $a - b = 0$, and dividing by zero is not a legal algebra step — there is no axiom permitting it, and cancellation $xc = yc \\Rightarrow x = y$ requires $c \\ne 0$. Every earlier line is fine: $a\\cdot a = a\\cdot b$ (equational reasoning from $a=b$), the subtraction, and the factoring $(a+b)(a-b) = b(a-b)$ are all valid identities. Only the cancellation by the zero quantity $a-b$ breaks the chain, so the conclusion $1 = 2$ is unsupported."
+    },
+    { type:"challenge", id:"ch7",
+      prompt:"Prove $(\\forall a)(\\forall b)\\big(0 < a \\rightarrow (0 < b \\rightarrow 0 < a + b)\\big)$ directly from the fact that adding a positive to a positive stays above the smaller operand ($0 < b \\rightarrow a < a + b$) together with transitivity of $<$.",
+      solution:"Let $a,b$ be arbitrary; assume $0 < a$ and $0 < b$; goal $0 < a + b$. From the given fact instantiated at these $a,b$: since $0 < b$, we get $a < a + b$. We already have $0 < a$. By transitivity of $<$ applied to $0 < a$ and $a < a + b$, we conclude $0 < a + b$. Discharging the two assumptions and the generalization proves $(\\forall a)(\\forall b)(0 < a \\rightarrow (0 < b \\rightarrow 0 < a + b))$."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>You can now prove facts about any specific object or under an assumption. Next comes the tool that proves facts about <em>infinitely many</em> objects at once — and we’ll meet it first in its most general form: structural induction.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

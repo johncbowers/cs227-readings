@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 4 — Sets and Operations</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "04-sets",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 4',
+  title: "Reading 4 — Sets and Operations",
+  subtitle: "Sets package collections of objects — and each set is really just a condition wearing different clothes.",
+  prev: { href: "reading-03-truth.html", label: "Reading 3 — Truth & Entailment" },
+  next: { href: "reading-05-counting.html", label: "Reading 5 — Functions & Counting" },
+  blocks: [
+    { type: "prose", html:
+      "<p>A <strong>set</strong> is an unordered collection of distinct <strong>elements</strong>. Write $x \\in A$ for “$x$ is in $A$,” list small sets in braces ($\\{1,2,3\\}$), and write $|A|$ for the number of elements (the <strong>cardinality</strong>). $A \\subseteq B$ (“$A$ is a subset of $B$”) means every element of $A$ is also in $B$ — note the hidden “for all.”</p>"
+    },
+    { type: "def", title: "Three operations", html:
+      "<ul>" +
+      "<li><strong>Union</strong> $A \\cup B$: everything in $A$ or $B$ (or both).</li>" +
+      "<li><strong>Intersection</strong> $A \\cap B$: everything in both.</li>" +
+      "<li><strong>Difference</strong> $A \\setminus B$: everything in $A$ that is not in $B$.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Let $A = \\{1,2,3,4,5,6\\}$ and $B = \\{2,4,6\\}$. What is $A \\cap B$?",
+      choices: ["{2, 4, 6}", "{1, 3, 5}", "{1, 2, 3, 4, 5, 6}", "{ } (empty)"],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "Those are the elements of $A$ <em>not</em> in $B$ — that's $A \\setminus B$.",
+        "That's the union $A \\cup B$. Intersection keeps only what's in both.",
+        "The sets overlap ($2, 4, 6$ are in both), so the intersection isn't empty."
+      ],
+      explain: "Intersection keeps what's in both sets; since $B \\subseteq A$, that's all of $B$."
+    },
+    { type: "shortnum", id: "q2", badge: "Challenge",
+      prompt: "With $B = \\{2,4,6\\}$ and $C = \\{5,6,7\\}$, what is $|B \\cup C|$?",
+      answer: 5,
+      hint: "List the union and count the shared element only once.",
+      explain: "$B \\cup C = \\{2,4,5,6,7\\}$, so $|B \\cup C| = 5$."
+    },
+    { type: "prose", html:
+      "<h2>Sets and conditions are two sides of a coin</h2>" +
+      "<p>Every condition carves out a set — the objects that satisfy it — and every set is the condition “belongs to this set.” <strong>Set-builder notation</strong> writes this directly: $\\{x : P(x)\\}$ is “the set of all $x$ for which $P(x)$ holds,” and $\\{x \\in A : P(x)\\}$ narrows that to the elements of $A$ satisfying $P$. For instance, $\\{n : n$ is even$\\}$ is the set of even integers, and $\\{n \\in A : n$ is odd$\\}$ keeps just the odd members of $A$.</p>" +
+      "<p>The operations line up with the connectives: union with “or,” intersection with “and,” and the <strong>complement</strong> (everything <em>not</em> in the set) with “not.” Combining conditions with “and,” “or,” “not” is the same as combining their sets with $\\cap$, $\\cup$, and complement. Taking a complement distributes across the connectives: not ($P$ and $Q$) is (not $P$) or (not $Q$), and not ($P$ or $Q$) is (not $P$) and (not $Q$). So the complement of a set built with “and” is described with “or,” and vice versa.</p>"
+    },
+    { type: "mc", id: "q3",
+      prompt: "Over the integers, the set $\\{n : n$ is even$\\} \\cap \\{n : n > 0\\}$ is the set of integers satisfying which condition?",
+      choices: [
+        "$n$ is even <strong>and</strong> $n > 0$",
+        "$n$ is even <strong>or</strong> $n > 0$",
+        "$n$ is even <strong>implies</strong> $n > 0$",
+        "$n$ is odd and $n \\le 0$"
+      ],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "“Or” corresponds to <em>union</em>, not intersection.",
+        "Intersection is a plain “and,” not an implication.",
+        "That describes (roughly) the complement, not the intersection."
+      ],
+      explain: "Intersection corresponds to “and”: the objects in both sets are exactly those satisfying both conditions."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>One more computation — mind the elements of $C$ that aren’t even in $A$.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "With $A = \\{1,2,3,4,5,6\\}$ and $C = \\{5,6,7\\}$, what is $|A \\setminus C|$?",
+      answer: 4,
+      placeholder: "a whole number",
+      hint: "Remove from $A$ only the elements that are actually in both $A$ and $C$. ($7$ isn't in $A$.)",
+      explain: "$A \\setminus C = \\{1,2,3,4\\}$ (remove $5$ and $6$; $7$ was never in $A$), so the count is $4$."
+    },
+    { type: "prose", html:
+      "<h2>Counting a union</h2>" +
+      "<p>To find $|A \\cup B|$, list the union’s distinct elements and count — anything in both sets is written once. Two sets are <strong>disjoint</strong> when they share no elements (that is, $A \\cap B$ is empty). For disjoint sets nothing is double-counted, so $|A \\cup B| = |A| + |B|$. When the sets do overlap, adding $|A| + |B|$ would count each shared element twice.</p>"
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "mc", id: "e1", practice: true,
+      prompt: "Let $A = \\{1,2,3\\}$ and $B = \\{3,4,5\\}$. What is $A \\cup B$?",
+      choices: ["{1, 2, 3, 4, 5}", "{3}", "{1, 2, 4, 5}", "{ } (empty)"],
+      answer: 0,
+      choiceFeedback: [null, "That's the intersection — union keeps everything in either set.", "That's the symmetric difference; union keeps the shared $3$ too.", "The sets are non-empty, so their union is too."],
+      explain: "Union collects everything in $A$ or $B$ (or both); the shared $3$ is listed once."
+    },
+    { type: "shortnum", id: "e2", practice: true,
+      prompt: "What is $|\\{2,4,6,8,10\\}|$?",
+      answer: 5,
+      hint: "Cardinality just counts the distinct elements.",
+      explain: "There are five distinct elements, so the cardinality is $5$."
+    },
+    { type: "mc", id: "e3", practice: true,
+      prompt: "Let $A = \\{1,2,3,4\\}$ and $B = \\{2,4\\}$. What is $A \\setminus B$?",
+      choices: ["{1, 3}", "{2, 4}", "{1, 2, 3, 4}", "{ } (empty)"],
+      answer: 0,
+      choiceFeedback: [null, "That's $A \\cap B$ — difference removes those, keeping what's left.", "That's $A$ itself; difference removes the elements of $B$.", "$A$ and $B$ overlap, so the difference isn't empty."],
+      explain: "$A \\setminus B$ keeps the elements of $A$ that are not in $B$: $\\{1,3\\}$."
+    },
+    { type: "selectall", id: "e4", practice: true,
+      prompt: "Select <strong>all</strong> correct correspondences between a set operation and a connective.",
+      choices: [
+        "Union $A \\cup B$ corresponds to “or.”",
+        "Intersection $A \\cap B$ corresponds to “and.”",
+        "Complement corresponds to “not.”",
+        "Union $A \\cup B$ corresponds to “and.”",
+        "Intersection $A \\cap B$ corresponds to “or.”"
+      ],
+      answers: [0, 1, 2],
+      hint: "Write out what $x \\in A \\cup B$ and $x \\in A \\cap B$ each mean.",
+      explain: "$x \\in A \\cup B$ means $x \\in A$ <em>or</em> $x \\in B$; $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$; the complement collects the objects <em>not</em> in the set. So union goes with “or,” intersection with “and,” and complement with “not.”"
+    },
+    { type: "shortnum", id: "e5", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5\\}$ and $B = \\{4,5,6,7\\}$. What is $|A \\cap B|$?",
+      answer: 2,
+      hint: "List the elements in both sets, then count.",
+      explain: "$A \\cap B = \\{4,5\\}$, so $|A \\cap B| = 2$."
+    },
+    { type: "shorttext", id: "e6", practice: true,
+      prompt: "Is $\\{1,2\\}$ a subset of $\\{1,2,3\\}$? Answer yes or no.",
+      answer: "yes",
+      accept: ["y", "Yes"],
+      explain: "Every element of $\\{1,2\\}$ is also in $\\{1,2,3\\}$, so $\\{1,2\\} \\subseteq \\{1,2,3\\}$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m2", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5,6\\}$, $B = \\{2,4,6\\}$, $C = \\{5,6,7\\}$. What is $|A \\cap (B \\cup C)|$?",
+      answer: 4,
+      hint: "First build $B \\cup C$, then keep only its elements that are in $A$ (watch out for $7$).",
+      explain: "$B \\cup C = \\{2,4,5,6,7\\}$; intersecting with $A$ drops the $7$, leaving $\\{2,4,5,6\\}$, so the count is $4$."
+    },
+    { type: "matching", id: "m4", practice: true,
+      prompt: "Match each set expression to its meaning.",
+      pairs: [
+        { left: "$A \\cap B$", right: "elements in both A and B" },
+        { left: "$A \\cup B$", right: "elements in A or B or both" },
+        { left: "$A \\setminus B$", right: "elements in A but not in B" },
+        { left: "$|A|$", right: "the number of elements in A" }
+      ],
+      explain: "Intersection = both, union = either, difference = in the first but not the second, and $|A|$ is the cardinality."
+    },
+    { type: "selectall", id: "m5", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5\\}$. Select <strong>all</strong> expressions that equal $\\{1,3,5\\}$.",
+      choices: [
+        "$A \\setminus \\{2,4\\}$",
+        "$A \\cap \\{1,3,5,7\\}$",
+        "$\\{n \\in A : n$ is odd$\\}$",
+        "$A \\cup \\{1,3,5\\}$",
+        "$A \\setminus \\{1,3,5\\}$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Compute each set explicitly and compare to $\\{1,3,5\\}$.",
+      explain: "$A \\setminus \\{2,4\\} = \\{1,3,5\\}$; $A \\cap \\{1,3,5,7\\} = \\{1,3,5\\}$ (the $7$ isn't in $A$); the odd elements of $A$ are $\\{1,3,5\\}$. But $A \\cup \\{1,3,5\\} = A$, and $A \\setminus \\{1,3,5\\} = \\{2,4\\}$."
+    },
+    { type: "shortnum", id: "m6", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5,6\\}$ and $C = \\{5,6,7\\}$. What is $|A \\setminus C| + |C \\setminus A|$?",
+      answer: 5,
+      hint: "Compute each difference separately, then add the two counts.",
+      explain: "$A \\setminus C = \\{1,2,3,4\\}$ (count $4$) and $C \\setminus A = \\{7\\}$ (count $1$), so the sum is $5$."
+    },
+    { type: "selectall", id: "m7", practice: true,
+      prompt: "Over the integers, consider the complement of $\\{n : n$ is even and $n > 0\\}$ (reading complement as “not”). Select <strong>all</strong> true statements.",
+      choices: [
+        "The complement is $\\{n : n$ is odd or $n \\le 0\\}$.",
+        "$-4$ belongs to the complement.",
+        "$3$ belongs to the complement.",
+        "The complement is $\\{n : n$ is odd and $n \\le 0\\}$.",
+        "$6$ belongs to the complement."
+      ],
+      answers: [0, 1, 2],
+      hint: "Complementing an “and” gives an “or”: negate each part and switch the connective.",
+      explain: "Complementing the compound: not(even and positive) = (not even) or (not positive) = odd or $n \\le 0$. So the complement is $\\{n : n$ is odd or $n \\le 0\\}$. Then $-4$ (even but $\\le 0$) and $3$ (odd) belong to it, while $6$ (even and positive) does not. The “odd and $n \\le 0$” version is wrong — complementing an “and” must give an “or.”"
+    },
+    { type: "shortnum", id: "m8", practice: true,
+      prompt: "$A$ and $B$ are disjoint (no common elements) with $|A| = 3$ and $|B| = 4$. What is $|A \\cup B|$?",
+      answer: 7,
+      hint: "With no overlap, nothing is double-counted.",
+      explain: "Disjoint means $|A \\cap B| = 0$, so $|A \\cup B| = |A| + |B| = 3 + 4 = 7$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Prove that $A \\cap B \\subseteq A$ for any sets $A$ and $B$.",
+      solution: "To show $A \\cap B \\subseteq A$, we must show every element of $A \\cap B$ is also in $A$ (that is the definition of $\\subseteq$). <br><br>Let $x$ be an arbitrary element of $A \\cap B$. By definition of intersection, $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$. In particular, $x \\in A$. <br><br>Since $x$ was arbitrary, every element of $A \\cap B$ is in $A$, so $A \\cap B \\subseteq A$. $\\blacksquare$ <br><br>The whole proof is just dropping the “and $x \\in B$” half — membership in an intersection is a stronger condition than membership in either set alone."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Suppose $|A| = 10$, $|B| = 7$, and $|A \\cap B| = 3$. What is $|A \\cup B|$? Explain the formula.",
+      solution: "$|A \\cup B| = |A| + |B| - |A \\cap B| = 10 + 7 - 3 = 14$. <br><br>Why subtract? Adding $|A| + |B|$ counts each element of the overlap $A \\cap B$ <em>twice</em> — once as a member of $A$ and once as a member of $B$. Every other element is counted once. Subtracting $|A \\cap B|$ removes exactly the one extra copy of each shared element. This is the <strong>inclusion–exclusion</strong> principle."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Using the “sets are conditions” idea, argue that the complement of $A \\cup B$ equals $(\\text{complement of } A) \\cap (\\text{complement of } B)$.",
+      solution: "An element $x$ is in the complement of $A \\cup B$ exactly when $x \\notin A \\cup B$, i.e. it is <em>not</em> the case that ($x \\in A$ or $x \\in B$). <br><br>Complementing that compound, “not ($P$ or $Q$)” is equivalent to “(not $P$) and (not $Q$).” So this says $x \\notin A$ <strong>and</strong> $x \\notin B$. <br><br>That is precisely the condition for $x$ to be in (complement of $A$) $\\cap$ (complement of $B$). Since the two sides are carved out by equivalent conditions, they are the same set. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Prove that $|A \\setminus B| = |A| - |A \\cap B|$ for finite sets $A$ and $B$.",
+      solution: "Split $A$ into two disjoint pieces by asking, for each element of $A$, whether it is also in $B$: <ul><li>elements of $A$ that <em>are</em> in $B$ — that is exactly $A \\cap B$;</li><li>elements of $A$ that are <em>not</em> in $B$ — that is exactly $A \\setminus B$.</li></ul> Every element of $A$ lands in exactly one piece, and the two pieces are disjoint, so by the sum rule $|A| = |A \\cap B| + |A \\setminus B|$. <br><br>Rearranging gives $|A \\setminus B| = |A| - |A \\cap B|$. $\\blacksquare$ <br><br>Edge case: if $A$ and $B$ are disjoint then $|A \\cap B| = 0$ and the formula gives $|A \\setminus B| = |A|$, as expected — removing nothing leaves all of $A$."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>Sets in hand, Reading 5 turns to functions — and to counting, our first real taste of building a big answer from small independent choices.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

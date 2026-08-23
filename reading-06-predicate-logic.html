@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 6 — Predicate Logic and Formalization</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "06-predicate-logic",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 6',
+  title: "Reading 6 — Predicate Logic and Formalization",
+  subtitle: "Quantifiers let us say things about all objects, or some object — the language proofs are written in.",
+  prev: { href: "reading-05-counting.html", label: "Reading 5 — Functions & Counting" },
+  next: { href: "reading-07-implication.html", label: "Reading 7 — Implication, up close" },
+  blocks: [
+    { type: "prose", html:
+      "<p>A predicate with a variable, like $S(x)$ (“$x$ is a squirrel”), is neither true nor false until we say something about $x$. <strong>Quantifiers</strong> do that: the <strong>universal</strong> $\\forall$ (“for all”) and the <strong>existential</strong> $\\exists$ (“there exists”).</p>" +
+      "<p>Throughout, use $S(x)$ for “$x$ is a squirrel,” $M(x)$ for “$x$ is a mammal,” $F(x, y)$ for “$x$ fears $y$,” with constants Scrat (a squirrel) and Fafnir (a dragon).</p>"
+    },
+    { type: "def", title: "Two patterns worth memorizing", html:
+      "<ul>" +
+      "<li>“All $A$’s are $B$’s” becomes $(\\forall x)(A(x) \\rightarrow B(x))$ — <strong>$\\forall$ pairs with $\\rightarrow$</strong>.</li>" +
+      "<li>“Some $A$ is a $B$” becomes $(\\exists x)(A(x) \\wedge B(x))$ — <strong>$\\exists$ pairs with $\\wedge$</strong>.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Which formula formalizes “All squirrels are mammals”?",
+      choices: ["$(\\forall x)(S(x) \\rightarrow M(x))$", "$(\\forall x)(S(x) \\wedge M(x))$", "$(\\exists x)(S(x) \\rightarrow M(x))$", "$(\\forall x)(M(x) \\rightarrow S(x))$"],
+      answer: 0,
+      choiceFeedback: [null,
+        "$\\forall$ with $\\wedge$ claims every object is both a squirrel and a mammal — too strong.",
+        "$\\exists$ makes it “some squirrel,” but this is a universal claim.",
+        "That's the swapped statement, “all mammals are squirrels.”"],
+      explain: "$\\forall$ pairs with $\\rightarrow$. The $\\wedge$ version wrongly claims everything is both."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Which formula formalizes “Some mammal is a squirrel”?",
+      choices: ["$(\\exists x)(M(x) \\wedge S(x))$", "$(\\exists x)(M(x) \\rightarrow S(x))$", "$(\\forall x)(M(x) \\wedge S(x))$", "$(\\forall x)(M(x) \\rightarrow S(x))$"],
+      answer: 0,
+      choiceFeedback: [null,
+        "$\\exists$ with $\\rightarrow$ is trivially true of any non-mammal — it says nothing about squirrels.",
+        "$\\forall$ makes it “every object is both” — too strong.",
+        "That's “all mammals are squirrels,” a universal with the wrong meaning."],
+      explain: "$\\exists$ pairs with $\\wedge$."
+    },
+    { type: "mc", id: "q3",
+      prompt: "What does $(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$ say?",
+      choices: ["Fafnir fears every squirrel", "Every squirrel fears Fafnir", "Some squirrel fears Fafnir", "Fafnir fears something that is a squirrel"],
+      answer: 0,
+      choiceFeedback: [null,
+        "Check the slots of $F$: Fafnir is the first argument, so Fafnir does the fearing.",
+        "This is universal, not existential — and about all squirrels.",
+        "That's existential; the formula uses $\\forall$."],
+      explain: "For every $x$, if $x$ is a squirrel then Fafnir fears it."
+    },
+    { type: "mc", id: "q4",
+      prompt: "When formalizing “there exists an $x$ that is a squirrel <strong>and</strong> …”, which connective pairs with $\\exists$?",
+      choices: ["$\\wedge$ (and)", "$\\rightarrow$ (implies)"],
+      answer: 0,
+      choiceFeedback: [null,
+        "$\\rightarrow$ is the universal partner; with $\\exists$ it becomes trivially true of any object that isn’t a squirrel."],
+      explain: "Existentials assert something positive about a witness, so they pair with $\\wedge$."
+    },
+    { type: "prose", html:
+      "<h2>Nesting quantifiers</h2>" +
+      "<p>When one quantifier sits inside another, <strong>the outer one is chosen first</strong>, and the inner variable may depend on the outer one. Compare:</p>" +
+      "<ul>" +
+      "<li>$(\\forall x)(\\exists y)\\,F(x, y)$ — for <em>each</em> $x$ we may pick a possibly different $y$: “everyone fears at least one creature (not necessarily the same one).”</li>" +
+      "<li>$(\\exists y)(\\forall x)\\,F(x, y)$ — one $y$ is fixed first and must work for <em>all</em> $x$: “there is a single creature feared by everyone.”</li>" +
+      "</ul>" +
+      "<p>So swapping the order of $\\forall$ and $\\exists$ genuinely changes the meaning: $\\exists\\forall$ demands one witness that serves everybody, while $\\forall\\exists$ lets the witness vary. Inside a nest the pairing rules still apply ($\\forall$ with $\\rightarrow$, $\\exists$ with $\\wedge$).</p>"
+    },
+    { type: "mc", id: "q5",
+      prompt: "What does $(\\exists y)(\\forall x)\\,F(x, y)$ mean?",
+      choices: ["There is a single creature that is feared by everyone", "Everyone fears at least one creature (possibly different ones)", "There is a creature that fears everyone", "Everyone fears everyone"],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's $(\\forall x)(\\exists y)$, where the feared one may vary. Here $\\exists y$ is fixed first.",
+        "That reverses the fear direction.",
+        "That needs two universals; only $x$ is universal here."],
+      explain: "$\\exists y$ is fixed first: one creature feared by every $x$."
+    },
+    { type: "matching", id: "q6",
+      prompt: "Match each English sentence to its formalization.",
+      pairs: [
+        { left: "All squirrels are mammals", right: "(∀x)(S(x) → M(x))" },
+        { left: "Some mammal is a squirrel", right: "(∃x)(M(x) ∧ S(x))" },
+        { left: "Every squirrel fears Fafnir", right: "(∀x)(S(x) → F(x, Fafnir))" },
+        { left: "Something fears Scrat", right: "(∃x)F(x, Scrat)" }
+      ],
+      hint: "Universals pair with →, existentials with ∧; check the argument order of F.",
+      explain: "Universals pair with →, existentials with ∧, and the first argument of F is the one doing the fearing."
+    },
+    { type: "selectall", id: "q7",
+      prompt: "Select <strong>all</strong> formulas that correctly formalize “Fafnir fears every mammal.”",
+      choices: [
+        "$(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$",
+        "$(\\forall y)(M(y) \\rightarrow F(\\text{Fafnir}, y))$",
+        "$(\\forall x)(M(x) \\wedge F(\\text{Fafnir}, x))$",
+        "$(\\exists x)(M(x) \\wedge F(\\text{Fafnir}, x))$"
+      ],
+      answers: [0, 1],
+      hint: "Two are correct: the name of the bound variable doesn’t change the meaning. Watch the $\\wedge$-with-$\\forall$ trap and the $\\exists$ version.",
+      explain: "The first two are the same correct formula — renaming the bound variable ($x$ to $y$) changes nothing. The $\\wedge$-with-$\\forall$ form forces everything to be a mammal; the $\\exists$ form only claims Fafnir fears some mammal."
+    },
+    { type: "prose", html:
+      "<h2>Free and bound variables</h2>" +
+      "<p>A variable is <strong>bound</strong> when a quantifier ($\\forall$ or $\\exists$) captures it, and <strong>free</strong> otherwise. A formula with a free variable — like $S(x)$ or $F(x, \\text{Scrat})$ — is an <strong>open formula</strong>: its truth depends on who the free variable is, so it is neither true nor false on its own. A formula with <em>no</em> free variables — every variable bound, or only constants used — is a <strong>sentence</strong>, and has a definite truth value.</p>" +
+      "<p>To count free variables, count the ones no quantifier binds. In $(\\forall x)\\,F(x, y)$, the $\\forall x$ binds $x$, but $y$ is still free, so the whole thing is an open formula. Close an open formula into a sentence either by substituting a constant for the free variable or by binding it with a quantifier.</p>"
+    },
+    { type: "mc", id: "q8",
+      prompt: "Is $F(x, \\text{Scrat})$ a sentence (already true or false) or an open formula with a free variable?",
+      choices: ["An open formula with free variable $x$", "A sentence"],
+      answer: 0,
+      choiceFeedback: [null, "It has a free variable $x$ — not true or false until we say who $x$ is. $F(\\text{Fafnir}, \\text{Scrat})$ would be a sentence."],
+      explain: "Until we say who $x$ is, “$x$ fears Scrat” is a unary predicate, not a sentence."
+    },
+    { type: "shortnum", id: "q9", badge: "Challenge",
+      prompt: "How many free variables does $S(x) \\wedge M(y)$ have?",
+      answer: 2,
+      hint: "Count the variables no quantifier binds.",
+      explain: "Both $x$ and $y$ are free — a binary open predicate."
+    },
+    { type: "prose", html:
+      "<h2>Formalizing statements about structures</h2>" +
+      "<p>Quantifiers work on strings and trees too. Writing $\\mathrm{Subtree}(s, t)$ for “$s$ is a subtree of $t$” and $\\mathrm{Leaf}(s)$ for “$s$ is a leaf,” we can formalize claims about structure.</p>"
+    },
+    { type: "mc", id: "q10",
+      prompt: "Which formula says “some subtree of $t$ is a leaf”?",
+      choices: [
+        "$(\\exists s)(\\mathrm{Subtree}(s, t) \\wedge \\mathrm{Leaf}(s))$",
+        "$(\\forall s)(\\mathrm{Subtree}(s, t) \\rightarrow \\mathrm{Leaf}(s))$",
+        "$(\\exists s)(\\mathrm{Subtree}(s, t) \\rightarrow \\mathrm{Leaf}(s))$",
+        "$(\\forall s)(\\mathrm{Subtree}(s, t) \\wedge \\mathrm{Leaf}(s))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That says <em>every</em> subtree is a leaf — universal, not “some.”",
+        "$\\exists$ with $\\rightarrow$ is trivially satisfied by any non-subtree.",
+        "$\\forall$ with $\\wedge$ forces every object to be a subtree-and-leaf."],
+      explain: "“Some subtree is a leaf” is existential, so $\\exists$ pairs with $\\wedge$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>This one nests two quantifiers — apply both the order rule and the pairing rules.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Which formula formalizes “Every creature fears some mammal” (each fears at least one, possibly a different one)?",
+      choices: [
+        "$(\\forall x)(\\exists y)(M(y) \\wedge F(x, y))$",
+        "$(\\exists y)(\\forall x)(M(y) \\wedge F(x, y))$",
+        "$(\\forall x)(\\forall y)(M(y) \\rightarrow F(x, y))$",
+        "$(\\forall x)(\\exists y)(M(y) \\rightarrow F(x, y))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That says one <em>single</em> mammal is feared by everyone — stronger, and wrong order.",
+        "That says every creature fears <em>every</em> mammal.",
+        "Right quantifier order, but $\\exists$ must pair with $\\wedge$: with $\\rightarrow$, any non-mammal makes it trivially true."],
+      explain: "“Every creature” is $\\forall x$; “fears some mammal” is $\\exists y (M(y) \\wedge F(x,y))$ inside it, so the mammal may depend on $x$."
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "selectall", id: "e1", practice: true,
+      prompt: "Select <strong>all</strong> true statements about formalizing “All $A$’s are $B$’s.”",
+      choices: [
+        "It is $(\\forall x)(A(x) \\rightarrow B(x))$",
+        "The universal quantifier $\\forall$ pairs with $\\rightarrow$",
+        "It is $(\\forall x)(A(x) \\wedge B(x))$",
+        "It is an existential statement"
+      ],
+      answers: [0, 1],
+      hint: "Recall the memorized pattern: $\\forall$ pairs with $\\rightarrow$.",
+      explain: "“All $A$’s are $B$’s” is $(\\forall x)(A(x) \\rightarrow B(x))$: $\\forall$ pairs with $\\rightarrow$. The $\\wedge$ version would force everything to be both, and it is universal, not existential."
+    },
+    { type: "mc", id: "e2", practice: true,
+      prompt: "“Some $A$ is a $B$” follows which pattern?",
+      choices: ["$(\\exists x)(A(x) \\wedge B(x))$", "$(\\exists x)(A(x) \\rightarrow B(x))$", "$(\\forall x)(A(x) \\wedge B(x))$", "$(\\forall x)(A(x) \\rightarrow B(x))$"],
+      answer: 0,
+      choiceFeedback: [null, "$\\exists$ with $\\rightarrow$ is trivially true of any non-$A$.", "$\\forall$ with $\\wedge$ says everything is both.", "That's “all $A$'s are $B$'s.”"],
+      explain: "$\\exists$ pairs with $\\wedge$."
+    },
+    { type: "mc", id: "e3", practice: true,
+      prompt: "Which formula formalizes “All mammals are squirrels”?",
+      choices: ["$(\\forall x)(M(x) \\rightarrow S(x))$", "$(\\forall x)(S(x) \\rightarrow M(x))$", "$(\\exists x)(M(x) \\wedge S(x))$", "$(\\forall x)(M(x) \\wedge S(x))$"],
+      answer: 0,
+      choiceFeedback: [null, "That's the swapped statement, “all squirrels are mammals.”", "That's “some mammal is a squirrel.”", "$\\forall$ with $\\wedge$ says everything is both."],
+      explain: "$\\forall$ with $\\rightarrow$: for every $x$, if $x$ is a mammal then $x$ is a squirrel."
+    },
+    { type: "selectall", id: "e5", practice: true,
+      prompt: "Select <strong>all</strong> true statements about $F(\\text{Scrat}, \\text{Fafnir})$, where $F(x,y)$ means “$x$ fears $y$.”",
+      choices: [
+        "It says Scrat fears Fafnir",
+        "The first argument is the one doing the fearing",
+        "It is a sentence (it has a definite truth value)",
+        "It says Fafnir fears Scrat",
+        "It has a free variable"
+      ],
+      answers: [0, 1, 2],
+      hint: "Read the slots of $F$ in order, and note that both arguments are constants.",
+      explain: "$F(\\text{Scrat}, \\text{Fafnir})$ means “Scrat fears Fafnir”; the first slot fears the second. Both slots are constants, so it is a sentence with no free variables."
+    },
+    { type: "shortnum", id: "e8", practice: true,
+      prompt: "How many free variables does $S(x)$ have?",
+      answer: 1,
+      hint: "No quantifier binds $x$ here.",
+      explain: "$x$ is free, so there is $1$ free variable — this is an open formula, not a sentence."
+    },
+    { type: "mc", id: "e9", practice: true,
+      prompt: "Is $S(\\text{Scrat})$ a sentence (already true or false) or an open formula?",
+      choices: ["A sentence", "An open formula with a free variable"],
+      answer: 0,
+      choiceFeedback: [null, "There's no variable — Scrat is a specific constant, so it's already true or false."],
+      explain: "With the constant Scrat filling the slot, “Scrat is a squirrel” has a definite truth value: it's a sentence."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "mc", id: "m1", practice: true,
+      prompt: "Which formula formalizes “Fafnir fears some squirrel”?",
+      choices: [
+        "$(\\exists x)(S(x) \\wedge F(\\text{Fafnir}, x))$",
+        "$(\\exists x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$",
+        "$(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$",
+        "$(\\exists x)(S(x) \\wedge F(x, \\text{Fafnir}))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "$\\exists$ with $\\rightarrow$ is trivially true via any non-squirrel.", "That's “Fafnir fears every squirrel.”", "The slots are reversed — this says a squirrel fears Fafnir."],
+      explain: "“Some squirrel” is $\\exists$ with $\\wedge$, and Fafnir does the fearing so Fafnir is the first slot of $F$."
+    },
+    { type: "mc", id: "m2", practice: true,
+      prompt: "Which formula formalizes “Every squirrel fears Fafnir”?",
+      choices: [
+        "$(\\forall x)(S(x) \\rightarrow F(x, \\text{Fafnir}))$",
+        "$(\\forall x)(S(x) \\wedge F(x, \\text{Fafnir}))$",
+        "$(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$",
+        "$(\\exists x)(S(x) \\wedge F(x, \\text{Fafnir}))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "$\\forall$ with $\\wedge$ says everything is a squirrel that fears Fafnir.", "The slots are reversed — this says Fafnir fears every squirrel.", "That's “some squirrel fears Fafnir.”"],
+      explain: "Universal “every squirrel” pairs with $\\rightarrow$, and the squirrel does the fearing, so it's the first slot: $F(x, \\text{Fafnir})$."
+    },
+    { type: "selectall", id: "m3", practice: true,
+      prompt: "Select <strong>all</strong> true statements about $(\\exists x)(M(x) \\wedge F(x, \\text{Scrat}))$.",
+      choices: [
+        "It says some mammal fears Scrat",
+        "It asserts a witness that is both a mammal and a fearer of Scrat",
+        "It says every mammal fears Scrat",
+        "It says Scrat fears some mammal"
+      ],
+      answers: [0, 1],
+      hint: "$\\exists$ with $\\wedge$ claims a single object with both properties; check the slot order of $F$.",
+      explain: "The formula asserts a witness that is a mammal and fears Scrat — “some mammal fears Scrat.” It is existential (not “every”), and the mammal is in the first slot, so it does the fearing."
+    },
+    { type: "matching", id: "m4", practice: true,
+      prompt: "Match each English sentence to its formalization.",
+      pairs: [
+        { left: "Every squirrel is a mammal", right: "(∀x)(S(x) → M(x))" },
+        { left: "Some squirrel fears Fafnir", right: "(∃x)(S(x) ∧ F(x, Fafnir))" },
+        { left: "Fafnir fears every mammal", right: "(∀x)(M(x) → F(Fafnir, x))" },
+        { left: "Fafnir fears something", right: "(∃x)F(Fafnir, x)" }
+      ],
+      hint: "Universals pair with →, existentials with ∧; check the argument order of F.",
+      explain: "Watch the pairing rules and the slots of F: the first argument does the fearing."
+    },
+    { type: "selectall", id: "m5", practice: true,
+      prompt: "Select <strong>all</strong> true statements about $(\\forall x)(M(x) \\rightarrow F(x, \\text{Scrat}))$.",
+      choices: [
+        "It says every mammal fears Scrat",
+        "The universal $\\forall$ correctly pairs with $\\rightarrow$ here",
+        "It says some mammal fears Scrat",
+        "It forces every object to be a mammal"
+      ],
+      answers: [0, 1],
+      hint: "$\\forall$ pairs with $\\rightarrow$; the implication only constrains objects that are mammals.",
+      explain: "For each $x$, if $x$ is a mammal then $x$ fears Scrat — “every mammal fears Scrat,” with $\\forall$ correctly paired with $\\rightarrow$. It is universal, not existential, and non-mammals are left unconstrained."
+    },
+    { type: "selectall", id: "m6", practice: true,
+      prompt: "Select <strong>all</strong> true statements about $(\\forall x)(\\exists y)\\,F(x, y)$.",
+      choices: [
+        "Everyone fears at least one creature (possibly different ones)",
+        "The witness $y$ may depend on which $x$ we picked",
+        "There is a single creature that everyone fears",
+        "Everyone fears everyone"
+      ],
+      answers: [0, 1],
+      hint: "$\\forall x$ is chosen first, so the inner $y$ can vary with $x$.",
+      explain: "Because $\\forall x$ is outermost, for each $x$ we may choose a possibly different $y$ that $x$ fears. A single shared witness would require $(\\exists y)(\\forall x)$."
+    },
+    { type: "shortnum", id: "m9", practice: true,
+      prompt: "How many free variables does $F(x, y) \\wedge S(z)$ have?",
+      answer: 3,
+      hint: "Count variables no quantifier binds.",
+      explain: "$x$, $y$, and $z$ are all free — no quantifiers appear."
+    },
+    { type: "selectall", id: "m10", practice: true,
+      prompt: "Select <strong>all</strong> true statements about $(\\forall x)\\,F(x, y)$.",
+      choices: [
+        "It is an open formula",
+        "The variable $y$ is free",
+        "The variable $x$ is bound by $\\forall$",
+        "It is a sentence with a definite truth value",
+        "The variable $y$ is bound"
+      ],
+      answers: [0, 1, 2],
+      hint: "A quantifier binds only the variable it names; anything else stays free.",
+      explain: "$\\forall x$ binds $x$, but $y$ has no quantifier, so $y$ is free and the whole thing is an open formula — not yet true or false."
+    },
+    { type: "selectall", id: "m11", practice: true,
+      prompt: "Select <strong>all</strong> formulas that are sentences (no free variables).",
+      choices: [
+        "$(\\forall x)(S(x) \\rightarrow M(x))$",
+        "$F(\\text{Scrat}, \\text{Fafnir})$",
+        "$S(x)$",
+        "$(\\exists y)\\,F(x, y)$",
+        "$(\\forall x)(\\exists y)\\,F(x, y)$"
+      ],
+      answers: [0, 1, 4],
+      hint: "A sentence has every variable bound by a quantifier (or uses only constants).",
+      explain: "The first has $x$ bound; the second uses only constants; the last binds both $x$ and $y$. But $S(x)$ has free $x$, and $(\\exists y)F(x,y)$ leaves $x$ free."
+    },
+    { type: "matching", id: "m12", practice: true,
+      prompt: "Match each formula to its English meaning.",
+      pairs: [
+        { left: "$(\\forall x)(\\exists y)\\,F(x, y)$", right: "everyone fears at least one creature (possibly different)" },
+        { left: "$(\\exists y)(\\forall x)\\,F(x, y)$", right: "one single creature is feared by everyone" },
+        { left: "$(\\forall x)\\,F(x, \\text{Scrat})$", right: "everyone fears Scrat" },
+        { left: "$(\\exists x)\\,F(\\text{Scrat}, x)$", right: "Scrat fears something" }
+      ],
+      hint: "Quantifier order matters: the outer quantifier is chosen first.",
+      explain: "Order changes meaning: ∀x∃y lets the witness vary, while ∃y∀x fixes one witness for all."
+    },
+    { type: "mc", id: "m15", practice: true,
+      prompt: "Which formula formalizes “Every leaf is a subtree of $t$”?",
+      choices: [
+        "$(\\forall s)(\\mathrm{Leaf}(s) \\rightarrow \\mathrm{Subtree}(s, t))$",
+        "$(\\exists s)(\\mathrm{Leaf}(s) \\wedge \\mathrm{Subtree}(s, t))$",
+        "$(\\forall s)(\\mathrm{Leaf}(s) \\wedge \\mathrm{Subtree}(s, t))$",
+        "$(\\forall s)(\\mathrm{Subtree}(s, t) \\rightarrow \\mathrm{Leaf}(s))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "That's “some leaf is a subtree of $t$.”", "$\\forall$ with $\\wedge$ forces everything to be a leaf.", "That's the swapped statement, “every subtree of $t$ is a leaf.”"],
+      explain: "Universal “every leaf” pairs with $\\rightarrow$: for all $s$, if $s$ is a leaf then $s$ is a subtree of $t$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Explain why “All squirrels are mammals” is $(\\forall x)(S(x) \\rightarrow M(x))$ and not $(\\forall x)(S(x) \\wedge M(x))$.",
+      solution: "A universal claim ranges over <em>every</em> object in the domain, including things that aren't squirrels at all. <br><br>The $\\wedge$ version, $(\\forall x)(S(x) \\wedge M(x))$, would require every object $x$ to be <em>both</em> a squirrel and a mammal — so it also claims rocks, dragons, and numbers are squirrels. That's absurdly too strong. <br><br>The $\\rightarrow$ version makes a conditional promise about each object: <em>if</em> $x$ happens to be a squirrel, <em>then</em> it is a mammal. For a non-squirrel the antecedent $S(x)$ is false, so the implication is vacuously true and the object imposes no constraint. Only the actual squirrels are required to be mammals — exactly what the English means. That's why $\\forall$ pairs with $\\rightarrow$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Explain why “Some mammal is a squirrel” is $(\\exists x)(M(x) \\wedge S(x))$ and not $(\\exists x)(M(x) \\rightarrow S(x))$.",
+      solution: "An existential claims a genuine <em>witness</em> exists with all the stated properties. The $\\wedge$ version, $(\\exists x)(M(x) \\wedge S(x))$, asserts there is some object that is a mammal <em>and</em> a squirrel — exactly the intended meaning. <br><br>The $\\rightarrow$ version is a trap: $(\\exists x)(M(x) \\rightarrow S(x))$ is satisfied by any object that is <em>not</em> a mammal, since then $M(x)$ is false and $M(x) \\rightarrow S(x)$ is vacuously true. As long as the domain contains a single non-mammal (say, Fafnir), the formula is true — even in a world with no squirrels at all. So it says essentially nothing about squirrels. That's why $\\exists$ pairs with $\\wedge$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Describe a concrete situation where $(\\forall x)(\\exists y)\\,F(x, y)$ is true but $(\\exists y)(\\forall x)\\,F(x, y)$ is false.",
+      solution: "Take a domain of two creatures, $a$ and $b$, and let $F(x,y)$ mean “$x$ fears $y$.” Suppose $a$ fears only $b$, and $b$ fears only $a$ (so $F(a,b)$ and $F(b,a)$ hold, but $F(a,a)$ and $F(b,b)$ do not). <br><br>$(\\forall x)(\\exists y)\\,F(x,y)$ is <strong>true</strong>: every creature fears <em>someone</em> — $a$ fears $b$, and $b$ fears $a$. The witness $y$ is allowed to depend on $x$. <br><br>$(\\exists y)(\\forall x)\\,F(x,y)$ is <strong>false</strong>: it would need one single creature feared by everyone. Is it $a$? No — $a$ does not fear $a$. Is it $b$? No — $b$ does not fear $b$. No single $y$ works for all $x$. <br><br>This is exactly why quantifier order matters: $\\forall\\exists$ lets the witness vary; $\\exists\\forall$ demands one fixed witness. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Formalize “Every mammal fears some squirrel” (each mammal fears at least one squirrel, possibly a different one). Explain the structure.",
+      solution: "$(\\forall x)\\big(M(x) \\rightarrow (\\exists y)(S(y) \\wedge F(x, y))\\big)$. <br><br>Reading it outward in: “every mammal” is a universal over $x$ paired with $\\rightarrow$, guarding the claim so it only applies to mammals. Inside, “fears some squirrel” is an existential over $y$ paired with $\\wedge$: there is a $y$ that is a squirrel and is feared by $x$. <br><br>Because the $\\exists y$ sits <em>inside</em> the scope of $\\forall x$, the squirrel $y$ may depend on which mammal $x$ we picked — matching “possibly a different one.” $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "Formalize “Some squirrel is feared by every mammal.” Explain why the quantifier order is what it is.",
+      solution: "$(\\exists x)\\big(S(x) \\wedge (\\forall y)(M(y) \\rightarrow F(y, x))\\big)$. <br><br>The main claim is existential — there <em>is</em> a squirrel with a special property — so the outer quantifier is $\\exists x$ paired with $\\wedge$ (it's a squirrel, and …). The special property is “every mammal fears it”: a universal over $y$ paired with $\\rightarrow$, with $y$ in the first (fearer) slot and our fixed squirrel $x$ in the second (feared) slot: $F(y, x)$. <br><br>Because $\\exists x$ is outermost, the <em>same</em> squirrel $x$ must be feared by all mammals — “feared by every mammal” describes one shared object, which is why the existential comes first. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "Formalize both “$t$ has a subtree that is a leaf” and “every subtree of $t$ is a leaf,” and explain how they differ.",
+      solution: "“$t$ has a subtree that is a leaf”: $(\\exists s)(\\mathrm{Subtree}(s, t) \\wedge \\mathrm{Leaf}(s))$ — existential with $\\wedge$, claiming at least one subtree of $t$ is a leaf. <br><br>“Every subtree of $t$ is a leaf”: $(\\forall s)(\\mathrm{Subtree}(s, t) \\rightarrow \\mathrm{Leaf}(s))$ — universal with $\\rightarrow$, claiming <em>all</em> subtrees are leaves. <br><br>How they differ: the first is very weak — any tree with a leaf anywhere satisfies it. The second is very strong — it holds only when $t$ itself is a single leaf (with no non-leaf subtrees). The first says “at least one,” the second says “no exceptions,” which is the general $\\exists$-vs-$\\forall$ contrast. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch9",
+      prompt: "Explain why $(\\forall x)\\,F(x, y)$ is an open formula, not a sentence, and give two different ways to turn it into a sentence.",
+      solution: "A sentence has a definite truth value; that requires every variable to be <em>bound</em> by a quantifier (or replaced by a constant). In $(\\forall x)\\,F(x, y)$, the quantifier $\\forall x$ binds $x$, but $y$ appears with no quantifier binding it — $y$ is <strong>free</strong>. Its truth depends on who $y$ is (“does everyone fear $y$?”), so it isn't yet true or false. <br><br>Two ways to close it into a sentence: <ul><li>Substitute a constant for $y$: $(\\forall x)\\,F(x, \\text{Scrat})$ — “everyone fears Scrat.”</li><li>Bind $y$ with a quantifier: $(\\exists y)(\\forall x)\\,F(x, y)$ — “there is someone everyone fears,” or $(\\forall y)(\\forall x)\\,F(x, y)$ — “everyone fears everyone.”</li></ul> Each removes the free variable, yielding a sentence. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch10",
+      prompt: "Formalize “There is exactly one squirrel,” using $\\exists$, $\\forall$, and equality. Explain each part.",
+      solution: "$(\\exists x)\\big(S(x) \\wedge (\\forall y)(S(y) \\rightarrow y = x)\\big)$. <br><br>Read in two halves: <ul><li>$(\\exists x)\\,S(x)$ (the outer $\\exists x$ with the first conjunct) says there is <em>at least</em> one squirrel — call it $x$.</li><li>$(\\forall y)(S(y) \\rightarrow y = x)$ says <em>any</em> squirrel $y$ must actually be that same $x$ — i.e., there is at most one squirrel.</li></ul> Together, “at least one” and “at most one” give “exactly one.” The equality symbol is essential: it's how we express that two names refer to the same object, which uniqueness claims require. $\\blacksquare$"
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>One connective deserves a closer look before we prove anything: the implication $\\rightarrow$, whose truth conditions trip up almost everyone. That's Reading 7.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

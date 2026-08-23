@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 16 — Disjunction, DeMorgan, and Cases</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "16-disjunction",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 16',
+  title: "Reading 16 — Disjunction, DeMorgan, and Cases",
+  subtitle: "Reasoning with “or”: DeMorgan’s laws, proving vs. using a disjunction, and proof by cases.",
+  prev: { href: "reading-15-negation.html", label: "Reading 15 — Negation & Refutation" },
+  next: { href: "reading-17-contradiction.html", label: "Reading 17 — Proof by Contradiction" },
+  blocks: [
+    { type: "def", title: "Disjunction and DeMorgan", html:
+      "<ul>" +
+      "<li><strong>DeMorgan:</strong> $\\neg(P \\wedge Q) \\equiv \\neg P \\vee \\neg Q$ &nbsp;and&nbsp; $\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$. The same rule works for any number of operands: push the negation inward and flip every $\\wedge$ to $\\vee$ (and vice versa), so $\\neg(A \\wedge B \\wedge C) \\equiv \\neg A \\vee \\neg B \\vee \\neg C$. Nested formulas negate one layer at a time: $\\neg\\big(P \\wedge (Q \\vee R)\\big) \\equiv \\neg P \\vee \\neg(Q \\vee R) \\equiv \\neg P \\vee (\\neg Q \\wedge \\neg R)$.</li>" +
+      "<li>Two negations from earlier readings pair naturally with DeMorgan: $\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$, and $\\neg(\\forall x)\\,P(x) \\equiv (\\exists x)\\,\\neg P(x)$.</li>" +
+      "<li>To <strong>prove</strong> a goal $P \\vee Q$, prove <em>one</em> disjunct. Equivalently, you may assume $\\neg P$ and derive $Q$ — if $P$ fails, the other side must hold.</li>" +
+      "<li>To <strong>use</strong> a known $P \\vee Q$, argue by <strong>cases</strong>: reach the goal assuming $P$, and again assuming $Q$. A disjunction with $k$ alternatives (say $P \\vee Q \\vee R$) requires the goal to be derived in all $k$ cases.</li>" +
+      "</ul>"
+    },
+    { type: "prose", html:
+      "<h2>Disjunctions worth splitting on</h2>" +
+      "<p>Proof by cases needs a true disjunction to split on. A few come up constantly:</p>" +
+      "<ul>" +
+      "<li><strong>Parity:</strong> every integer is even or odd — two cases.</li>" +
+      "<li><strong>Sign / trichotomy:</strong> every real number is $< 0$, $= 0$, or $> 0$ (three mutually exclusive cases). When only the split at zero matters, use $x \\ge 0$ or $x < 0$ (two cases).</li>" +
+      "<li><strong>Absolute value</strong> is defined by that split: $|x| = x$ when $x \\ge 0$, and $|x| = -x$ when $x < 0$.</li>" +
+      "</ul>" +
+      "<p>Recursively built objects split on their <strong>constructors</strong>, and the number of constructors is the number of cases:</p>" +
+      "<ul>" +
+      "<li>A <strong>natural number</strong> is $0$ or $m + 1$ (the successor of some natural $m$) — two cases.</li>" +
+      "<li>A <strong>string</strong> is $\\varepsilon$ (empty) or $a \\cdot w'$ (a character prepended to a smaller string) — two cases.</li>" +
+      "<li>A <strong>list</strong> is $\\mathrm{nil}$ or $\\mathrm{cons}(h, t)$ (a head consed onto a tail) — two cases.</li>" +
+      "<li>A <strong>binary tree</strong> is a leaf or a node with two subtrees — two cases.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "$\\neg(P \\wedge Q)$ is equivalent to:",
+      choices: ["$\\neg P \\vee \\neg Q$", "$\\neg P \\wedge \\neg Q$", "$P \\vee Q$", "$\\neg P \\rightarrow \\neg Q$"],
+      answer: 0,
+      choiceFeedback: [null, "That's $\\neg(P \\vee Q)$ — negating an OR.", "That drops the negations.", "Not equivalent — DeMorgan gives $\\neg P \\vee \\neg Q$."],
+      explain: "The negation of an AND is the OR of the negations."
+    },
+    { type: "mc", id: "q2",
+      prompt: "To prove a goal of the form $P \\vee Q$, it is enough to:",
+      choices: ["prove just one of the two disjuncts", "prove both disjuncts", "assume $P$ and derive $Q$", "find a counterexample"],
+      answer: 0,
+      choiceFeedback: [null, "You don't need both — one side holding is enough.", "That proves $P \\rightarrow Q$, a different statement.", "Counterexamples refute; they don't prove a disjunction."],
+      explain: "A disjunction holds as soon as one side does."
+    },
+    { type: "mc", id: "q3",
+      prompt: "You <strong>know</strong> $P \\vee Q$ and want to prove goal $G$. Which technique?",
+      choices: ["Proof by cases: prove $G$ assuming $P$, then again assuming $Q$", "Detachment", "Prove one disjunct of your choice", "Existential generalization"],
+      answer: 0,
+      choiceFeedback: [null, "Detachment is for implications.", "That's how you <em>prove</em> a $\\vee$ goal; here you're <em>using</em> one.", "Unrelated to a known disjunction."],
+      explain: "You don't know which disjunct holds, so cover both cases."
+    },
+    { type: "selectall", id: "q4",
+      prompt: "Select <strong>all</strong> statements equivalent to the negation of “$x > 0$ <strong>and</strong> $x$ is even.”",
+      choices: ["$x \\le 0$ or $x$ is odd", "not($x > 0$) or not($x$ is even)", "$x \\le 0$ and $x$ is odd", "$x < 0$ or $x$ is even"],
+      answers: [0, 1],
+      hint: "DeMorgan: “not(A and B)” = “not-A or not-B.” Note “not($x>0$)” is $x \\le 0$, and “not even” is odd.",
+      explain: "DeMorgan gives “$x \\le 0$ or $x$ odd” — the second option states the same thing."
+    },
+    { type: "mc", id: "q5",
+      prompt: "When proving something about an arbitrary string $w$ by cases, which disjunction do you split on?",
+      choices: [
+        "$w = \\varepsilon$ &nbsp;or&nbsp; $w = a \\cdot w'$ for some character $a$, smaller string $w'$",
+        "$w$ is a palindrome or not",
+        "$w$ is finite or infinite",
+        "$\\mathrm{length}(w) = 0$ or $1$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "True of every string, but not how a string is <em>built</em>.", "Every string is finite; that split does nothing.", "Length can be any value; split on the constructors."],
+      explain: "The two constructors — empty, or a character prepended — are exactly the two cases."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Set up a proof by cases for a claim about all integers — what disjunction do you know that lets you split?</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "To prove “for every integer $n$, $n(n+1)$ is even” by cases, which disjunction do you split on?",
+      choices: [
+        "$n$ is even or $n$ is odd",
+        "$n > 0$ or $n \\le 0$",
+        "$n(n+1) > 0$ or $n(n+1) \\le 0$",
+        "$n = 0$ or $n \\ne 0$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "Sign doesn't help decide parity of the product.",
+        "That's what you're trying to conclude, not a useful split of $n$.",
+        "Splitting off $n=0$ leaves the hard part unproven."],
+      explain: "Every integer is even or odd. If $n$ is even, $n(n+1)$ has an even factor; if $n$ is odd, $n+1$ is even — either way the product is even."
+    },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3>" },
+    { type:"selectall", id:"e5", practice:true,
+      prompt:"Select <strong>all</strong> statements equivalent to $\\neg(P \\vee Q)$.",
+      choices:["$\\neg P \\wedge \\neg Q$","not $P$ and not $Q$","$\\neg P \\vee \\neg Q$","$P \\wedge Q$"],
+      answers:[0,1],
+      explain:"$\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$; the first two say the same thing." },
+    { type:"selectall", id:"e8", practice:true,
+      prompt:"Select <strong>all</strong> valid ways to establish the goal “$7$ is prime or $7$ is even.”",
+      choices:["Show $7$ is prime","Assume $7$ is not prime and show $7$ is even","Show $7$ is prime and $7$ is even","Show $7$ is odd"],
+      answers:[0,1],
+      hint:"A disjunction holds once one disjunct does; equivalently, assume the first disjunct fails and derive the second.",
+      explain:"Proving one disjunct ($7$ is prime) settles the disjunction; so does assuming the first fails and deriving the other. Proving both, or showing $7$ is odd, does not." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
+    { type:"selectall", id:"m1", practice:true,
+      prompt:"Select <strong>all</strong> statements equivalent to $\\neg\\big(P \\wedge (Q \\vee R)\\big)$.",
+      choices:["$\\neg P \\vee (\\neg Q \\wedge \\neg R)$","not $P$, or both not $Q$ and not $R$","$\\neg P \\wedge (\\neg Q \\vee \\neg R)$","$\\neg P \\vee \\neg Q \\vee \\neg R$"],
+      answers:[0,1],
+      hint:"Push the negation in one layer at a time: $\\neg(P \\wedge X) = \\neg P \\vee \\neg X$, then apply DeMorgan to $\\neg(Q \\vee R)$.",
+      explain:"$\\neg(P \\wedge (Q\\vee R)) = \\neg P \\vee \\neg(Q\\vee R) = \\neg P \\vee (\\neg Q \\wedge \\neg R)$; the second option states the same thing. The other two flip the wrong connective." },
+    { type:"selectall", id:"m2", practice:true,
+      prompt:"Select <strong>all</strong> statements equivalent to $\\neg\\big((x>0) \\wedge (x<10)\\big)$.",
+      choices:["$x \\le 0$ or $x \\ge 10$","not $(x>0)$ or not $(x<10)$","$x \\le 0$ and $x \\ge 10$","$x > 0$ or $x < 10$"],
+      answers:[0,1],
+      explain:"DeMorgan on an AND gives an OR of the negations: $x\\le 0$ or $x\\ge 10$." },
+    { type:"parsons", id:"m3", practice:true,
+      prompt:"Order the proof by cases that $n(n+1)$ is even for every integer $n$.",
+      steps:[
+        "Every integer $n$ is even or odd.",
+        "Case 1 ($n$ even): $n = 2k$, so $n(n+1) = 2k(n+1)$ is even.",
+        "Case 2 ($n$ odd): $n+1$ is even, say $n+1 = 2k$, so $n(n+1) = 2kn$ is even.",
+        "In both cases $n(n+1)$ is even.",
+        "Since one case must hold, $n(n+1)$ is even for every $n$."
+      ],
+      explain:"Split on parity; each case exhibits an even factor, so the product is even." },
+    { type:"mc", id:"m4", practice:true,
+      prompt:"To prove “$|x| = x$ or $|x| = -x$” for every real $x$ by cases, split on:",
+      choices:["$x \\ge 0$ or $x < 0$","$x > 0$ or $x = 0$","$x$ rational or irrational","$|x| = 0$ or $|x| \\ne 0$"],
+      answer:0,
+      explain:"The definition of $|x|$ branches at $0$: $x\\ge 0$ gives $|x|=x$, $x<0$ gives $|x|=-x$." },
+    { type:"shortnum", id:"m8", practice:true,
+      prompt:"Trichotomy says every real is $<0$, $=0$, or $>0$. A proof by cases using trichotomy has how many cases?",
+      answer:3,
+      explain:"Three mutually exclusive possibilities give three cases." },
+    { type:"selectall", id:"m9", practice:true,
+      prompt:"Select <strong>all</strong> valid ways to prove a goal $P \\vee Q$.",
+      choices:["Prove $P$.","Prove $Q$.","Assume $\\neg P$ and derive $Q$.","Prove $\\neg P \\wedge \\neg Q$."],
+      answers:[0,1,2],
+      explain:"Proving either disjunct works; so does assuming one is false and deriving the other. Proving both negations proves the opposite." },
+    { type:"parsons", id:"m10", practice:true,
+      prompt:"Order the proof by cases that $x \\le |x|$ for every real $x$.",
+      steps:[
+        "Every real $x$ satisfies $x \\ge 0$ or $x < 0$.",
+        "Case 1 ($x \\ge 0$): then $|x| = x$, so $x \\le |x|$.",
+        "Case 2 ($x < 0$): then $|x| = -x > 0 > x$, so $x \\le |x|$.",
+        "In either case $x \\le |x|$."
+      ],
+      explain:"Split at $0$; each case gives $x \\le |x|$ directly." },
+    { type:"mc", id:"m11", practice:true,
+      prompt:"A list is either empty or of the form $\\mathrm{cons}(h, t)$. The correct two-case split for a proof about all lists is:",
+      choices:["$\\mathrm{nil}$, or $\\mathrm{cons}(h, t)$","length $0$, or length $1$","sorted, or unsorted","finite, or infinite"],
+      answer:0,
+      explain:"Split on the two constructors: the empty list and a head consed onto a tail." },
+    { type:"mc", id:"m13", practice:true,
+      prompt:"To prove goal $G$ from a known $P \\vee Q \\vee R$, you must:",
+      choices:["derive $G$ in each of the three cases $P$, $Q$, $R$","derive $G$ in just one case","prove $P \\wedge Q \\wedge R$","negate $G$"],
+      answer:0,
+      explain:"Using a three-way disjunction requires covering all three cases." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
+    { type:"challenge", id:"ch1",
+      prompt:"Prove by cases: for every integer $n$, $n^2 + n$ is even.",
+      solution:"Every integer is even or odd. <strong>Case 1 ($n$ even):</strong> $n = 2k$, so $n^2 + n = n(n+1) = 2k(n+1)$, which is even. <strong>Case 2 ($n$ odd):</strong> $n+1$ is even, say $n+1 = 2k$, so $n^2 + n = n(n+1) = 2kn$, which is even. In both cases $n^2 + n$ is even, and one case always holds. $\\blacksquare$" },
+    { type:"challenge", id:"ch2",
+      prompt:"Prove by cases: for every integer $n$, $n^2 \\bmod 4$ is either $0$ or $1$.",
+      solution:"Split on parity. <strong>Even:</strong> $n = 2k$ gives $n^2 = 4k^2$, so $n^2 \\bmod 4 = 0$. <strong>Odd:</strong> $n = 2k+1$ gives $n^2 = 4k^2 + 4k + 1 = 4(k^2+k) + 1$, so $n^2 \\bmod 4 = 1$. Thus $n^2 \\bmod 4 \\in \\{0, 1\\}$ for every integer $n$. $\\blacksquare$" },
+    { type:"challenge", id:"ch3",
+      prompt:"Prove that $\\neg(P \\vee Q)$ is equivalent to $\\neg P \\wedge \\neg Q$ (both directions).",
+      solution:"<strong>($\\Rightarrow$)</strong> Assume $\\neg(P \\vee Q)$, so $P \\vee Q$ is false. A disjunction is false exactly when both sides are false, so $P$ is false and $Q$ is false; that is $\\neg P \\wedge \\neg Q$. <strong>($\\Leftarrow$)</strong> Assume $\\neg P \\wedge \\neg Q$, so $P$ is false and $Q$ is false. Then neither disjunct of $P \\vee Q$ can hold, and a disjunction with both sides false is itself false, giving $\\neg(P \\vee Q)$. $\\blacksquare$" },
+    { type:"challenge", id:"ch4",
+      prompt:"Prove: for all integers $m, n$, if $mn$ is odd then $m$ is odd and $n$ is odd.",
+      solution:"We prove the contrapositive by cases: if $m$ or $n$ is even, then $mn$ is even. <strong>Case $m$ even:</strong> $m = 2k$, so $mn = 2kn$ is even. <strong>Case $n$ even:</strong> $n = 2k$, so $mn = 2km$ is even. So whenever $m$ or $n$ is even, $mn$ is even. Contrapositively, if $mn$ is odd then neither is even — both $m$ and $n$ are odd. $\\blacksquare$" },
+    { type:"challenge", id:"ch5",
+      prompt:"A student proves “for every integer $n$, $n(n-1)$ is even” as follows: “Since $n$ is even, write $n = 2k$; then $n(n-1) = 2k(n-1)$ is even. $\\blacksquare$” Why does this proof fail, and how do you fix it?",
+      solution:"The proof silently assumes $n$ is even — it handles only one case of the disjunction “$n$ even or $n$ odd,” yet claims the result for <em>every</em> integer. The odd case is never justified. Fix: add <strong>Case $n$ odd:</strong> then $n-1$ is even, say $n-1 = 2k$, so $n(n-1) = 2kn$ is even. With both cases covered, the claim holds for all $n$. $\\blacksquare$" },
+    { type:"challenge", id:"ch6",
+      prompt:"Prove: for every integer $n$, $n = 0$ or $n^2 > 0$. (Prove the disjunction by assuming the first disjunct fails.)",
+      solution:"To prove the disjunction, assume the first disjunct is false, i.e. $n \\ne 0$, and derive the second. If $n \\ne 0$ then $n > 0$ or $n < 0$. If $n > 0$, then $n^2 = n \\cdot n > 0$. If $n < 0$, then $n \\cdot n > 0$ (a negative times a negative is positive). Either way $n^2 > 0$. So $n = 0$ or $n^2 > 0$. $\\blacksquare$" },
+    { type:"challenge", id:"ch7",
+      prompt:"Prove by cases on the string constructor: for every string $w$, $\\mathrm{length}(w) = 0$ or $\\mathrm{length}(w) \\ge 1$.",
+      solution:"Every string is either $\\varepsilon$ or $a \\cdot w'$ for some character $a$ and string $w'$. <strong>Case $w = \\varepsilon$:</strong> $\\mathrm{length}(\\varepsilon) = 0$, so the left disjunct holds. <strong>Case $w = a \\cdot w'$:</strong> $\\mathrm{length}(w) = 1 + \\mathrm{length}(w') \\ge 1$, so the right disjunct holds. In both cases the disjunction holds. $\\blacksquare$" },
+    { type:"challenge", id:"ch8",
+      prompt:"Prove by cases: for every integer $n$, $n$ is even or $n + 1$ is even.",
+      solution:"Every integer is even or odd. <strong>Case $n$ even:</strong> the left disjunct holds immediately. <strong>Case $n$ odd:</strong> $n = 2k+1$, so $n + 1 = 2k + 2 = 2(k+1)$ is even, and the right disjunct holds. In both cases at least one of $n$, $n+1$ is even. $\\blacksquare$" },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>Negation unlocks one more powerful proof technique — the subject of the next reading.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

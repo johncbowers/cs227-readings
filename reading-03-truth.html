@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 3 — Truth, Entailment, and Complementation</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "03-truth",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 3',
+  title: "Reading 3 — Truth, Entailment, and Complementation",
+  subtitle: "How a condition behaves across all objects of its type — and how conditions relate to one another.",
+  prev: { href: "reading-02-conditions.html", label: "Reading 2 — Conditions & Types" },
+  next: { href: "reading-04-sets.html", label: "Reading 4 — Sets & Operations" },
+  blocks: [
+    { type: "def", title: "Four ways to classify a condition", html:
+      "<ul>" +
+      "<li><strong>satisfiable</strong> — <em>some</em> object satisfies it;</li>" +
+      "<li><strong>falsifiable</strong> — <em>some</em> object falsifies it;</li>" +
+      "<li><strong>tautological</strong> — <em>every</em> object satisfies it;</li>" +
+      "<li><strong>contradictory</strong> — <em>no</em> object satisfies it.</li>" +
+      "</ul>" +
+      "<p>Every tautological condition is satisfiable; every contradictory one is falsifiable — but never the reverse.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Over the integers, which single label best fits “$n \\cdot n \\ge 0$”?",
+      choices: ["Contradictory", "Satisfiable but not tautological", "Tautological", "Falsifiable but not satisfiable"],
+      answer: 2,
+      choiceFeedback: [
+        "Contradictory means <em>nothing</em> satisfies it — but $n = 2$ gives $4 \\ge 0$.",
+        "It's satisfied by <em>every</em> integer, not just some — try to find one that fails it.",
+        null,
+        "It's never falsified: no integer has a negative square."
+      ],
+      explain: "Every integer has a nonnegative square, so every object satisfies it — tautological."
+    },
+    { type: "selectall", id: "q2",
+      prompt: "Over the integers, select <strong>all</strong> tautological conditions.",
+      choices: ["$n = n$", "$n > 0$", "“$n \\ge 0$ or $n < 0$”", "$n$ is even", "$n + 1 > n$"],
+      answers: [0, 2, 4],
+      hint: "Tautological means every integer satisfies it. Test each at $n = 0$ and $n = 1$.",
+      explain: "“$n>0$” fails at $0$ and “$n$ is even” fails at $1$; the other three hold for every integer."
+    },
+    { type: "prose", html:
+      "<h2>Entailment</h2>" +
+      "<p>Condition $X$ <strong>entails</strong> $Y$ (written $X \\models Y$) when every object satisfying $X$ also satisfies $Y$. To refute an entailment, exhibit one object satisfying $X$ but falsifying $Y$.</p>"
+    },
+    { type: "mc", id: "q3",
+      prompt: "Over the integers, does “$n$ is divisible by 4” entail “$n$ is even”?",
+      choices: [
+        "Yes — every multiple of 4 is even",
+        "No — because 2 is even but not a multiple of 4",
+        "Yes — because every even number is a multiple of 4",
+        "No — divisibility and parity are unrelated"
+      ],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "That fact concerns the <em>reverse</em> direction; entailment here asks only whether every multiple of 4 is even.",
+        "That claim is false ($2$ is even, not a multiple of 4) — and it's the wrong direction anyway.",
+        "They're related: every multiple of 4 is even, which is exactly the entailment."
+      ],
+      explain: "Every object satisfying “divisible by 4” also satisfies “even.” (The reverse direction fails, but that's a separate question.)"
+    },
+    { type: "prose", html:
+      "<h2>Complementation</h2>" +
+      "<p>The <strong>complement</strong> of a condition $X$ is satisfied by exactly the objects that falsify $X$. Watch the connective flip: the complement of “$P$ and $Q$” is “not $P$ <em>or</em> not $Q$,” and, symmetrically, the complement of “$P$ or $Q$” is “not $P$ <em>and</em> not $Q$.” The pattern is the same both ways: to complement a compound condition, negate each part and switch “and” to “or” (or “or” to “and”).</p>"
+    },
+    { type: "mc", id: "q4",
+      prompt: "The complement of “$n$ is positive <strong>and</strong> even” is:",
+      choices: [
+        "$n$ is negative and odd",
+        "$n$ is not positive and not even",
+        "$n \\le 0$ <strong>or</strong> $n$ is odd",
+        "$n \\le 0$ and $n$ is odd"
+      ],
+      answer: 2,
+      choiceFeedback: [
+        "Two issues: negating “and” gives “or,” and “not positive” is $n \\le 0$ (includes $0$), not “negative.”",
+        "Right idea to negate each part, but the connective flips to “or.”",
+        null,
+        "Almost — but “and” must become “or” when you complement a compound condition."
+      ],
+      explain: "not($P$ and $Q$) = (not $P$) or (not $Q$) = ($n \\le 0$) or ($n$ odd)."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Combine the definitions on a condition you haven’t classified before — count how many integers satisfy it, and let that decide the labels.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Over the integers, classify “$n^2 = n$.”",
+      choices: [
+        "Satisfiable and falsifiable (neither tautological nor contradictory)",
+        "Tautological",
+        "Contradictory",
+        "Tautological and contradictory"
+      ],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "Tautological would need <em>every</em> integer to satisfy it, but $2^2 = 4 \\ne 2$.",
+        "Contradictory would need <em>no</em> integer to satisfy it, but $0$ and $1$ do.",
+        "No condition can be both — those are opposites."
+      ],
+      explain: "$n^2 = n$ holds exactly for $n = 0$ and $n = 1$ (satisfiable) and fails for $n = 2$ (falsifiable). Since some but not all integers satisfy it, it is neither tautological nor contradictory."
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "selectall", id: "e1", practice: true,
+      prompt: "Select <strong>all</strong> statements that correctly define a classification.",
+      choices: [
+        "A condition is <strong>satisfiable</strong> when some object satisfies it.",
+        "A condition is <strong>tautological</strong> when every object satisfies it.",
+        "A condition is <strong>contradictory</strong> when some object satisfies it.",
+        "A condition is <strong>falsifiable</strong> when some object falsifies it.",
+        "A condition is <strong>tautological</strong> when no object satisfies it."
+      ],
+      answers: [0, 1, 3],
+      hint: "Match each word to “some,” “every,” or “no” object.",
+      explain: "Satisfiable = some object satisfies it; tautological = every object satisfies it; falsifiable = some object falsifies it. Contradictory means <em>no</em> object satisfies it (not “some”), and “no object satisfies it” is contradictory, not tautological."
+    },
+    { type: "shorttext", id: "e4", practice: true,
+      prompt: "What word describes a condition that <em>some</em> object falsifies?",
+      answer: "falsifiable",
+      explain: "Falsifiable = some object falsifies it. (Every contradictory condition is falsifiable, but not the reverse.)"
+    },
+    { type: "mc", id: "e5", practice: true,
+      prompt: "Over the integers, classify “$n = n$.”",
+      choices: ["Tautological", "Contradictory", "Satisfiable but not tautological", "Falsifiable but not satisfiable"],
+      answer: 0,
+      explain: "Every integer equals itself, so every object satisfies it — tautological."
+    },
+    { type: "mc", id: "e7", practice: true,
+      prompt: "Over the integers, the complement of “$n$ is even” is:",
+      choices: ["“$n$ is odd”", "“$n$ is positive”", "“$n = 0$”", "“$n$ is even”"],
+      answer: 0,
+      explain: "The complement is satisfied by exactly the integers that falsify “even” — namely the odd integers."
+    },
+    { type: "mc", id: "e8", practice: true,
+      prompt: "To refute the entailment $X \\models Y$, you must exhibit:",
+      choices: [
+        "an object satisfying $X$ but falsifying $Y$",
+        "an object satisfying both $X$ and $Y$",
+        "an object falsifying both $X$ and $Y$",
+        "an object satisfying $Y$ but falsifying $X$"
+      ],
+      answer: 0,
+      explain: "$X \\models Y$ claims every object satisfying $X$ also satisfies $Y$; one object that satisfies $X$ yet falsifies $Y$ breaks it."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "selectall", id: "m2", practice: true,
+      prompt: "Over the integers, select <strong>all</strong> tautological conditions.",
+      choices: ["$n + 1 > n$", "$n \\ge 5$", "$n \\cdot n \\ge 0$", "$2n$ is even", "$n$ is odd"],
+      answers: [0, 2, 3],
+      hint: "Tautological means every integer satisfies it. Test each at $n = 0$ and $n = 1$.",
+      explain: "$n+1>n$, $n\\cdot n \\ge 0$, and “$2n$ is even” hold for every integer. “$n \\ge 5$” fails at $0$ and “$n$ is odd” fails at $0$."
+    },
+    { type: "selectall", id: "m3", practice: true,
+      prompt: "Over the integers, select <strong>all</strong> contradictory conditions.",
+      choices: ["“$n < 0$ and $n > 0$”", "$n \\cdot n < 0$", "$n = n + 1$", "$n > 0$", "$n^2 = 4$"],
+      answers: [0, 1, 2],
+      hint: "Contradictory means no integer satisfies it at all.",
+      explain: "No integer is both negative and positive, none has a negative square, and none equals its own successor. But $n>0$ holds for $1$ and $n^2=4$ holds for $2$, so those are satisfiable."
+    },
+    { type: "matching", id: "m7", practice: true,
+      prompt: "Over the integers, match each condition to its classification.",
+      pairs: [
+        { left: "$n \\cdot n \\ge 0$", right: "tautological" },
+        { left: "$n \\cdot n < 0$", right: "contradictory" },
+        { left: "$n > 0$", right: "satisfiable and falsifiable" },
+        { left: "$n$ is even", right: "satisfiable and falsifiable" }
+      ],
+      explain: "$n\\cdot n\\ge 0$ holds for every integer (tautological); $n\\cdot n<0$ for none (contradictory); $n>0$ and “$n$ is even” each hold for some integers and fail for others."
+    },
+    { type: "selectall", id: "m9", practice: true,
+      prompt: "Every tautological condition is necessarily also which of these? Select <strong>all</strong> that apply.",
+      choices: [
+        "satisfiable",
+        "falsifiable",
+        "not contradictory",
+        "contradictory",
+        "satisfied by every object of its type"
+      ],
+      answers: [0, 2, 4],
+      hint: "A tautological condition is satisfied by every object, so nothing falsifies it.",
+      explain: "If every object satisfies it, then some object does (satisfiable), it is satisfied by every object of its type, and it is not contradictory. It cannot be falsifiable or contradictory, since nothing falsifies it."
+    },
+    { type: "selectall", id: "m10", practice: true,
+      prompt: "Over the integers, select <strong>all</strong> entailments that hold.",
+      choices: [
+        "“$n$ divisible by 6” $\\models$ “$n$ is even”",
+        "“$n > 5$” $\\models$ “$n > 0$”",
+        "“$n$ is even” $\\models$ “$n > 0$”",
+        "“$n = 4$” $\\models$ “$n$ is even”"
+      ],
+      answers: [0, 1, 3],
+      hint: "$X \\models Y$ holds unless some object satisfies $X$ but falsifies $Y$.",
+      explain: "Every multiple of 6 is even, every integer past 5 is positive, and $4$ is even. But “$n$ is even” does not entail “$n>0$” — take $n = -2$."
+    },
+    { type: "shortnum", id: "m11", practice: true,
+      prompt: "How many integers $n$ with $1 \\le n \\le 10$ satisfy “$n$ is even <strong>and</strong> $n > 5$”?",
+      answer: 3,
+      hint: "List the even numbers between 1 and 10, then keep those greater than 5.",
+      explain: "The even integers in range are $2,4,6,8,10$; keeping those greater than 5 leaves $6, 8, 10$ — that is 3."
+    },
+    { type: "mc", id: "m12", practice: true,
+      prompt: "Over the integers, the complement of “$n < 0$ <strong>or</strong> $n > 100$” is:",
+      choices: [
+        "$0 \\le n \\le 100$",
+        "$0 < n < 100$",
+        "$n < 0$ and $n > 100$",
+        "$n \\le 0$ or $n \\ge 100$"
+      ],
+      answer: 0,
+      explain: "Complementing the compound: not($n<0$ or $n>100$) = (not $n<0$) and (not $n>100$) = ($n \\ge 0$) and ($n \\le 100$), i.e. $0 \\le n \\le 100$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Over the integers, show that “$n > 0$” does <em>not</em> entail “$n > 1$,” and name the single object that witnesses this.",
+      solution: "An entailment $X \\models Y$ fails as soon as one object satisfies $X$ but falsifies $Y$. Take $n = 1$: it satisfies “$n > 0$” (since $1 > 0$) but falsifies “$n > 1$” (since $1 > 1$ is false). So $n = 1$ is a witness, and “$n > 0$” $\\not\\models$ “$n > 1$.” One counterexample is all it takes to refute a universal claim like an entailment."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Over the integers, prove that “$n$ is divisible by 6” entails “$n$ is even.”",
+      solution: "We must show every integer satisfying “divisible by 6” also satisfies “even.” Suppose $n$ is divisible by 6. Then $n = 6k$ for some integer $k$. Rewrite: $n = 6k = 2\\cdot(3k)$. Since $3k$ is an integer, $n$ is $2$ times an integer, which is exactly what it means to be even. As $n$ was an arbitrary multiple of 6, every such $n$ is even, so the entailment holds. (This is a proof, not a check of examples — it covers all multiples of 6 at once.)"
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Over the integers, give the complement of “$n$ is even <strong>and</strong> ($n > 0$ <strong>or</strong> $n = -4$),” simplified.",
+      solution: "Let $P$ = “$n$ is even” and $Q$ = “$n > 0$ or $n = -4$.” The complement of “$P$ and $Q$” is “not $P$ or not $Q$.” Now “not $P$” = “$n$ is odd.” For “not $Q$,” complement the compound “$n > 0$ or $n = -4$” by negating each part and switching “or” to “and”: that gives “$n \\le 0$ and $n \\ne -4$.” So the full complement is: “$n$ is odd, <strong>or</strong> ($n \\le 0$ and $n \\ne -4$).” Check: $n=-4$ is even and satisfies $Q$, so it satisfies the original and must fail the complement — indeed it is not odd, and the second clause excludes $-4$. Good."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Suppose a condition $X$ is contradictory. Show that $X$ entails <em>every</em> condition $Y$ (of the same type).",
+      solution: "By definition $X \\models Y$ means: every object satisfying $X$ also satisfies $Y$. Since $X$ is contradictory, <em>no</em> object satisfies $X$. So there is no object that satisfies $X$ but fails $Y$ — there is nothing to serve as a counterexample. The statement “every object satisfying $X$ also satisfies $Y$” is therefore vacuously true, whatever $Y$ is. Hence a contradictory condition entails everything. (Intuitively: an impossible premise can’t be caught making a false promise.)"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Show that a condition $X$ is tautological if and only if its complement $\\overline{X}$ is contradictory.",
+      solution: "Recall $\\overline{X}$ is satisfied by exactly the objects that falsify $X$. ($\\Rightarrow$) Suppose $X$ is tautological, so every object satisfies $X$, meaning no object falsifies $X$. Then no object satisfies $\\overline{X}$, i.e. $\\overline{X}$ is contradictory. ($\\Leftarrow$) Suppose $\\overline{X}$ is contradictory, so no object satisfies $\\overline{X}$, meaning no object falsifies $X$. Then every object satisfies $X$, i.e. $X$ is tautological. Both directions hold, so the equivalence is proved. (Symmetrically, $X$ is contradictory iff $\\overline{X}$ is tautological.)"
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "Over the integers, classify “$n^2 < 0$” and “$n^2 \\ge 0$,” and explain how the two conditions are related.",
+      solution: "For every integer $n$, $n^2 \\ge 0$: a square is never negative. So “$n^2 \\ge 0$” is satisfied by every object — <strong>tautological</strong>. And “$n^2 < 0$” is satisfied by no object — <strong>contradictory</strong>. The two are <em>complements</em>: “$n^2 < 0$” is exactly “not ($n^2 \\ge 0$),” so it is satisfied precisely by the objects that falsify “$n^2 \\ge 0$.” This illustrates the general fact from ch5: the complement of a tautological condition is contradictory, and vice versa."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>These classifications, plus entailment and complementation, are the vocabulary for the whole logic unit. Next we pick up sets and functions — the objects our conditions so often talk about.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 13 — Existentials and Conjunction</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "13-existentials",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 13',
+  title: "Reading 13 — Existentials and Conjunction",
+  subtitle: "How to prove that something exists, how to use the fact that something exists, and how to handle “and.”",
+  prev: { href: "reading-12-induction-naturals.html", label: "Reading 12 — Induction on ℕ" },
+  next: { href: "reading-14-eventuality.html", label: "Reading 14 — Eventuality" },
+  blocks: [
+    { type: "def", title: "Rules for ∃ and ∧", html:
+      "<ul>" +
+      "<li><strong>Existential generalization</strong> (goal $(\\exists x)P(x)$): supply a specific <em>witness</em> $a$ and prove $P(a)$.</li>" +
+      "<li><strong>Name a witness</strong> (using $(\\exists x)P(x)$): introduce a fresh name $c$ and record $P(c)$.</li>" +
+      "<li><strong>Conjunction on the goal</strong> (goal $P \\wedge Q$): split into two claims.</li>" +
+      "<li><strong>Conjunction on the left</strong> (using $P \\wedge Q$): conclude either $P$ or $Q$.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Your goal is $(\\exists x)\\,P(x)$. Which rule?",
+      choices: ["Existential generalization: supply a witness $a$ and prove $P(a)$", "Name a witness", "Universal generalization", "Conjunction on the goal"],
+      answer: 0,
+      choiceFeedback: [null, "Naming a witness is for <em>using</em> a known $\\exists$.", "That proves a $\\forall$ goal.", "There's no $\\wedge$ in the goal."],
+      explain: "To prove something exists, exhibit one and verify it works."
+    },
+    { type: "mc", id: "q2",
+      prompt: "You <strong>know</strong> $(\\exists x)\\,P(x)$. Which rule lets you use it?",
+      choices: ["Name a witness: introduce a fresh $c$ with $P(c)$", "Existential generalization", "Detachment", "Universal instantiation"],
+      answer: 0,
+      choiceFeedback: [null, "That <em>proves</em> an $\\exists$ goal; here you're using one.", "Detachment needs an implication.", "Instantiation is for a known $\\forall$."],
+      explain: "Knowing something exists lets you name one instance and reason about it."
+    },
+    { type: "mc", id: "q3",
+      prompt: "Your goal is $P \\wedge Q$. Which rule?",
+      choices: ["Split into two claims: prove $P$, then $Q$", "Prove either $P$ or $Q$, your choice", "Name a witness", "Existential generalization"],
+      answer: 0,
+      choiceFeedback: [null, "A conjunction goal needs <em>both</em> parts (“either” is for an “or” goal).", "That's an $\\exists$ move.", "That's for an $\\exists$ goal."],
+      explain: "A conjunction goal requires both parts, proved separately."
+    },
+    { type: "mc", id: "q4",
+      prompt: "You know $P \\wedge Q$ and only need $P$. Which rule?",
+      choices: ["Conjunction on the left: from $P \\wedge Q$ conclude $P$", "Split into two claims", "Detachment", "Make-believe"],
+      answer: 0,
+      choiceFeedback: [null, "Splitting is for <em>proving</em> a conjunction goal; you already know it.", "Detachment is for implications.", "Make-believe is for an implication goal."],
+      explain: "From a known conjunction you may keep whichever piece you need."
+    },
+    { type: "prose", html:
+      "<h2>Vocabulary for checking witnesses</h2>" +
+      "<p>Most existence claims below ask for a natural number meeting several conditions joined by $\\wedge$. A <strong>witness</strong> must satisfy <em>every</em> conjunct at once; miss even one and it is not a witness.</p>" +
+      "<ul>" +
+      "<li>$n$ is <strong>even</strong> if it is a multiple of $2$ ($0, 2, 4, \\dots$) and <strong>odd</strong> otherwise ($1, 3, 5, \\dots$).</li>" +
+      "<li>$n$ is <strong>divisible by</strong> $k$ if $n = k \\cdot m$ for some whole number $m$; the multiples of $k$ are $0, k, 2k, 3k, \\dots$.</li>" +
+      "<li>$n$ is <strong>prime</strong> if $n > 1$ and its only divisors are $1$ and $n$ ($2, 3, 5, 7, 11, \\dots$); note $2$ is the only even prime.</li>" +
+      "<li>$n$ is a <strong>perfect square</strong> if $n = k^2$ for some whole number $k$ ($0, 1, 4, 9, 16, 25, \\dots$).</li>" +
+      "<li>$n$ is a <strong>perfect cube</strong> if $n = k^3$ for some whole number $k$ ($0, 1, 8, 27, 64, 125, \\dots$).</li>" +
+      "</ul>" +
+      "<p>A double inequality such as $10 < n < 14$ means $n$ is <em>strictly between</em> the bounds: greater than $10$ and less than $14$, so here $n \\in \\{11, 12, 13\\}$.</p>" +
+      "<p>The <strong>smallest witness</strong> is the least value satisfying all the conditions. To find it, walk upward through the candidates (the multiples of $k$, or the squares $1, 4, 9, \\dots$, and so on) and take the first that clears every requirement.</p>"
+    },
+    { type: "mc", id: "q5",
+      prompt: "To prove $(\\exists x)(x \\text{ is even} \\wedge x > 100)$ over the integers, which is a valid witness?",
+      choices: ["$102$", "$101$", "$99$", "$50$"],
+      answer: 0,
+      choiceFeedback: [null, "$101 > 100$ but it's odd — fails the “even” half.", "$99$ is odd and not $>100$ — fails both.", "$50$ is even but not $>100$."],
+      explain: "The witness must satisfy both parts: $102$ is even and greater than 100."
+    },
+    { type: "selectall", id: "q6",
+      prompt: "Select <strong>all</strong> valid witnesses for $(\\exists n \\in \\mathbb{N})(n > 5 \\wedge n \\text{ is a perfect square})$.",
+      choices: ["$9$", "$16$", "$4$", "$6$"],
+      answers: [0, 1],
+      hint: "A witness must satisfy both: greater than 5, and a perfect square.",
+      explain: "$9 = 3^2 > 5$ and $16 = 4^2 > 5$ work; $4$ isn't $>5$; $6$ isn't a perfect square."
+    },
+    { type: "prose", html:
+      "<h2>Putting the rules together</h2>" +
+      "<p>A typical existence proof <em>names</em> a witness from something you know, transforms it, then <em>generalizes</em>. The steps below prove “there is a mammal” from “there is a squirrel” and “all squirrels are mammals.”</p>"
+    },
+    { type: "parsons", id: "q7",
+      prompt: "Order the steps to prove $(\\exists x)\\,M(x)$ from $(\\exists x)\\,S(x)$ and $(\\forall x)(S(x) \\rightarrow M(x))$.",
+      steps: [
+        "Name a witness $c$ for $(\\exists x)\\,S(x)$: we have $S(c)$.",
+        "Instantiate the universal at $c$: $S(c) \\rightarrow M(c)$.",
+        "Detach with $S(c)$ to get $M(c)$.",
+        "Existential generalization with witness $c$: $(\\exists x)\\,M(x)$."
+      ],
+      hint: "You need a concrete $c$ before instantiating or detaching, and can only generalize once you have $M(c)$.",
+      explain: "Name the squirrel, push it through the universal to a mammal, then generalize back."
+    },
+    { type: "mc", id: "q8",
+      prompt: "To prove “some mammal fears Fafnir” from “some squirrel fears Fafnir” and “all squirrels are mammals,” a good <strong>first</strong> step is to:",
+      choices: ["Name a witness for “some squirrel fears Fafnir”", "Supply the witness “Scrat” out of nowhere", "Generalize to “some mammal” before you have any mammal in hand", "Instantiate “all squirrels are mammals” at every object at once"],
+      answer: 0,
+      choiceFeedback: [null, "You can't assume it's Scrat — only <em>some</em> squirrel is known to.", "You can only generalize to “some mammal” once you actually have a concrete mammal; you have none yet.", "You name one witness from an existential, not “every object.”"],
+      explain: "The existential known hands you a concrete squirrel; name it, then push it through the universal."
+    },
+    { type: "prose", html:
+      "<h2>Trees as witnesses</h2>" +
+      "<p>A <strong>binary tree</strong> here is either a $\\mathrm{leaf}$ or a $\\mathrm{node}(L, R)$ built from a left subtree $L$ and a right subtree $R$. Two quantities matter:</p>" +
+      "<ul>" +
+      "<li><strong>Number of leaves</strong>: a $\\mathrm{leaf}$ has $1$; a $\\mathrm{node}(L, R)$ has (leaves of $L$) $+$ (leaves of $R$). In practice, just count the $\\mathrm{leaf}$ tokens.</li>" +
+      "<li><strong>Height</strong> (edges on the longest root-to-leaf path): a $\\mathrm{leaf}$ has height $0$; a $\\mathrm{node}(L, R)$ has height $1 + \\max(\\text{height of } L, \\text{height of } R)$.</li>" +
+      "</ul>" +
+      "<p>To witness a claim like “there is a tree of height $2$ with exactly $3$ leaves,” exhibit one specific tree and verify both numbers.</p>"
+    },
+    { type: "mc", id: "q9",
+      prompt: "Which tree is a witness for “there is a tree of height 2 with exactly 3 leaves”? (height counts edges on the longest root-to-leaf path)",
+      choices: [
+        "$\\mathrm{node}(\\mathrm{leaf},\\ \\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}))$",
+        "$\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf})$",
+        "$\\mathrm{leaf}$",
+        "$\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}),\\ \\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}))$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "Height 1, only 2 leaves.", "A single leaf: height 0, 1 leaf.", "Height 2 but 4 leaves, not 3."],
+      explain: "That tree has height $1 + \\max(0,1) = 2$ and $1 + 2 = 3$ leaves."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Existence claims can also <em>fail</em>. This one has three constraints — decide whether any single number meets all of them.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Is there a witness for $(\\exists n \\in \\mathbb{N})(n \\text{ is even} \\ \\wedge\\ 10 < n < 14 \\ \\wedge\\ n \\text{ is a perfect square})$?",
+      choices: ["$n = 12$", "$n = 16$", "No such witness exists", "$n = 11$"],
+      answer: 2,
+      choiceFeedback: ["$12$ is even and in range but not a perfect square.", "$16$ is an even square but out of range.", null, "$11$ is in range but odd and not a square."],
+      explain: "The only even integer with $10 < n < 14$ is $12$, which isn't a perfect square — so no number meets all three conditions."
+    },
+    { type: "prose", html:
+      "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>"
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "mc", id: "e1", practice: true,
+      prompt: "Which is a valid witness for $(\\exists n \\in \\mathbb{N})(n > 3 \\ \\wedge\\ n \\text{ is even})$?",
+      choices: ["$4$", "$3$", "$5$", "$2$"],
+      answer: 0,
+      choiceFeedback: [null, "$3 > 3$ is false, and $3$ is odd.", "$5 > 3$ but $5$ is odd.", "$2$ is even but not $> 3$."],
+      explain: "$4$ is greater than $3$ and even, so it satisfies both parts."
+    },
+    { type: "selectall", id: "e3", practice: true,
+      prompt: "Your goal is $(\\exists x)\\,P(x)$ and you have no existential to draw on. Select <strong>all</strong> correct statements.",
+      choices: ["Supply a specific witness $a$ and prove $P(a)$", "This move is called existential generalization", "Name a fresh witness $c$ from the goal", "Split the goal into two claims"],
+      answers: [0, 1],
+      hint: "To prove existence you exhibit one object; naming a fresh $c$ is for <em>using</em> a known $\\exists$, and there is no $\\wedge$ to split.",
+      explain: "To prove $(\\exists x)P(x)$ you exhibit a concrete witness $a$ and check $P(a)$ — this is existential generalization. Naming a fresh $c$ is for using a known existential, and there is no conjunction in the goal to split."
+    },
+    { type: "selectall", id: "e4", practice: true,
+      prompt: "You <strong>know</strong> $P \\wedge Q$. Select <strong>all</strong> conclusions you may draw from it directly.",
+      choices: ["$Q$", "$P$", "A witness $c$ with $P(c)$", "That the goal splits into two claims"],
+      answers: [0, 1],
+      hint: "Conjunction on the left lets you keep either piece; splitting is for <em>proving</em> a conjunction goal, not using one.",
+      explain: "From a known $P \\wedge Q$ you may conclude $P$ or $Q$ (conjunction on the left) — keep whichever you need. Producing a witness is an existential move, and splitting into two claims is for a conjunction <em>goal</em>."
+    },
+    { type: "selectall", id: "e5", practice: true,
+      prompt: "Your goal is $P \\wedge Q$. Select <strong>all</strong> subgoals you must establish.",
+      choices: ["Prove $P$", "Prove $Q$", "Prove just one of $P$ or $Q$", "Name a witness"],
+      answers: [0, 1],
+      hint: "A conjunction goal needs <em>both</em> parts, each proved on its own.",
+      explain: "A conjunction goal splits into two subgoals: prove $P$ and prove $Q$ separately. One piece is not enough, and there is no existential here to name a witness for."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Select <strong>all</strong> valid witnesses for $(\\exists n \\in \\mathbb{N})(2 < n < 7)$.",
+      choices: ["$3$", "$5$", "$1$", "$8$"],
+      answers: [0, 1],
+      hint: "The witness must be strictly between $2$ and $7$.",
+      explain: "$3$ and $5$ lie strictly between $2$ and $7$; $1$ and $8$ do not."
+    },
+    { type: "shortnum", id: "e8", practice: true,
+      prompt: "What is the smallest witness in $\\mathbb{N}$ for $(\\exists n \\in \\mathbb{N})(n > 7)$?",
+      answer: 8,
+      placeholder: "a whole number",
+      hint: "The smallest whole number strictly greater than $7$.",
+      explain: "$n > 7$ means $n \\ge 8$, so the smallest witness is $8$."
+    },
+    { type: "selectall", id: "e9", practice: true,
+      prompt: "You <strong>know</strong> $(\\exists x)\\,S(x)$ and want to use it. Select <strong>all</strong> correct moves.",
+      choices: ["Introduce a fresh name $c$ and record $S(c)$", "Reason further about that particular $c$", "Supply the specific object “Scrat” as the witness", "Conclude $(\\forall x)\\,S(x)$"],
+      answers: [0, 1],
+      hint: "A known existential hands you one unnamed instance; name it and reason about it, but you can't choose which object it is or upgrade to a universal.",
+      explain: "A known $(\\exists x)S(x)$ lets you introduce a fresh $c$ with $S(c)$ and reason about that $c$. You can't assume it is a specific object like Scrat, and knowing one instance never gives $(\\forall x)S(x)$."
+    },
+    { type: "mc", id: "e10", practice: true,
+      prompt: "Which is a valid witness for $(\\exists n \\in \\mathbb{N})(n \\text{ is even} \\ \\wedge\\ n \\text{ is prime})$?",
+      choices: ["$2$", "$3$", "$4$", "$9$"],
+      answer: 0,
+      choiceFeedback: [null, "$3$ is prime but odd.", "$4$ is even but not prime.", "$9$ is odd and not prime."],
+      explain: "$2$ is the only even prime — it satisfies both parts."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "mc", id: "m1", practice: true,
+      prompt: "Which is a valid witness for $(\\exists n \\in \\mathbb{N})(n \\text{ is even} \\ \\wedge\\ n > 20 \\ \\wedge\\ n \\text{ is a perfect square})$?",
+      choices: ["$36$", "$25$", "$16$", "$24$"],
+      answer: 0,
+      choiceFeedback: [null, "$25 = 5^2 > 20$ but is odd.", "$16 = 4^2$ is even but not $> 20$.", "$24$ is even and $> 20$ but not a perfect square."],
+      explain: "$36 = 6^2$ is even, greater than $20$, and a perfect square — all three hold."
+    },
+    { type: "selectall", id: "m2", practice: true,
+      prompt: "Select <strong>all</strong> valid witnesses for $(\\exists n \\in \\mathbb{N})(n \\text{ is a perfect square} \\ \\wedge\\ n < 50 \\ \\wedge\\ n \\text{ is even})$.",
+      choices: ["$4$", "$16$", "$36$", "$49$"],
+      answers: [0, 1, 2],
+      hint: "Check all three: perfect square, less than $50$, and even.",
+      explain: "$4, 16, 36$ are even perfect squares under $50$; $49 = 7^2$ is under $50$ but odd."
+    },
+    { type: "shortnum", id: "m4", practice: true,
+      prompt: "What is the smallest witness for $(\\exists n \\in \\mathbb{N})(n > 100 \\ \\wedge\\ n \\text{ is a perfect square})$?",
+      answer: 121,
+      placeholder: "a whole number",
+      hint: "$10^2 = 100$ is not $> 100$; try the next square.",
+      explain: "$11^2 = 121$ is the smallest perfect square strictly greater than $100$."
+    },
+    { type: "mc", id: "m8", practice: true,
+      prompt: "Which tree is a witness for “there is a tree of height 2 with exactly 4 leaves”? (height counts edges on the longest root-to-leaf path)",
+      choices: [
+        "$\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}),\\ \\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}))$",
+        "$\\mathrm{node}(\\mathrm{leaf},\\ \\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}))$",
+        "$\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf})$",
+        "$\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf},\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf})),\\ \\mathrm{leaf})$"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "Height $2$ but only $3$ leaves.", "Height $1$ with $2$ leaves.", "Height $3$, not $2$."],
+      explain: "Both children are height-$1$ nodes, so height $= 1 + 1 = 2$, and leaves $= 2 + 2 = 4$."
+    },
+    { type: "shortnum", id: "m9", practice: true,
+      prompt: "How many leaves does $\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}),\\ \\mathrm{leaf})$ have?",
+      answer: 3,
+      placeholder: "a whole number",
+      hint: "Count the $\\mathrm{leaf}$ tokens: the left subtree has two, plus one on the right.",
+      explain: "The left child $\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf})$ contributes $2$ leaves and the right child is $1$ leaf: $2 + 1 = 3$."
+    },
+    { type: "selectall", id: "m10", practice: true,
+      prompt: "Select <strong>all</strong> valid witnesses for $(\\exists n \\in \\mathbb{N})(n \\text{ is even} \\ \\wedge\\ 5 < n < 15)$.",
+      choices: ["$6$", "$10$", "$12$", "$15$"],
+      answers: [0, 1, 2],
+      hint: "The witness must be even and strictly between $5$ and $15$.",
+      explain: "$6, 10, 12$ are even and in range; $15$ is odd (and not $< 15$)."
+    },
+    { type: "mc", id: "m11", practice: true,
+      prompt: "Is there a witness for $(\\exists n \\in \\mathbb{N})(n \\text{ is a perfect square} \\ \\wedge\\ n \\text{ is odd} \\ \\wedge\\ 20 < n < 30)$?",
+      choices: ["$n = 25$", "$n = 27$", "$n = 21$", "No such witness exists"],
+      answer: 0,
+      choiceFeedback: [null, "$27$ is odd and in range but not a perfect square.", "$21$ is odd and in range but not a perfect square.", "There is one — check the squares between $20$ and $30$."],
+      explain: "$25 = 5^2$ is a perfect square, odd, and strictly between $20$ and $30$."
+    },
+    { type: "mc", id: "m12", practice: true,
+      prompt: "Is there a witness for $(\\exists n \\in \\mathbb{N})(n \\text{ is a perfect square} \\ \\wedge\\ n \\text{ is even} \\ \\wedge\\ 20 < n < 35)$?",
+      choices: ["No such witness exists", "$n = 25$", "$n = 30$", "$n = 36$"],
+      answer: 0,
+      choiceFeedback: [null, "$25 = 5^2$ is in range but odd.", "$30$ is even and in range but not a perfect square.", "$36 = 6^2$ is an even square but not $< 35$."],
+      explain: "The only perfect square strictly between $20$ and $35$ is $25$, which is odd — so no number meets all three conditions."
+    },
+    { type: "shortnum", id: "m13", practice: true,
+      prompt: "What is the smallest witness for $(\\exists n \\in \\mathbb{N})(n > 1000 \\ \\wedge\\ n \\text{ is a perfect cube})$?",
+      answer: 1331,
+      placeholder: "a whole number",
+      hint: "$10^3 = 1000$ is not $> 1000$; try the next cube.",
+      explain: "$11^3 = 1331$ is the smallest perfect cube strictly greater than $1000$."
+    },
+    { type: "parsons", id: "m14", practice: true,
+      prompt: "Order the steps to prove $(\\exists x)(S(x) \\wedge M(x))$ from $(\\exists x)\\,S(x)$ and $(\\forall x)(S(x) \\rightarrow M(x))$.",
+      steps: [
+        "Name a witness $c$ for $(\\exists x)\\,S(x)$: we have $S(c)$.",
+        "Instantiate the universal at $c$: $S(c) \\rightarrow M(c)$.",
+        "Detach with $S(c)$ to get $M(c)$.",
+        "Conjunction on the goal: combine $S(c)$ and $M(c)$ into $S(c) \\wedge M(c)$.",
+        "Existential generalization with witness $c$: $(\\exists x)(S(x) \\wedge M(x))$."
+      ],
+      hint: "You need a concrete $c$ with $S(c)$ before instantiating; keep $S(c)$ around so you can pair it with $M(c)$ at the end.",
+      explain: "Name the squirrel, derive that it's a mammal, keep both facts, combine, and generalize."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Prove $(\\exists n \\in \\mathbb{N})(n \\text{ is even} \\ \\wedge\\ n > 1000 \\ \\wedge\\ n \\text{ is a perfect square})$.",
+      solution: "Take the witness $n = 1024$. Then $1024 = 2^{10} = (2^5)^2 = 32^2$, so it is a perfect square; it is even since it is a power of $2$ (equivalently $1024 = 2 \\cdot 512$); and $1024 > 1000$. All three conjuncts hold for this witness, so by existential generalization the statement is true. (Any even square past $1000$ works, e.g. $34^2 = 1156$.)"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Give a full proof of $(\\exists x)(M(x) \\wedge F(x, \\text{Fafnir}))$ from the premises $(\\exists x)(S(x) \\wedge F(x, \\text{Fafnir}))$ and $(\\forall x)(S(x) \\rightarrow M(x))$.",
+      solution: "1. By the first premise, name a witness $c$ with $S(c) \\wedge F(c, \\text{Fafnir})$.\n2. Conjunction on the left gives $S(c)$ and (separately) $F(c, \\text{Fafnir})$.\n3. Instantiate the universal premise at $c$: $S(c) \\rightarrow M(c)$.\n4. Detach with $S(c)$ from step 2 to obtain $M(c)$.\n5. Conjunction on the goal: from $M(c)$ and $F(c, \\text{Fafnir})$ conclude $M(c) \\wedge F(c, \\text{Fafnir})$.\n6. Existential generalization with witness $c$ gives $(\\exists x)(M(x) \\wedge F(x, \\text{Fafnir}))$, as required."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Show that $(\\exists x)(S(x) \\wedge M(x))$ does <em>not</em> follow from $(\\exists x)\\,S(x)$ and $(\\exists x)\\,M(x)$. (Give a counter-model.)",
+      solution: "Let the domain be $\\{a, b\\}$ with $S(a)$ true, $S(b)$ false, $M(a)$ false, $M(b)$ true. Then $(\\exists x)\\,S(x)$ holds (via $a$) and $(\\exists x)\\,M(x)$ holds (via $b$), so both premises are true. But no single object is both: $a$ is $S$ but not $M$, and $b$ is $M$ but not $S$. So $(\\exists x)(S(x) \\wedge M(x))$ is false. Two separate witnesses cannot be merged into one — that is exactly why the conjunction-under-$\\exists$ fails here."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Prove $(\\exists a \\in \\mathbb{N})(\\exists b \\in \\mathbb{N})(a \\text{ is prime} \\ \\wedge\\ b \\text{ is prime} \\ \\wedge\\ a + b = 100)$.",
+      solution: "Take witnesses $a = 47$ and $b = 53$. Both are prime: $47$ has no divisor among $2,3,5$ (and $7^2 = 49 > 47$), and $53$ has no divisor among $2,3,5,7$ (and $8^2 = 64 > 53$). And $47 + 53 = 100$. All three conjuncts hold, so by existential generalization (twice) the statement is true. (Other witnesses work too, e.g. $3 + 97$ or $17 + 83$.)"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Prove there is a tree of height exactly $3$ with exactly $4$ leaves. (Exhibit one and verify.)",
+      solution: "Take $t = \\mathrm{node}(\\mathrm{leaf},\\ \\mathrm{node}(\\mathrm{leaf},\\ \\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf})))$. Height: the right subtree $\\mathrm{node}(\\mathrm{leaf}, \\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}))$ has height $2$, so $t$ has height $1 + \\max(0, 2) = 3$. Leaves: the direct left $\\mathrm{leaf}$ gives $1$; the right subtree contributes $\\mathrm{leaf}$ plus $\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf})$'s two leaves, i.e. $3$; total $1 + 3 = 4$. So $t$ witnesses the claim."
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "Prove $(\\exists n \\in \\mathbb{N})(n > 5 \\ \\wedge\\ n \\text{ is divisible by } 3 \\ \\wedge\\ n \\text{ is divisible by } 4)$.",
+      solution: "Take the witness $n = 12$. Then $12 > 5$; $12 = 3 \\cdot 4$ is divisible by $3$; and $12 = 4 \\cdot 3$ is divisible by $4$. All three conjuncts hold, so existential generalization gives the claim. (Note $12$ is the least common multiple of $3$ and $4$, so it is the smallest such witness.)"
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "Prove $(\\exists x)(\\exists y)\\,F(x, y)$ from $(\\exists x)\\,F(x, \\text{Fafnir})$.",
+      solution: "1. By the premise, name a witness $c$ with $F(c, \\text{Fafnir})$.\n2. Existential generalization on the second coordinate: since $F(c, \\text{Fafnir})$ holds, $(\\exists y)\\,F(c, y)$ holds (witness $y = \\text{Fafnir}$).\n3. Existential generalization on the first coordinate: since $(\\exists y)\\,F(c, y)$ holds for the specific $c$, $(\\exists x)(\\exists y)\\,F(x, y)$ holds (witness $x = c$). This is the required statement."
+    },
+    { type: "challenge", id: "ch8",
+      prompt: "Prove $(\\exists n \\in \\mathbb{N})(n = n^2)$. How many witnesses are there, and what are they?",
+      solution: "Take the witness $n = 0$: then $0^2 = 0 = n$, so $n = n^2$ holds, proving the existential. There are exactly two witnesses in $\\mathbb{N}$: $n = 0$ and $n = 1$ (since $1^2 = 1$). For any $n \\ge 2$ we have $n^2 = n \\cdot n > n$, so no larger value works. Only one witness is needed for the existence claim, but both $0$ and $1$ satisfy it."
+    },
+    { type: "challenge", id: "ch9",
+      prompt: "Prove there is a natural number $n$ such that $n$, $n+1$, and $n+2$ are all composite (none is prime).",
+      solution: "Take the witness $n = 8$. Then $8 = 2 \\cdot 4$, $9 = 3 \\cdot 3$, and $10 = 2 \\cdot 5$ are each composite. So $n = 8$ satisfies the conjunction $(8 \\text{ composite}) \\wedge (9 \\text{ composite}) \\wedge (10 \\text{ composite})$, and existential generalization gives the claim."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>Next, a distinctive use of these ideas: reasoning about what happens <em>eventually</em>, once inputs get large enough.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

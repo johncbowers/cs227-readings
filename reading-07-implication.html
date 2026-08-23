@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 7 — Implication, up close</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "07-implication",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 7',
+  title: "Reading 7 — Implication, up close",
+  subtitle: "The connective that trips up everyone. Get its truth conditions right and much of what follows becomes easy.",
+  prev: { href: "reading-06-predicate-logic.html", label: "Reading 6 — Predicate Logic" },
+  next: { href: "reading-08-proofs-1.html", label: "Reading 8 — Proofs I" },
+  blocks: [
+    { type: "def", title: "When is “if P then Q” false?", html:
+      "<p>An implication $P \\rightarrow Q$ is <strong>false in exactly one case</strong>: when $P$ is true and $Q$ is false. In every other case it is true — including whenever $P$ is false, where we say it holds <strong>vacuously</strong>.</p>" +
+      "<p>Think of it as a promise: “if $P$ happens, I guarantee $Q$.” The promise is broken only if $P$ happens and $Q$ doesn’t.</p>"
+    },
+    { type: "prose", html:
+      "<h2>The truth table</h2>" +
+      "<p>Writing out all four combinations of $P$ and $Q$ makes the rule concrete:</p>" +
+      "<ul>" +
+      "<li>$P$ true, $Q$ true: $P \\rightarrow Q$ is <strong>true</strong>.</li>" +
+      "<li>$P$ true, $Q$ false: $P \\rightarrow Q$ is <strong>false</strong> — the one and only false row.</li>" +
+      "<li>$P$ false, $Q$ true: $P \\rightarrow Q$ is <strong>true</strong> (vacuous).</li>" +
+      "<li>$P$ false, $Q$ false: $P \\rightarrow Q$ is <strong>true</strong> (vacuous).</li>" +
+      "</ul>" +
+      "<p>So across the four rows $P \\rightarrow Q$ is true in three and false in only one.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Which combination makes $P \\rightarrow Q$ <strong>false</strong>?",
+      choices: ["$P$ true, $Q$ false", "$P$ true, $Q$ true", "$P$ false, $Q$ true", "$P$ false, $Q$ false"],
+      answer: 0,
+      choiceFeedback: [null,
+        "The promise is kept: $P$ happened and so did $Q$.",
+        "Vacuously true — the promise was never triggered.",
+        "Vacuously true — again $P$ never happened, so nothing was promised."],
+      explain: "An implication fails only when the hypothesis is true but the conclusion is false."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Consider “if $x$ is a squirrel, then $x$ is a mammal.” Which creature <strong>falsifies</strong> it?",
+      choices: [
+        "A squirrel that is somehow not a mammal",
+        "A dog (a mammal that is not a squirrel)",
+        "A cobra (not a mammal, not a squirrel)",
+        "A rock (neither)"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "A dog isn't a squirrel, so the premise is false — the implication holds for it.",
+        "A cobra isn't a squirrel either — premise false, so it's satisfied vacuously.",
+        "A rock isn't a squirrel — premise false, so the implication holds."],
+      explain: "Only a squirrel-that-isn’t-a-mammal has the premise true and the conclusion false."
+    },
+    { type: "mc", id: "q3",
+      prompt: "Does a rock (not a squirrel) <strong>satisfy</strong> or <strong>falsify</strong> “if $x$ is a squirrel, then $x$ is a mammal”?",
+      choices: ["Satisfies it — vacuously, since the premise is false", "Falsifies it — a rock is not a mammal"],
+      answer: 0,
+      choiceFeedback: [null, "Being a non-mammal only matters if the premise (“is a squirrel”) is true. It isn't, so the implication holds."],
+      explain: "When the hypothesis is false, the implication is automatically satisfied. Non-squirrels never falsify it."
+    },
+    { type: "def", title: "The converse: swapping the parts", html:
+      "<p>From an implication $P \\rightarrow Q$ we can build its <strong>converse</strong> by swapping the hypothesis and conclusion: $Q \\rightarrow P$.</p>" +
+      "<p>The converse is <em>not</em> the same claim as the original. $P \\rightarrow Q$ and its converse $Q \\rightarrow P$ can have different truth values, so knowing one holds tells you nothing automatic about the other.</p>" +
+      "<p>The original <em>can</em> be restated without swapping, though: “every $P$ is a $Q$” and the no-counterexample phrasing “there is no $P$ that fails to be a $Q$” both say exactly the same thing as $P \\rightarrow Q$. But the converse $Q \\rightarrow P$ does not follow from the original.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Reasoning with an implication</h2>" +
+      "<p>Suppose you know a true rule $P \\rightarrow Q$ (for example, “if it rains, the ground is wet”):</p>" +
+      "<ul>" +
+      "<li>If you also learn that $P$ is true, you may conclude $Q$ — valid.</li>" +
+      "<li>If you learn that $Q$ is true, you may <strong>not</strong> conclude $P$ — invalid. This mistake is called <em>affirming the consequent</em>, and it amounts to using the converse. Wet ground does not prove it rained; a sprinkler could be responsible.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q4",
+      prompt: "“If $x$ is a squirrel then $x$ is a mammal” is <strong>not</strong> the same as which statement (its converse)?",
+      choices: [
+        "If $x$ is a mammal then $x$ is a squirrel",
+        "Every squirrel is a mammal",
+        "There is no squirrel that fails to be a mammal",
+        "If something is a squirrel, it must be a mammal"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's just a restatement of the original, not a different claim.",
+        "Also equivalent to the original (it's the “no counterexample” phrasing).",
+        "That just restates the original in other words."],
+      explain: "The converse swaps hypothesis and conclusion ($M \\rightarrow S$) and is a genuinely different claim; the other three all restate the original."
+    },
+    { type: "selectall", id: "q5",
+      prompt: "Select <strong>all</strong> statements that say the same thing as “if $x$ is a squirrel then $x$ is a mammal.”",
+      choices: [
+        "Every squirrel is a mammal",
+        "There is no squirrel that fails to be a mammal",
+        "If $x$ is a mammal then $x$ is a squirrel",
+        "Being a mammal makes something a squirrel"
+      ],
+      answers: [0, 1],
+      hint: "Restatements of the original keep the same direction; the converse swaps hypothesis and conclusion.",
+      explain: "“Every squirrel is a mammal” and the no-counterexample phrasing both restate the original. The other two are the converse ($M \\rightarrow S$), a genuinely different claim."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Vacuous truth shows up constantly in “every …” statements. Reason it out for a specific object.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Consider “every integer greater than 100 is positive,” i.e. “if $n > 100$ then $n > 0$.” For $n = 3$, this statement is:",
+      choices: [
+        "Satisfied (vacuously — the hypothesis $3 > 100$ is false)",
+        "Falsified (because $3$ is small)",
+        "Neither true nor false for $n = 3$",
+        "Satisfied because $3 > 100$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "The size of $3$ is irrelevant: the hypothesis “$3 > 100$” is false, so the implication holds vacuously.",
+        "An implication is always true or false for a given object; here it's true (vacuously).",
+        "$3 > 100$ is false, so the hypothesis fails — that's exactly the vacuous case."],
+      explain: "Since $3 > 100$ is false, the implication is vacuously satisfied at $n = 3$ — regardless of the conclusion."
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "shortnum", id: "e5", practice: true,
+      prompt: "A truth table for $P \\rightarrow Q$ has four rows. In how many of them is $P \\rightarrow Q$ <strong>true</strong>?",
+      answer: 3,
+      explain: "It is false only in the one row where $P$ is true and $Q$ is false; the other three rows make it true."
+    },
+    { type: "shorttext", id: "e6", practice: true,
+      prompt: "When the hypothesis of an implication is false, the implication is said to hold ______. (one word)",
+      answer: "vacuously", accept: ["vacuous", "vacuously true", "vacuous truth"],
+      explain: "A false hypothesis makes the implication vacuously true — the promise was never triggered."
+    },
+    { type: "selectall", id: "e8", practice: true,
+      prompt: "Select <strong>all</strong> rows in which $P \\rightarrow Q$ is <strong>true</strong>.",
+      choices: ["$P$ true, $Q$ true", "$P$ true, $Q$ false", "$P$ false, $Q$ true", "$P$ false, $Q$ false"],
+      answers: [0, 2, 3],
+      hint: "Only one row makes it false.",
+      explain: "Every row except ($P$ true, $Q$ false) makes $P \\rightarrow Q$ true."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "selectall", id: "m1", practice: true,
+      prompt: "For “if $x$ is a squirrel then $x$ is a mammal,” select <strong>all</strong> objects that <strong>satisfy</strong> it (vacuously or otherwise).",
+      choices: [
+        "A dog (mammal, not squirrel)",
+        "A cobra (neither squirrel nor mammal)",
+        "A rock (neither)",
+        "A squirrel that is somehow not a mammal"
+      ],
+      answers: [0, 1, 2],
+      hint: "Only an object with the hypothesis true and the conclusion false falsifies it.",
+      explain: "Every non-squirrel satisfies the implication vacuously (the hypothesis is false). Only a squirrel-that-isn’t-a-mammal — hypothesis true, conclusion false — falsifies it."
+    },
+    { type: "mc", id: "m4", practice: true,
+      prompt: "The converse “if $x$ is a mammal then $x$ is a squirrel” — is it logically equivalent to “if $x$ is a squirrel then $x$ is a mammal”?",
+      choices: ["No — the converse is a genuinely different claim", "Yes — swapping hypothesis and conclusion preserves meaning", "Yes — every implication equals its converse", "Only when both are true"],
+      answer: 0,
+      explain: "The converse is not equivalent: many mammals (dogs, cats) are not squirrels, so the converse is false while the original is true."
+    },
+    { type: "selectall", id: "m6", practice: true,
+      prompt: "Suppose “every squirrel is a mammal” is true. Select <strong>all</strong> statements that must therefore also be true.",
+      choices: [
+        "There is no squirrel that fails to be a mammal",
+        "If something is a squirrel, then it is a mammal",
+        "Every mammal is a squirrel",
+        "If something is a mammal, then it is a squirrel"
+      ],
+      answers: [0, 1],
+      hint: "Restatements of the original follow; the converse (swapping the parts) does not.",
+      explain: "The no-counterexample phrasing and the plain if-then restate the original, so they must hold. The other two are the converse (“every mammal is a squirrel”), which does not follow — a dog is a mammal but not a squirrel."
+    },
+    { type: "mc", id: "m7", practice: true,
+      prompt: "Given the true rule “if it rains, the ground is wet,” you observe the ground is wet. Can you conclude it rained?",
+      choices: ["No — this affirms the consequent (uses the converse)", "Yes — the rule guarantees it", "Yes — wet ground requires rain", "Yes — rain is the only cause of wetness"],
+      answer: 0,
+      explain: "From $P \\rightarrow Q$ and $Q$ you cannot infer $P$; that would use the converse, which is not equivalent. A sprinkler could wet the ground."
+    },
+    { type: "mc", id: "m11", practice: true,
+      prompt: "Is “every element of the empty set is a squirrel” true or false?",
+      choices: ["True — vacuously, since there are no elements to check", "False — the empty set has no squirrels", "Neither", "It depends on the set"],
+      answer: 0,
+      explain: "The hypothesis “$x$ is in the empty set” is false for every $x$, so the implication holds vacuously for all $x$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "A teacher promises: “If you score above 90, you get an A.” A student scores 85 and receives an A. Did the teacher break the promise? Explain in terms of truth conditions.",
+      solution: "No. The promise is the implication “score $> 90$ $\\rightarrow$ get an A.” It is broken only when the hypothesis is true and the conclusion false — a student who scores above 90 yet does <em>not</em> get an A. For the 85 student the hypothesis ($85 > 90$) is false, so the implication is satisfied vacuously no matter what grade is given. The teacher is free to award an A anyway."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Someone argues: “All squirrels are mammals. Fido is a mammal. Therefore Fido is a squirrel.” Identify the flaw.",
+      solution: "The argument uses the <strong>converse</strong>. The premise is $S(x) \\rightarrow M(x)$; from $M(\\text{Fido})$ it infers $S(\\text{Fido})$, which would require $M(x) \\rightarrow S(x)$. That is affirming the consequent, and the converse is not equivalent to the original. Fido could be a dog — a mammal that is not a squirrel."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Give a concrete implication whose converse is true but whose original is false, showing that an implication and its converse are independent.",
+      solution: "Take “if $x$ is a mammal then $x$ is a squirrel” ($M \\rightarrow S$). This is <em>false</em> (a dog is a counterexample). Its converse is “if $x$ is a squirrel then $x$ is a mammal” ($S \\rightarrow M$), which is <em>true</em>. So one holds while the other fails, demonstrating that an implication and its converse are logically independent."
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Is “every integer $n$ with $n^2 < 0$ is prime” true or false? Justify carefully.",
+      solution: "True — vacuously. The statement is $(\\forall n)(n^2 < 0 \\rightarrow n \\text{ is prime})$. For every integer $n$, the hypothesis $n^2 < 0$ is false (a square is never negative). An implication with a false hypothesis is true, so it holds for every $n$; hence the universal statement is true. The conclusion (“is prime”) is never even tested."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>With implication understood, we can start building proofs. Reading 8 introduces the first two proof rules — for using what you know.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

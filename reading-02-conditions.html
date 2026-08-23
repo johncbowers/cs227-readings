@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 2 — Conditions and Types</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "02-conditions",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 2',
+  title: "Reading 2 — Conditions and Types",
+  subtitle: "The atom of everything ahead: a condition, the objects it talks about, and the variables it mentions.",
+  prev: { href: "reading-01-why-prove.html", label: "Reading 1 — Why prove?" },
+  next: { href: "reading-03-truth.html", label: "Reading 3 — Truth & Entailment" },
+  blocks: [
+    { type: "prose", html:
+      "<p>A <strong>condition</strong> (or <strong>predicate</strong>) describes a property an object may or may not have: “$s$ is a palindrome,” “point $p$ lies on line $\\ell$,” “$n > 5$.” A condition is not yet true or false — it becomes true or false only once you supply the object(s) it talks about.</p>" +
+      "<p>Two features pin a condition down: its <strong>type</strong> (what kind of object each variable ranges over) and its <strong>arguments</strong> — the variables it mentions. The number of arguments is the condition’s <strong>arity</strong> (one = unary, two = binary, three = ternary, and so on).</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "What are the type and arity of “point $p$ lies on line $\\ell$”?",
+      choices: ["Type (Point, Line); binary", "Type (Point); unary", "Type (Line); unary", "Type (Point, Line); unary"],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "It mentions a line too — $\\ell$ is a second argument, so it isn't unary.",
+        "It mentions a point too — $p$ is an argument, so the type isn't just (Line).",
+        "It has two arguments ($p$ and $\\ell$), so it's binary, not unary."
+      ],
+      explain: "The condition mentions two variables, a point $p$ and a line $\\ell$, so its type is (Point, Line) and it is binary."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Which of these conditions is <strong>binary</strong>?",
+      choices: [
+        "“$s$ and $t$ have the same length”",
+        "“$s$ is a palindrome”",
+        "“$n$ is even”",
+        "“line $\\ell$ is horizontal”"
+      ],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "This mentions only $s$ — one argument, so it's unary.",
+        "Only $n$ appears — unary.",
+        "Only $\\ell$ appears — unary."
+      ],
+      explain: "“$s$ and $t$ have the same length” mentions two variables, so it is binary; the others each mention just one."
+    },
+    { type: "shortnum", id: "q3", badge: "Challenge",
+      prompt: "How many arguments does “$s$ is a palindrome and $t$ has length 5” have?",
+      answer: 2,
+      hint: "Count the distinct variables, not the number of clauses joined by “and.”",
+      explain: "Two distinct variables, $s$ and $t$, so it is binary — type (string, string)."
+    },
+    { type: "mc", id: "q4",
+      prompt: "Strings and trees are objects too. What are the type and arity of “$t$ is a leaf”?",
+      choices: ["Type (Tree); unary", "Type (Tree, Tree); binary", "Type (Leaf); unary", "It has no type — it's always true"],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "Only one variable $t$ appears, so it's unary, not binary.",
+        "The variable ranges over trees; “leaf” is the property, not the type.",
+        "It's a genuine condition on a tree — some trees are leaves, some aren't."
+      ],
+      explain: "It mentions one variable $t$ ranging over trees, so its type is (Tree) and it is unary."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Arity is just “how many distinct variables,” no matter how the clauses are combined.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "What is the arity of “$x$ fears $y$ and $y$ fears $z$”?",
+      answer: 3,
+      placeholder: "a whole number",
+      hint: "List the distinct variables that appear anywhere in the condition.",
+      explain: "Three distinct variables appear — $x$, $y$, and $z$ — so the condition is ternary (arity 3), even though $y$ is mentioned twice."
+    },
+    { type: "prose", html:
+      "<h2>Constants and arity 0</h2>" +
+      "<p>A <strong>variable</strong> ($x$, $y$, $s$, $\\ell$) is a blank waiting to be filled by any object of its type. A <strong>constant</strong> names one specific object — Scrat, Fafnir, the number 5. Constants are <em>not</em> counted by arity: there is nothing left to supply for them.</p>" +
+      "<p>So replacing a variable by a constant drops the arity by one. $F(x,y)$ = “$x$ fears $y$” is binary, but “$x$ fears Fafnir” is unary. Fill in <em>every</em> variable and the arity reaches <strong>0</strong>: a condition with no variables is <strong>nullary</strong>. A nullary condition — such as $S(\\mathrm{Scrat})$ = “Scrat is a squirrel” — is already a complete statement that is simply true or false, with nothing left to supply.</p>"
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "shortnum", id: "e1", practice: true,
+      prompt: "The condition $F(x,y)$ = “$x$ fears $y$” has arity how much?",
+      answer: 2,
+      hint: "Count the distinct variables it mentions.",
+      explain: "It mentions two distinct variables, $x$ and $y$, so its arity is 2 (it is binary)."
+    },
+    { type: "mc", id: "e4", practice: true,
+      prompt: "The <strong>arity</strong> of a condition is:",
+      choices: [
+        "the number of distinct variables (arguments) it mentions",
+        "the kind of object each variable ranges over",
+        "whether the condition is true or false",
+        "the number of clauses joined by “and”"
+      ],
+      answer: 0,
+      explain: "Arity counts the distinct arguments; the kind each variable ranges over is the condition’s <em>type</em>."
+    },
+    { type: "shorttext", id: "e5", practice: true,
+      prompt: "What word describes a condition with exactly two arguments?",
+      answer: "binary",
+      explain: "Two arguments = binary, such as $F(x,y)$ = “$x$ fears $y$.”"
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Select <strong>all</strong> conditions that are <strong>unary</strong>.",
+      choices: [
+        "$S(x)$ = “$x$ is a squirrel”",
+        "$F(x,y)$ = “$x$ fears $y$”",
+        "“$t$ is a leaf”",
+        "“point $p$ lies on line $\\ell$”",
+        "“$n$ is even”"
+      ],
+      answers: [0, 2, 4],
+      hint: "Unary means exactly one distinct variable.",
+      explain: "$S(x)$, “$t$ is a leaf,” and “$n$ is even” each mention a single variable, so they are unary. $F(x,y)$ and “point $p$ lies on line $\\ell$” each mention two, so they are binary."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m1", practice: true,
+      prompt: "What is the arity of “$F(x,y)$ and $F(y,x)$”?",
+      answer: 2,
+      hint: "Which distinct variables appear anywhere in the condition?",
+      explain: "Only $x$ and $y$ appear (each twice), so there are 2 distinct variables — arity 2."
+    },
+    { type: "shortnum", id: "m3", practice: true,
+      prompt: "What is the arity of “$S(\\mathrm{Scrat})$,” where Scrat is a constant (not a variable)?",
+      answer: 0,
+      hint: "A constant is a fixed object, not an argument to be supplied.",
+      explain: "Scrat is a constant, so no variables remain to be supplied — the arity is 0. It is already a statement that is simply true or false."
+    },
+    { type: "matching", id: "m4", practice: true,
+      prompt: "Match each condition to its arity.",
+      pairs: [
+        { left: "$S(x)$", right: "unary" },
+        { left: "$F(x,y)$", right: "binary" },
+        { left: "“$F(x,y)$ and $F(y,z)$”", right: "ternary" },
+        { left: "$S(\\mathrm{Scrat})$", right: "nullary (arity 0)" }
+      ],
+      explain: "Count distinct variables: $S(x)$ has 1 (unary), $F(x,y)$ has 2 (binary), “$F(x,y)$ and $F(y,z)$” has 3 (ternary), and $S(\\mathrm{Scrat})$ has 0 (nullary)."
+    },
+    { type: "selectall", id: "m5", practice: true,
+      prompt: "Consider “$x$ fears $y$ and $x$ is a mammal” (variables range over animals). Select <strong>all</strong> true statements about it.",
+      choices: [
+        "It is binary.",
+        "Its type is (Animal, Animal).",
+        "It mentions exactly two distinct variables.",
+        "It is ternary.",
+        "Its type is (Mammal)."
+      ],
+      answers: [0, 1, 2],
+      hint: "Count distinct variables and note what each variable ranges over.",
+      explain: "The distinct variables are $x$ and $y$, so the condition is binary (two distinct variables). Each ranges over animals, so the type is (Animal, Animal). “Mammal” is a property the condition expresses, not the type of a variable, so the condition is not ternary and its type is not (Mammal)."
+    },
+    { type: "selectall", id: "m6", practice: true,
+      prompt: "Select <strong>all</strong> conditions that are binary.",
+      choices: [
+        "$F(x,y)$ = “$x$ fears $y$”",
+        "$S(x)$ = “$x$ is a squirrel”",
+        "“$x$ and $y$ have the same size”",
+        "“$x$ fears $y$ and $y$ fears $z$”",
+        "“$F(y,x)$ and $M(x)$”"
+      ],
+      answers: [0, 2, 4],
+      hint: "Binary means exactly two distinct variables.",
+      explain: "$F(x,y)$, “$x$ and $y$ have the same size,” and “$F(y,x)$ and $M(x)$” each mention exactly two distinct variables. $S(x)$ is unary; “$x$ fears $y$ and $y$ fears $z$” is ternary."
+    },
+    { type: "shorttext", id: "m7", practice: true,
+      prompt: "A condition that mentions exactly three distinct variables is called ____.",
+      answer: "ternary",
+      explain: "Three distinct arguments = ternary (arity 3), for example “$x$ fears $y$ and $y$ fears $z$.”"
+    },
+    { type: "mc", id: "m8", practice: true,
+      prompt: "Starting from $F(x,y)$ = “$x$ fears $y$,” we replace $y$ by the constant Fafnir to get “$x$ fears Fafnir.” What is the arity now?",
+      choices: ["1", "2", "0", "3"],
+      answer: 0,
+      explain: "Fafnir is a constant, so only $x$ remains as a variable — the arity drops from 2 to 1 (unary)."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Explain why “$F(x,y)$ and $F(y,x)$ and $F(x,x)$” has arity 2, even though $F$ is applied three times and $x$ appears four times.",
+      solution: "Arity counts <em>distinct variables</em>, not how many times a predicate is applied or how often a variable occurs. Scanning the condition, the only variables mentioned are $x$ and $y$; the set of distinct variables is $\\{x, y\\}$, which has size 2. So the condition is binary. To turn it into a true-or-false statement you must supply exactly two objects (one for $x$, one for $y$) — the repeated occurrences all get filled in by those same two choices."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "For “$x$ is a squirrel and $x$ fears $y$” (variables range over animals): state its arity and type, then explain whether substituting the constant Scrat for $x$ changes the arity.",
+      solution: "The distinct variables are $x$ and $y$, so the arity is 2 and the type is (Animal, Animal). Substituting the constant Scrat for $x$ yields “Scrat is a squirrel and Scrat fears $y$.” Now $x$ is gone — replaced by a fixed object — and the only remaining variable is $y$. The arity drops to 1 (unary), type (Animal). In general, replacing a variable by a constant lowers the arity by one, provided that variable does not still appear elsewhere as a variable."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Can a condition have arity 0? Give an example, and explain how such a thing differs from a genuine condition of arity $\\ge 1$.",
+      solution: "Yes. Take $S(\\mathrm{Scrat})$ = “Scrat is a squirrel,” or $F(\\mathrm{Scrat}, \\mathrm{Fafnir})$ = “Scrat fears Fafnir.” Every argument position is filled by a constant, so there are no variables to supply — the arity is 0 (nullary). The difference: a condition of arity $\\ge 1$ has no truth value on its own (“$x$ is a squirrel” is neither true nor false until you say which $x$), whereas an arity-0 condition is already a complete <em>statement</em> with a definite truth value. Arity measures exactly how many objects you must still supply before the condition becomes true or false; when that number is 0, nothing remains to supply."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Design a condition of type (Animal, Animal, Animal) that is <em>genuinely</em> ternary (all three variables matter). Then argue why “$F(x,y)$ and $F(x,y)$” is only binary despite looking longer.",
+      solution: "A genuinely ternary condition: “$x$ fears $y$, and $y$ fears $z$, and $z$ fears $x$” (that is, $F(x,y)$ and $F(y,z)$ and $F(z,x)$). Its distinct variables are $x$, $y$, $z$ — three of them, each essential (drop any one and the meaning changes), so it is ternary of type (Animal, Animal, Animal). By contrast, “$F(x,y)$ and $F(x,y)$” merely repeats one clause. The set of distinct variables is still $\\{x, y\\}$, size 2, so the arity is 2 (binary). Length and number of clauses are irrelevant to arity; only the count of distinct variables matters, and duplicating a clause introduces no new variable."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>Now that a condition has a precise shape, Reading 3 asks the questions that drive the whole logic unit: does anything satisfy it? does everything?</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

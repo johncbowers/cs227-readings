@@ -1,0 +1,8 @@
+# Generated Canvas export artifacts — rebuilt anytime with canvas-export/export.sh
+canvas-export/out/
+*.zip
+*.imscc
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 5 — Functions and Counting</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "05-counting",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 5',
+  title: "Reading 5 — Functions and Counting",
+  subtitle: "Functions, and the product and sum rules — building a big count from small independent choices.",
+  prev: { href: "reading-04-sets.html", label: "Reading 4 — Sets & Operations" },
+  next: { href: "reading-06-predicate-logic.html", label: "Reading 6 — Predicate Logic" },
+  blocks: [
+    { type: "def", title: "Functions", html:
+      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to <em>each</em> element of the domain $X$ exactly one element of the codomain $Y$ — nothing unassigned, nothing with two values.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Counting by building up</h2>" +
+      "<p>The <strong>product rule</strong>: independent stages with $a$ then $b$ options give $a \\cdot b$ outcomes. The <strong>sum rule</strong>: disjoint groups of sizes $a$ and $b$ give $a + b$. An <strong>optional</strong> stage — take one of $k$ things, or none — is just a stage with $k + 1$ outcomes (the extra $1$ is the “none” choice). From these, the number of functions from a size-$m$ set to a size-$n$ set is $n^m$, and the number of subsets of an $n$-element set is $2^n$.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "The number of functions from a set of size $m$ to a set of size $n$ is:",
+      choices: ["$m^n$", "$n^m$", "$m \\cdot n$", "$2^{mn}$"],
+      answer: 1,
+      choiceFeedback: [
+        "The roles are swapped: the number of <em>inputs</em> goes in the exponent.",
+        null,
+        "$m \\cdot n$ counts input–output pairs, not whole functions.",
+        "$2^{mn}$ counts something larger (relations). A function fixes one output per input: $n^m$."
+      ],
+      explain: "Each of the $m$ inputs independently chooses one of $n$ outputs: $n^m$."
+    },
+    { type: "shortnum", id: "q2", badge: "Challenge",
+      prompt: "How many functions are there from $\\{a,b,c\\}$ to $\\{0,1\\}$?",
+      answer: 8,
+      hint: "Three inputs, two choices each: $2^3$.",
+      explain: "$2^3 = 8$."
+    },
+    { type: "shortnum", id: "q3", badge: "Challenge",
+      prompt: "How many subsets does a set of $5$ elements have?",
+      answer: 32,
+      hint: "Each element is independently in or out: $2^5$.",
+      explain: "$2^5 = 32$."
+    },
+    { type: "selectall", id: "q4",
+      prompt: "Select <strong>all</strong> quantities that equal $8$.",
+      choices: [
+        "Functions from a 3-element set to a 2-element set",
+        "Subsets of $\\{a,b,c\\}$",
+        "Binary strings of length 3",
+        "Functions from a 2-element set to a 3-element set",
+        "Subsets of $\\{a,b,c,d\\}$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Compute each with $n^m$ or $2^n$. Only the ones equal to 8 count.",
+      explain: "The first three are $2^3 = 8$; the fourth is $3^2 = 9$; the last is $2^4 = 16$."
+    },
+    { type: "shortnum", id: "q5", badge: "Challenge",
+      prompt: "A lunch special is one of $3$ sandwiches, one of $4$ drinks, and <strong>optionally</strong> one of $2$ desserts (or none). How many specials?",
+      answer: 36,
+      hint: "Dessert has three outcomes: dessert 1, dessert 2, or none.",
+      explain: "$3 \\cdot 4 \\cdot 3 = 36$ — the optional dessert contributes a factor of 3."
+    },
+    { type: "prose", html:
+      "<h2>A string is secretly a function</h2>" +
+      "<p>A string of length $n$ over an alphabet $\\Sigma$ assigns a character to each position $0, 1, \\dots, n-1$ — exactly a function $\\{0,\\dots,n-1\\} \\to \\Sigma$. So counting length-$n$ strings is the same problem as counting functions: $|\\Sigma|^n$.</p>"
+    },
+    { type: "shortnum", id: "q6", badge: "Challenge",
+      prompt: "How many binary strings (over $\\{0,1\\}$) have length $6$?",
+      answer: 64,
+      hint: "Six positions, two choices each: $2^6$.",
+      explain: "$2^6 = 64$ — the same reasoning as functions to a 2-element set."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>This one adds a restriction to one of the choices — count that choice under its restriction, then multiply.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "How many functions $f : \\{a,b,c\\} \\to \\{0,1,2\\}$ satisfy $f(a) \\ne 0$?",
+      answer: 18,
+      placeholder: "a whole number",
+      hint: "Count allowed values for $f(a)$ first, then the unrestricted choices for $f(b)$ and $f(c)$.",
+      explain: "$f(a)$ has $2$ allowed values; $f(b), f(c)$ have $3$ each: $2 \\cdot 3 \\cdot 3 = 18$."
+    },
+    { type: "prose", html:
+      "<h2>Restrictions, injections, and complements</h2>" +
+      "<p><strong>Restricting a choice.</strong> When one choice is limited, count how many values it may still take, then multiply by the free choices as usual. Forbidding some values just shrinks that stage’s count; forcing one specific value — a fixed first letter of a string, a required output — makes that stage contribute a factor of $1$. The other positions stay free. (So a length-$n$ string with its first symbol fixed has $1$ choice there and the full alphabet at each remaining position.)</p>" +
+      "<p><strong>Injective functions.</strong> A function is <strong>injective</strong> (one-to-one) if no two inputs map to the same output. Count injective functions by choosing outputs one input at a time, each new output avoiding the ones already used: the first input has all $n$ values, the next $n - 1$, then $n - 2$, and so on — a <em>falling product</em>.</p>" +
+      "<p><strong>Complement counting.</strong> Sometimes it is easier to count what you don’t want and subtract. A function is <strong>constant</strong> if it sends every input to the same output (all-$0$, all-$1$, …); there are exactly as many constant functions as output values. To count the <em>non-constant</em> functions, take the total and subtract the constant ones. The same “total minus the bad cases” move handles “at least one …” questions.</p>" +
+      "<p><strong>Constrained subsets.</strong> The “each element is in or out” idea handles constraints too. Force an element to be <em>in</em> (or <em>out</em>) and it no longer has a free choice, so the remaining $k$ free elements give $2^k$ subsets. Requiring a subset to avoid a whole class of elements just means choosing freely from the allowed ones — a subset of $\\{1,2,3,4\\}$ with no odd elements is exactly a subset of $\\{2,4\\}$.</p>" +
+      "<p><strong>Subsets as functions.</strong> Subsets of a set and functions from that set to $\\{0,1\\}$ are two views of the same thing: a subset corresponds to its <strong>indicator function</strong>, sending each member to $1$ and each non-member to $0$. This one-to-one correspondence is why both are counted by $2^n$.</p>"
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "mc", id: "e1", practice: true,
+      prompt: "The number of functions from a set of size $m$ to a set of size $n$ is:",
+      choices: ["$n^m$", "$m^n$", "$m \\cdot n$", "$m + n$"],
+      answer: 0,
+      choiceFeedback: [null, "The roles are swapped — the number of outputs is raised to the number of inputs.", "That counts input–output pairs, not whole functions.", "The sum rule doesn't apply; the choices multiply."],
+      explain: "Each of the $m$ inputs independently picks one of $n$ outputs: $n^m$."
+    },
+    { type: "shortnum", id: "e2", practice: true,
+      prompt: "How many functions are there from $\\{a,b\\}$ to $\\{0,1\\}$?",
+      answer: 4,
+      hint: "Two inputs, two choices each: $2^2$.",
+      explain: "$2^2 = 4$."
+    },
+    { type: "shortnum", id: "e3", practice: true,
+      prompt: "How many subsets does a set of $4$ elements have?",
+      answer: 16,
+      hint: "Each element is independently in or out: $2^4$.",
+      explain: "$2^4 = 16$."
+    },
+    { type: "shortnum", id: "e4", practice: true,
+      prompt: "How many binary strings (over $\\{0,1\\}$) have length $4$?",
+      answer: 16,
+      hint: "Four positions, two choices each: $2^4$.",
+      explain: "$2^4 = 16$ — one choice per position."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Select <strong>all</strong> quantities that equal the number of subsets of an $n$-element set.",
+      choices: [
+        "$2^n$",
+        "The number of functions from the set to $\\{0,1\\}$",
+        "The number of indicator functions on the set",
+        "$n^2$",
+        "$n!$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Each element is independently in or out; a subset is the same as its indicator function to $\\{0,1\\}$.",
+      explain: "Subsets, functions to $\\{0,1\\}$, and indicator functions all count $2^n$. Neither $n^2$ nor $n!$ matches."
+    },
+    { type: "shortnum", id: "e7", practice: true,
+      prompt: "You pick one of $3$ shirts and one of $4$ pairs of pants. How many outfits?",
+      answer: 12,
+      hint: "Two independent stages: multiply.",
+      explain: "Product rule: $3 \\cdot 4 = 12$."
+    },
+    { type: "shortnum", id: "e8", practice: true,
+      prompt: "A drink is <strong>either</strong> one of $3$ teas <strong>or</strong> one of $4$ coffees. How many drink choices?",
+      answer: 7,
+      hint: "Disjoint groups: add.",
+      explain: "Sum rule: the two groups are disjoint, so $3 + 4 = 7$."
+    },
+    { type: "shortnum", id: "e9", practice: true,
+      prompt: "How many strings of length $2$ are there over the alphabet $\\{a,b,c\\}$?",
+      answer: 9,
+      hint: "Two positions, three choices each: $3^2$.",
+      explain: "$3^2 = 9$ — a string of length $n$ over $\\Sigma$ is a function, so the count is $|\\Sigma|^n$."
+    },
+    { type: "selectall", id: "e10", practice: true,
+      prompt: "Select <strong>all</strong> true statements about a string of length $n$ over an alphabet $\\Sigma$.",
+      choices: [
+        "It is a function from $\\{0, 1, \\dots, n-1\\}$ (the positions) to $\\Sigma$",
+        "There are $|\\Sigma|^n$ such strings",
+        "The alphabet $\\Sigma$ is the domain of that function",
+        "There are $n^{|\\Sigma|}$ such strings"
+      ],
+      answers: [0, 1],
+      hint: "A string assigns a character to each position, so the positions form the domain.",
+      explain: "A length-$n$ string is a function from the $n$ positions to $\\Sigma$, and there are $|\\Sigma|^n$ of them. $\\Sigma$ is the codomain, not the domain."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m1", practice: true,
+      prompt: "How many functions are there from $\\{a,b,c\\}$ to $\\{0,1,2,3\\}$?",
+      answer: 64,
+      hint: "Three inputs, four choices each: $4^3$.",
+      explain: "$4^3 = 64$."
+    },
+    { type: "shortnum", id: "m2", practice: true,
+      prompt: "How many functions $f : \\{a,b,c\\} \\to \\{0,1,2\\}$ satisfy $f(a) \\ne 1$ <strong>and</strong> $f(b) \\ne 2$?",
+      answer: 12,
+      hint: "Count allowed values for $f(a)$, then $f(b)$, then the unrestricted $f(c)$, and multiply.",
+      explain: "$f(a)$ has $2$ allowed values, $f(b)$ has $2$, and $f(c)$ has all $3$: $2 \\cdot 2 \\cdot 3 = 12$."
+    },
+    { type: "shortnum", id: "m3", practice: true,
+      prompt: "A meal is one of $4$ mains, one of $3$ sides, and <strong>optionally</strong> one of $2$ drinks (or none). How many meals?",
+      answer: 36,
+      hint: "The optional drink has three outcomes: drink 1, drink 2, or none.",
+      explain: "$4 \\cdot 3 \\cdot 3 = 36$ — the optional drink contributes a factor of $3$."
+    },
+    { type: "shortnum", id: "m4", practice: true,
+      prompt: "How many subsets of $\\{a,b,c,d,e\\}$ contain the element $a$?",
+      answer: 16,
+      hint: "Fix $a$ as “in”; each of the other four elements is still free to be in or out.",
+      explain: "With $a$ forced in, the remaining $4$ elements each independently in or out: $2^4 = 16$."
+    },
+    { type: "selectall", id: "m5", practice: true,
+      prompt: "Select <strong>all</strong> quantities that equal $16$.",
+      choices: [
+        "Functions from a 2-element set to a 4-element set",
+        "Subsets of a 4-element set",
+        "Binary strings of length 4",
+        "Functions from a 4-element set to a 2-element set",
+        "Strings of length 2 over a 3-letter alphabet"
+      ],
+      answers: [0, 1, 2, 3],
+      hint: "Compute each with $n^m$ or $2^n$ and keep the ones equal to $16$.",
+      explain: "$4^2 = 16$, $2^4 = 16$, $2^4 = 16$, and $2^4 = 16$ all match; only the last, $3^2 = 9$, does not."
+    },
+    { type: "shortnum", id: "m6", practice: true,
+      prompt: "How many strings of length $3$ over $\\{a,b,c,d\\}$ start with the letter $a$?",
+      answer: 16,
+      hint: "Position 0 is fixed as $a$; the other two positions are free.",
+      explain: "$1 \\cdot 4 \\cdot 4 = 16$ — the first position is forced, the remaining two each have $4$ choices."
+    },
+    { type: "shortnum", id: "m8", practice: true,
+      prompt: "How many <strong>injective</strong> (no repeated output) functions are there from $\\{a,b\\}$ to $\\{1,2,3,4\\}$?",
+      answer: 12,
+      hint: "$f(a)$ has $4$ choices; then $f(b)$ must avoid it.",
+      explain: "$f(a)$ has $4$ options, and $f(b)$ must differ, leaving $3$: $4 \\cdot 3 = 12$."
+    },
+    { type: "shortnum", id: "m9", practice: true,
+      prompt: "How many functions from $\\{a,b,c\\}$ to $\\{0,1\\}$ are <strong>not</strong> constant (i.e., not all-0 and not all-1)?",
+      answer: 6,
+      hint: "Count all functions, then subtract the two constant ones.",
+      explain: "Total functions $= 2^3 = 8$; remove the all-$0$ and all-$1$ functions: $8 - 2 = 6$."
+    },
+    { type: "mc", id: "m10", practice: true,
+      prompt: "Why do subsets of an $n$-set and functions from that set to $\\{0,1\\}$ have the same count?",
+      choices: [
+        "Each subset matches the function sending its members to 1 and non-members to 0",
+        "Both are always equal to $n^2$",
+        "Subsets and functions are unrelated; the equality is a coincidence",
+        "Because every function is a subset of its domain"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "Both equal $2^n$, not $n^2$.", "There's a precise correspondence, not a coincidence.", "A function isn't literally a subset of its domain here."],
+      explain: "A subset corresponds exactly to its indicator function (1 for members, 0 for non-members), so the two collections are in one-to-one correspondence: both count $2^n$."
+    },
+    { type: "shortnum", id: "m12", practice: true,
+      prompt: "A license plate is $2$ letters ($A$–$Z$) followed by $2$ digits ($0$–$9$), repeats allowed. How many plates?",
+      answer: 67600,
+      hint: "Multiply the choices for all four positions: $26 \\cdot 26 \\cdot 10 \\cdot 10$.",
+      explain: "$26^2 \\cdot 10^2 = 676 \\cdot 100 = 67600$."
+    },
+    { type: "parsons", id: "m13", practice: true,
+      prompt: "Order the steps of a product-rule argument that there are $2^3$ functions from $\\{a,b,c\\}$ to $\\{0,1\\}$.",
+      steps: [
+        "A function is determined by choosing an output for each of the three inputs $a$, $b$, $c$.",
+        "The choice for $a$ has $2$ options, independent of the others.",
+        "The choices for $b$ and for $c$ likewise each have $2$ options.",
+        "By the product rule, multiply the independent choices: $2 \\cdot 2 \\cdot 2$.",
+        "So the number of functions is $2^3 = 8$."
+      ],
+      hint: "Start by saying what determines a function, then count each independent choice, then multiply.",
+      explain: "Each input independently chooses one of two outputs, and the product rule multiplies those independent choices to give $2^3$."
+    },
+    { type: "shortnum", id: "m14", practice: true,
+      prompt: "How many subsets of $\\{1,2,3,4\\}$ contain only even numbers (no odd elements)?",
+      answer: 4,
+      hint: "Such a subset can only use elements from $\\{2,4\\}$.",
+      explain: "A subset with no odd elements is just a subset of $\\{2,4\\}$, and there are $2^2 = 4$ of those."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Prove that a set of $n$ elements has exactly $2^n$ subsets.",
+      solution: "List the elements as $x_1, x_2, \\dots, x_n$. A subset is completely determined by answering, for each element, a single yes/no question: “is $x_i$ in the subset?” <br><br>Each of the $n$ answers is an independent binary choice ($2$ options), and different answer-patterns give different subsets while every subset arises from exactly one pattern. By the product rule, the number of answer-patterns is $\\underbrace{2 \\cdot 2 \\cdots 2}_{n} = 2^n$. <br><br>Equivalently: a subset corresponds exactly to a function $\\{x_1,\\dots,x_n\\} \\to \\{0,1\\}$ (its indicator function), and there are $2^n$ such functions. Either way, the count is $2^n$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "How many injective functions are there from $\\{a,b,c\\}$ to $\\{1,2,3,4,5\\}$? Derive the count.",
+      solution: "Injective means no two inputs share an output, so choose the outputs one at a time, each avoiding the ones already used: <ul><li>$f(a)$: any of the $5$ values.</li><li>$f(b)$: any value except $f(a)$, so $4$ remain.</li><li>$f(c)$: any value except $f(a)$ and $f(b)$, so $3$ remain.</li></ul> By the product rule, $5 \\cdot 4 \\cdot 3 = 60$. <br><br>(This is a “falling product” $n(n-1)(n-2)$ with $n = 5$ — the same shape as counting arrangements without repetition.)"
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "How many functions from $\\{a,b,c,d\\}$ to $\\{0,1\\}$ are surjective (use both outputs $0$ and $1$)? Explain.",
+      solution: "It's easiest to count the complement. Total functions $= 2^4 = 16$. A function fails to be surjective exactly when it misses an output — i.e., it is constant: <ul><li>the all-$0$ function (misses $1$),</li><li>the all-$1$ function (misses $0$).</li></ul> There are exactly $2$ such non-surjective functions. So the surjective count is $16 - 2 = 14$. $\\blacksquare$ <br><br>This subtract-the-bad-cases move is the counting analogue of “not (all one value).”"
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "How many binary strings of length $5$ contain at least one $0$? Derive it via complement counting.",
+      solution: "Directly counting “at least one $0$” means splitting into overlapping cases — messy. Instead count the complement. <br><br>Total binary strings of length $5$: $2^5 = 32$. The strings with <em>no</em> $0$ at all are those made entirely of $1$s — just the single string $11111$. <br><br>So strings with at least one $0$: $32 - 1 = 31$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "How many length-$4$ passwords over the $26$ lowercase letters contain <strong>at least one</strong> letter $a$? Give the count.",
+      solution: "Count the complement. Total passwords: $26^4 = 456976$. Passwords with <em>no</em> $a$ use only the other $25$ letters in each position: $25^4 = 390625$. <br><br>So passwords with at least one $a$: $456976 - 390625 = 66351$. $\\blacksquare$ <br><br>The lesson: “at least one” is almost always easier as (total) − (none)."
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "How many nonempty strings of length at most $2$ are there over $\\{a,b,c\\}$? Use both the sum and product rules.",
+      solution: "Split by length into disjoint groups (sum rule), counting each with the product rule: <ul><li>length $1$: $3$ strings,</li><li>length $2$: $3 \\cdot 3 = 9$ strings.</li></ul> These groups are disjoint (a string has one fixed length), so by the sum rule the total is $3 + 9 = 12$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "How many subsets of $\\{1,2,3,4,5,6\\}$ contain $1$ but do <strong>not</strong> contain $2$? Derive the count.",
+      solution: "Two elements are decided in advance: $1$ must be <em>in</em> and $2$ must be <em>out</em> — no freedom there. The remaining elements $\\{3,4,5,6\\}$ are each free to be in or out. <br><br>By the product rule that's $2^4 = 16$ subsets. $\\blacksquare$ <br><br>The pattern: forcing $k$ elements' membership leaves $2^{\\,n-k}$ subsets."
+    },
+    { type: "challenge", id: "ch8",
+      prompt: "How many strings of length $3$ over $\\{a,b,c,d\\}$ have all three characters distinct? Derive the count.",
+      solution: "Choose the characters position by position, each differing from those already placed: <ul><li>position 0: any of $4$ letters,</li><li>position 1: any letter except the first, so $3$,</li><li>position 2: any letter except the first two, so $2$.</li></ul> By the product rule, $4 \\cdot 3 \\cdot 2 = 24$. $\\blacksquare$ <br><br>This is exactly counting injective functions from the $3$ positions into the $4$-letter alphabet."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>The instinct you just used — build a big answer from independent small choices — is exactly the instinct behind recursion and induction later. Next, though, we add quantifiers so we can talk about <em>all</em> objects or <em>some</em> object.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

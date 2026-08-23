@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 9 — Proofs II: Make-believe and Generalization</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "09-proofs-2",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 9',
+  title: "Reading 9 — Proofs II: Make-believe and Generalization",
+  subtitle: "Two rules that act on the goal — letting you prove implications and universal statements.",
+  prev: { href: "reading-08-proofs-1.html", label: "Reading 8 — Proofs I" },
+  next: { href: "reading-10-algebra.html", label: "Reading 10 — Algebra in proofs" },
+  blocks: [
+    { type: "def", title: "Two rules for attacking the goal", html:
+      "<ul>" +
+      "<li><strong>Make-believe</strong> (goal is $P \\rightarrow Q$): assume $P$; the goal becomes $Q$.</li>" +
+      "<li><strong>Universal generalization</strong> (goal is $(\\forall x)P(x)$): introduce an <em>arbitrary</em> $c$; the goal becomes $P(c)$.</li>" +
+      "</ul>" +
+      "<p>Together with the two rules from Reading 8 — <strong>universal instantiation</strong> (from a known $(\\forall x)P(x)$, obtain an instance $P(a)$) and <strong>detachment</strong> (from a known $P \\rightarrow Q$ together with $P$, obtain $Q$) — these four rules handle every $\\forall$/$\\rightarrow$ proof.</p>"
+    },
+    { type: "prose", html:
+      "<p>Make-believe and generalization act on the <strong>goal</strong>; the Reading 8 rules (instantiation and detachment) act on what you already <strong>know</strong>.</p>" +
+      "<ul>" +
+      "<li>When make-believe assumes the hypothesis $P$, that $P$ joins the <strong>Known</strong> column — you may now use it — while the conclusion $Q$ becomes the remaining goal. Reaching $Q$ <em>discharges</em> the assumption and establishes $P \\rightarrow Q$.</li>" +
+      "<li>Peel a goal from the outside in: strip a leading $\\forall$ with generalization, and open a leading $\\rightarrow$ with make-believe. For a goal like $(\\forall x)(P(x) \\rightarrow Q(x))$ you must generalize <em>first</em> (the $x$ is still bound by the $\\forall$, so there is no free $P$ to assume yet), then make-believe.</li>" +
+      "<li>A <strong>nested</strong> chain of implications needs one make-believe per arrow. Proving $A \\rightarrow (B \\rightarrow (C \\rightarrow D))$ assumes $A$, then $B$, then $C$ — three make-believe steps — leaving goal $D$.</li>" +
+      "</ul>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Your goal is $P \\rightarrow Q$ and you have assumed nothing yet. Which rule?",
+      choices: ["Make-believe: assume $P$, goal becomes $Q$", "Detachment", "Universal instantiation", "Universal generalization"],
+      answer: 0,
+      choiceFeedback: [null,
+        "Detachment uses an implication you already know — but here it's the goal.",
+        "Instantiation is for using a known $\\forall$.",
+        "Generalization is for a $\\forall$ goal, not an implication."],
+      explain: "To prove an implication, assume the hypothesis and prove the conclusion."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Your goal is $(\\forall x)\\,P(x)$. Which rule, and what happens to the goal?",
+      choices: [
+        "Universal generalization: introduce an arbitrary $c$; goal becomes $P(c)$",
+        "Universal instantiation: goal becomes $P(\\text{Scrat})$",
+        "Detachment: goal becomes $P$",
+        "Make-believe: assume $(\\forall x)P(x)$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "Instantiation is for <em>using</em> a known $\\forall$; proving it for one Scrat wouldn't cover all objects.",
+        "Detachment applies to a known implication, not a $\\forall$ goal.",
+        "Make-believe is for an implication goal."],
+      explain: "To prove something for all $x$, prove it for one arbitrary $c$ about which you assume nothing special."
+    },
+    { type: "mc", id: "q3",
+      prompt: "You are proving $A \\rightarrow (B \\rightarrow C)$. After make-believe assumes $A$, what is the new goal?",
+      choices: ["$B \\rightarrow C$", "$C$", "$A \\rightarrow C$", "$A \\wedge B$"],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's the goal after <em>two</em> make-believe steps; you've assumed only $A$.",
+        "Assuming $A$ leaves the consequent $B \\rightarrow C$, not $A \\rightarrow C$.",
+        "Make-believe leaves the consequent as the goal; it doesn't build a conjunction."],
+      explain: "Assuming $A$ discharges the outer arrow, leaving $B \\rightarrow C$ as the goal."
+    },
+    { type: "prose", html:
+      "<h2>Assemble a proof</h2>" +
+      "<p>Given $(\\forall x)(P(x) \\rightarrow Q(x))$ and $(\\forall x)(Q(x) \\rightarrow R(x))$, the steps below prove $(\\forall x)(P(x) \\rightarrow R(x))$. Put them in order.</p>"
+    },
+    { type: "parsons", id: "q4",
+      prompt: "Order the steps to prove $(\\forall x)(P(x) \\rightarrow R(x))$.",
+      steps: [
+        "Universal generalization: let $c$ be arbitrary. Goal: $P(c) \\rightarrow R(c)$.",
+        "Make-believe: assume $P(c)$. Goal: $R(c)$.",
+        "Instantiate the first known at $c$: $P(c) \\rightarrow Q(c)$; detach with $P(c)$ to get $Q(c)$.",
+        "Instantiate the second known at $c$: $Q(c) \\rightarrow R(c)$; detach with $Q(c)$ to get $R(c)$.",
+        "By universal generalization, conclude $(\\forall x)(P(x) \\rightarrow R(x))$."
+      ],
+      hint: "Generalize and assume the hypothesis before using anything; you can only detach $Q(c) \\rightarrow R(c)$ once you have $Q(c)$.",
+      explain: "Generalize to an arbitrary $c$, assume the hypothesis, chain the implications with detachment, then generalize back."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Before touching any knowns, what are the first moves for a goal like $(\\forall x)(P(x) \\rightarrow Q(x))$?</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "To prove $(\\forall x)(P(x) \\rightarrow Q(x))$, the natural first two moves are:",
+      choices: [
+        "Introduce an arbitrary $c$ (generalization), then assume $P(c)$ (make-believe)",
+        "Assume $P(x)$, then introduce an arbitrary $c$",
+        "Instantiate a known $\\forall$, then detach",
+        "Assume the goal is false"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "You must strip the $\\forall$ first (generalization) before the goal even looks like an implication to assume into.",
+        "There's nothing to instantiate or detach yet — the goal, not a known, is what you must break down first.",
+        "Assuming the goal is false is not one of the four rules, and not how you open a $\\forall$/$\\rightarrow$ goal."],
+      explain: "Peel the goal from the outside in: generalization turns $(\\forall x)(\\dots)$ into $P(c) \\rightarrow Q(c)$, then make-believe assumes $P(c)$, leaving goal $Q(c)$."
+    },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "mc", id: "e1", practice: true,
+      prompt: "Your goal is $P \\rightarrow Q$ and you have assumed nothing yet. Which rule?",
+      choices: ["Make-believe: assume $P$; goal becomes $Q$", "Detachment", "Universal instantiation", "Universal generalization"],
+      answer: 0,
+      explain: "To prove an implication, assume its hypothesis and prove its conclusion."
+    },
+    { type: "mc", id: "e2", practice: true,
+      prompt: "Your goal is $(\\forall x)\\,P(x)$. Which rule?",
+      choices: ["Universal generalization: introduce an arbitrary $c$; goal becomes $P(c)$", "Universal instantiation", "Make-believe", "Detachment"],
+      answer: 0,
+      explain: "Prove it for one arbitrary $c$ about which you assume nothing special."
+    },
+    { type: "selectall", id: "e3", practice: true,
+      prompt: "Your goal is $P \\rightarrow Q$. After make-believe, select <strong>all</strong> statements that are correct.",
+      choices: [
+        "$Q$ becomes the remaining goal",
+        "$P$ joins the Known column",
+        "The goal becomes $P$",
+        "The goal becomes $P \\wedge Q$"
+      ],
+      answers: [0, 1],
+      hint: "Make-believe assumes the hypothesis and leaves the conclusion to prove.",
+      explain: "Make-believe moves the hypothesis $P$ into the Known column and leaves $Q$ as the remaining goal."
+    },
+    { type: "mc", id: "e4", practice: true,
+      prompt: "Your goal is $(\\forall x)\\,P(x)$. After universal generalization, what is the new goal?",
+      choices: ["$P(c)$ for an arbitrary $c$", "$P(\\text{Scrat})$", "$(\\exists x)\\,P(x)$", "$P$"],
+      answer: 0,
+      explain: "Generalization reduces the $\\forall$ goal to proving $P(c)$ for an arbitrary $c$."
+    },
+    { type: "shorttext", id: "e5", practice: true,
+      prompt: "The rule for proving a “for all” goal by fixing an arbitrary object is called universal ______. (one word)",
+      answer: "generalization", accept: ["generalisation"],
+      explain: "Universal generalization: prove $P(c)$ for an arbitrary $c$, then conclude $(\\forall x)P(x)$."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "In universal generalization, select <strong>all</strong> statements that must be true about the object $c$ you introduce.",
+      choices: [
+        "It is arbitrary — you assume nothing special about it",
+        "It stands for any object in the domain",
+        "It is a specific named object like Scrat",
+        "It must already satisfy $P$"
+      ],
+      answers: [0, 1],
+      hint: "Arbitrary means the argument may not lean on any special feature of $c$.",
+      explain: "$c$ is arbitrary and stands for any object; if you used special facts about it, the result would not hold for all objects."
+    },
+    { type: "matching", id: "e7", practice: true,
+      prompt: "Match each goal shape to the rule you apply first.",
+      pairs: [
+        { left: "$(\\forall x)\\,P(x)$", right: "universal generalization" },
+        { left: "$P \\rightarrow Q$", right: "make-believe" },
+        { left: "$(\\forall x)(P(x) \\rightarrow Q(x))$", right: "universal generalization (first)" }
+      ],
+      explain: "Peel the goal from the outside: strip a leading $\\forall$ with generalization, and open a leading $\\rightarrow$ with make-believe."
+    },
+    { type: "selectall", id: "e9", practice: true,
+      prompt: "Select <strong>all</strong> rules that act on the <strong>goal</strong> (rather than on what you already know).",
+      choices: ["Make-believe", "Universal generalization", "Detachment", "Universal instantiation"],
+      answers: [0, 1],
+      hint: "Two of these break down the goal; the other two use knowns.",
+      explain: "Make-believe and universal generalization attack the goal; detachment and instantiation use the knowns."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "parsons", id: "m4", practice: true,
+      prompt: "Known: $(\\forall x)(S(x) \\rightarrow M(x))$, $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$. Prove $(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$. Order the steps.",
+      steps: [
+        "Universal generalization: let $c$ be arbitrary. Goal: $S(c) \\rightarrow F(\\text{Fafnir}, c)$.",
+        "Make-believe: assume $S(c)$. Goal: $F(\\text{Fafnir}, c)$.",
+        "Instantiate the first known at $c$: $S(c) \\rightarrow M(c)$; detach with $S(c)$ to get $M(c)$.",
+        "Instantiate the second known at $c$: $M(c) \\rightarrow F(\\text{Fafnir}, c)$; detach with $M(c)$ to get $F(\\text{Fafnir}, c)$.",
+        "By universal generalization, conclude $(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$."
+      ],
+      hint: "Strip the $\\forall$, assume $S(c)$, then chain squirrel $\\to$ mammal $\\to$ feared-by-Fafnir.",
+      explain: "Every squirrel is a mammal and every mammal is feared by Fafnir, so every squirrel is feared by Fafnir — proved for an arbitrary $c$."
+    },
+    { type: "mc", id: "m6", practice: true,
+      prompt: "To prove the goal $(\\forall x)\\,P(x)$, a student instantiates a known $\\forall$ at Scrat and proves $P(\\text{Scrat})$. Does this establish the goal?",
+      choices: [
+        "No — proving it for one specific object does not cover all objects",
+        "Yes — Scrat is an object, so $\\forall$ follows",
+        "Yes — by detachment",
+        "Yes — by make-believe"
+      ],
+      answer: 0,
+      explain: "Generalization requires an <em>arbitrary</em> $c$; a specific object like Scrat could have special properties, so $P(\\text{Scrat})$ alone does not prove $(\\forall x)P(x)$."
+    },
+    { type: "parsons", id: "m7", practice: true,
+      prompt: "Known: $P \\rightarrow Q$, $Q \\rightarrow R$. Prove $P \\rightarrow R$. Order the steps.",
+      steps: [
+        "Make-believe: assume $P$. Goal: $R$.",
+        "Detach $P \\rightarrow Q$ with $P$ to get $Q$.",
+        "Detach $Q \\rightarrow R$ with $Q$ to get $R$.",
+        "Discharge the assumption: conclude $P \\rightarrow R$."
+      ],
+      hint: "Assume the hypothesis first; you can only detach $Q \\rightarrow R$ once you have $Q$.",
+      explain: "Assume $P$, chain through $Q$ to $R$ by detachment, then discharge to obtain $P \\rightarrow R$."
+    },
+    { type: "selectall", id: "m8", practice: true,
+      prompt: "Proving $(\\forall x)(P(x) \\rightarrow Q(x))$. Select <strong>all</strong> statements that are correct about the proof structure.",
+      choices: [
+        "The first move is to introduce an arbitrary $c$",
+        "After stripping the $\\forall$, make-believe assumes $P(c)$",
+        "The very first move should be to detach a known",
+        "The final step is a universal generalization"
+      ],
+      answers: [0, 1, 3],
+      hint: "You must open the goal before you can use knowns; the proof closes by generalizing.",
+      explain: "Generalize first (arbitrary $c$), then make-believe assumes $P(c)$; only afterward do you use knowns, and you finish by generalizing back."
+    },
+    { type: "mc", id: "m9", practice: true,
+      prompt: "For goal $(\\forall x)(P(x) \\rightarrow Q(x))$, after generalization (arbitrary $c$) and make-believe (assume $P(c)$), the current goal is:",
+      choices: ["$Q(c)$", "$P(c)$", "$(\\forall x)Q(x)$", "$P(c) \\rightarrow Q(c)$"],
+      answer: 0,
+      explain: "Generalization gave goal $P(c) \\rightarrow Q(c)$; make-believe assumed $P(c)$, leaving $Q(c)$."
+    },
+    { type: "matching", id: "m11", practice: true,
+      prompt: "Match each goal to the goal-attacking rule(s) it needs, in order.",
+      pairs: [
+        { left: "$(\\forall x)\\,P(x)$", right: "universal generalization" },
+        { left: "$P \\rightarrow Q$", right: "make-believe" },
+        { left: "$(\\forall x)(P(x) \\rightarrow Q(x))$", right: "generalization, then make-believe" },
+        { left: "$A \\rightarrow (B \\rightarrow C)$", right: "make-believe twice" }
+      ],
+      explain: "Peel the goal from the outside in, applying the rule matching each leading connective."
+    },
+    { type: "shortnum", id: "m12", practice: true,
+      prompt: "How many make-believe assumptions are needed to prove $A \\rightarrow (B \\rightarrow (C \\rightarrow D))$?",
+      answer: 3,
+      explain: "Assume $A$, then $B$, then $C$ — three nested implications require three make-believe steps, leaving goal $D$."
+    },
+    { type: "selectall", id: "m14", practice: true,
+      prompt: "Select <strong>all</strong> goals whose proof requires make-believe at some point.",
+      choices: [
+        "$P \\rightarrow Q$",
+        "$(\\forall x)(P(x) \\rightarrow Q(x))$",
+        "$(\\forall x)\\,P(x)$ (where $P(x)$ is not an implication)",
+        "$P \\wedge Q$"
+      ],
+      answers: [0, 1],
+      hint: "Make-believe is triggered by an implication goal.",
+      explain: "An implication goal (directly, or after stripping a $\\forall$) needs make-believe. A bare $\\forall$ over a non-implication needs only generalization, and a conjunction needs a different rule."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Write a complete proof of $(\\forall x)(P(x) \\rightarrow R(x))$ from $(\\forall x)(P(x) \\rightarrow Q(x))$ and $(\\forall x)(Q(x) \\rightarrow R(x))$, with justifications.",
+      solution: "<br>(1) Let $c$ be arbitrary &mdash; universal generalization; goal becomes $P(c) \\rightarrow R(c)$.<br>(2) Assume $P(c)$ &mdash; make-believe; goal becomes $R(c)$.<br>(3) $P(c) \\rightarrow Q(c)$ &mdash; instantiate the first known at $c$.<br>(4) $Q(c)$ &mdash; detach (3) with (2).<br>(5) $Q(c) \\rightarrow R(c)$ &mdash; instantiate the second known at $c$.<br>(6) $R(c)$ &mdash; detach (5) with (4). This discharges the make-believe: $P(c) \\rightarrow R(c)$.<br>(7) Since $c$ was arbitrary, $(\\forall x)(P(x) \\rightarrow R(x))$ &mdash; universal generalization. $\\checkmark$"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Write a complete proof of $(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$ from $(\\forall x)(S(x) \\rightarrow M(x))$ and $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$.",
+      solution: "<br>(1) Let $c$ be arbitrary &mdash; generalization; goal $S(c) \\rightarrow F(\\text{Fafnir}, c)$.<br>(2) Assume $S(c)$ &mdash; make-believe; goal $F(\\text{Fafnir}, c)$.<br>(3) $S(c) \\rightarrow M(c)$ &mdash; instantiate first known at $c$.<br>(4) $M(c)$ &mdash; detach (3) with (2).<br>(5) $M(c) \\rightarrow F(\\text{Fafnir}, c)$ &mdash; instantiate second known at $c$.<br>(6) $F(\\text{Fafnir}, c)$ &mdash; detach (5) with (4); discharge to $S(c) \\rightarrow F(\\text{Fafnir}, c)$.<br>(7) $(\\forall x)(S(x) \\rightarrow F(\\text{Fafnir}, x))$ &mdash; generalization, since $c$ was arbitrary. $\\checkmark$"
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "A student proves $(\\forall x)\\,P(x)$ by demonstrating $P(\\text{Scrat})$. Find the flaw.",
+      solution: "Scrat is a specific, named object, not an arbitrary one. Universal generalization requires that the object $c$ be arbitrary — nothing special assumed about it — so that the argument applies uniformly to every object. Proving $P(\\text{Scrat})$ might rely on features peculiar to Scrat, so it does not establish $P$ for all $x$."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Prove $P \\rightarrow R$ from $P \\rightarrow Q$ and $Q \\rightarrow R$, writing each step and its justification.",
+      solution: "<br>(1) Assume $P$ &mdash; make-believe; goal becomes $R$.<br>(2) $Q$ &mdash; detach $P \\rightarrow Q$ with (1).<br>(3) $R$ &mdash; detach $Q \\rightarrow R$ with (2).<br>(4) Discharge the assumption: $P \\rightarrow R$. $\\checkmark$"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Midway through a generalization proof (with arbitrary $c$), a student writes “since $c$ is a squirrel, $S(c)$ holds” and uses it. The squirrel-ness of $c$ was never part of the goal. Why is this illegitimate?",
+      solution: "$c$ was introduced as an <em>arbitrary</em> object, so the proof may assume nothing about it beyond genuine make-believe hypotheses that belong to the goal. Asserting $S(c)$ as a free-standing fact smuggles in a special property that most objects lack. The conclusion would then hold only for squirrels, not for all $x$, so the generalization step becomes invalid."
+    },
+    { type: "challenge", id: "ch6",
+      prompt: "Prove $(\\forall x)(P(x) \\rightarrow P(x))$ from no premises. (This is trivial, but write it out to show how the goal rules combine.)",
+      solution: "<br>(1) Let $c$ be arbitrary &mdash; generalization; goal $P(c) \\rightarrow P(c)$.<br>(2) Assume $P(c)$ &mdash; make-believe; goal $P(c)$.<br>(3) $P(c)$ &mdash; this is exactly the assumption from (2), so the goal is met; discharge to $P(c) \\rightarrow P(c)$.<br>(4) $(\\forall x)(P(x) \\rightarrow P(x))$ &mdash; generalization, since $c$ was arbitrary. $\\checkmark$"
+    },
+    { type: "challenge", id: "ch7",
+      prompt: "A proof of $(\\forall x)(P(x) \\rightarrow Q(x))$ begins with make-believe (“assume $P(x)$”) and only afterward does universal generalization. What is wrong, and how do you fix the order?",
+      solution: "While the goal is still $(\\forall x)(P(x) \\rightarrow Q(x))$, the variable $x$ is bound by the $\\forall$; there is no free hypothesis $P(x)$ to assume, so make-believe cannot apply yet. Fix the order: first apply universal generalization to introduce an arbitrary $c$, turning the goal into $P(c) \\rightarrow Q(c)$; <em>then</em> make-believe can assume $P(c)$, leaving goal $Q(c)$."
+    },
+    { type: "challenge", id: "ch8",
+      prompt: "Prove $\\big((\\forall x)P(x)\\big) \\rightarrow P(\\text{Scrat})$. (Hint: this goal is an implication, so start with make-believe.)",
+      solution: "<br>(1) Assume $(\\forall x)P(x)$ &mdash; make-believe; goal becomes $P(\\text{Scrat})$.<br>(2) $P(\\text{Scrat})$ &mdash; universal instantiation of the assumed $(\\forall x)P(x)$ at Scrat.<br>(3) Discharge the assumption: $\\big((\\forall x)P(x)\\big) \\rightarrow P(\\text{Scrat})$. $\\checkmark$<br>Note the goal is an implication, not a $\\forall$, so make-believe comes first and instantiation (a known-using rule) finishes it."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>These four rules prove logical facts. To prove <em>mathematical</em> facts, we also let ordinary algebra count as proof steps — that's Reading 10.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

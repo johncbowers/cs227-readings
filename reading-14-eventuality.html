@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 14 — Eventuality</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "14-eventuality",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 14',
+  title: "Reading 14 — Eventuality",
+  subtitle: "Many claims in computer science aren’t about every input, but about what happens once inputs get large enough — a ∃-then-∀ pattern.",
+  prev: { href: "reading-13-existentials.html", label: "Reading 13 — Existentials & Conjunction" },
+  next: { href: "reading-15-negation.html", label: "Reading 15 — Negation & Refutation" },
+  blocks: [
+    { type: "prose", html:
+      "<p>When we compare how two functions grow, we often don’t care about small inputs — only about what happens <em>eventually</em>. This is a nested quantifier pattern you’ll see again in algorithms: “there is a threshold beyond which something always holds.”</p>"
+    },
+    { type: "def", title: "Eventually greater than", html:
+      "<p>A function $f$ is <strong>eventually greater than</strong> $g$ when there is a threshold $N$ past which $f$ always beats $g$:</p>" +
+      "<p>$$(\\exists N)(\\forall n)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big).$$</p>" +
+      "<p>The $\\exists N$ comes first (one threshold), then $\\forall n$ beyond it.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Reading the definition</h2>" +
+      "<p>The guard $n \\ge N$ is doing real work: “eventually greater” says nothing about inputs <em>below</em> the threshold. For small $n$ we may well have $f(n) \\le g(n)$ — only from $N$ onward must $f$ win. Exceptions before the threshold are allowed.</p>" +
+      "<p><strong>“For all $n$” is stronger than “eventually.”</strong> If $f(n) > g(n)$ for <em>every</em> $n$, then it certainly holds past the threshold $N = 0$, so $f$ is eventually greater than $g$. The converse fails, since eventual dominance permits early exceptions. Thus “for all $n$” implies “eventually,” but not the reverse.</p>" +
+      "<h2>Finding the smallest threshold</h2>" +
+      "<p>To find the smallest threshold $N$ making $f(n) > g(n)$ for all $n \\ge N$, solve the inequality $f(n) > g(n)$ for $n$. If it reduces to $n > c$, the smallest integer that works is the next whole number above $c$, and that value is the smallest $N$; for instance $n > 100$ gives $N = 101$ (not $100$, since $100 > 100$ is false). If it reduces to $n \\ge c$, then $N = c$. When both sides share a factor of $n$ (as in $n^2 > 5n$), you may divide by $n$ for $n > 0$; when the inequality is not linear, test successive values until $f$ pulls ahead and stays ahead.</p>" +
+      "<h2>Transitivity</h2>" +
+      "<p>“Eventually greater than” is <strong>transitive</strong>. If $f$ eventually beats $g$ past $N_1$ and $g$ eventually beats $h$ past $N_2$, then past $N = \\max(N_1, N_2)$ both comparisons hold at once, so $f(n) > g(n) > h(n)$ and hence $f(n) > h(n)$. Taking the <em>larger</em> of the two thresholds guarantees both hold; the smaller one might still leave one comparison failing.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Which formula says “$f$ is eventually greater than $g$”?",
+      choices: [
+        "$(\\exists N)(\\forall n)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big)$",
+        "$(\\forall n)(\\exists N)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big)$",
+        "$(\\exists N)(\\forall n)\\big(f(n) > g(n)\\big)$",
+        "$(\\forall N)(\\exists n)\\big(n \\ge N \\wedge f(n) > g(n)\\big)$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "Swapping to $(\\forall n)(\\exists N)$ makes it nearly trivial — you could pick $N = n+1$ every time.",
+        "Dropping the $n \\ge N$ guard says $f > g$ <em>everywhere</em>, not just eventually.",
+        "That's “infinitely often greater” (for every threshold there's a later point where $f > g$) — a different, weaker idea."],
+      explain: "One threshold $N$ (chosen first), beyond which $f > g$ for all $n$: $(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > g(n))$."
+    },
+    { type: "mc", id: "q2",
+      prompt: "Which is the <strong>stronger</strong> statement: (A) $f(n) > g(n)$ for all $n$, or (B) $f$ is eventually greater than $g$?",
+      choices: [
+        "(A) is stronger — it implies (B)",
+        "(B) is stronger — it implies (A)",
+        "They are equivalent",
+        "Neither implies the other"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "(B) allows $f \\le g$ on small inputs, so it can hold when (A) fails — it's weaker.",
+        "(A) holds everywhere, so in particular past any threshold — that's (B).",
+        "(A) implies (B) (take $N = 0$) but not conversely, so they're not equivalent."],
+      explain: "“For all $n$” implies “eventually” (use $N = 0$), but eventually-greater allows exceptions on small inputs, so (A) is strictly stronger."
+    },
+    { type: "mc", id: "q3",
+      prompt: "Suppose $f$ is eventually greater than $g$ past threshold $N_1$, and $g$ is eventually greater than $h$ past threshold $N_2$. A threshold that works for “$f$ is eventually greater than $h$” is:",
+      choices: ["$N = \\max(N_1, N_2)$", "$N = \\min(N_1, N_2)$", "$N = 0$", "No single threshold works"],
+      answer: 0,
+      choiceFeedback: [null,
+        "Below the larger threshold, one of the two comparisons might fail — $\\min$ is too small.",
+        "$0$ only works if both comparisons hold from the start, which isn't given.",
+        "It does work — take the later of the two thresholds and both comparisons hold, so $f > g > h$."],
+      explain: "Past $\\max(N_1, N_2)$ both $f > g$ and $g > h$ hold, so $f > h$ — “eventually greater than” is transitive."
+    },
+    { type: "shortnum", id: "q4", badge: "Challenge",
+      prompt: "Let $f(n) = n$ and $g(n) = 100$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 101,
+      placeholder: "a whole number",
+      hint: "You need $n > 100$; what's the smallest integer $n$ that works, and hence the smallest $N$?",
+      explain: "$n > 100$ means $n \\ge 101$, so the smallest threshold is $N = 101$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Find the exact crossover threshold for two growing functions.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "Let $f(n) = 2n$ and $g(n) = n + 50$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 51,
+      placeholder: "a whole number",
+      hint: "Solve $2n > n + 50$ for $n$, then take the smallest integer that satisfies it.",
+      explain: "$2n > n + 50 \\iff n > 50 \\iff n \\ge 51$, so the smallest threshold is $N = 51$."
+    },
+    { type: "prose", html:
+      "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>"
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "selectall", id: "e1", practice: true,
+      prompt: "In $(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > g(n))$, select <strong>all</strong> true statements about the quantifier order.",
+      choices: ["$\\exists N$ is committed to before the inner $\\forall n$ ranges", "The threshold $N$ is fixed first, then the claim holds for all $n$ beyond it", "$\\forall n$ is chosen first, before any threshold", "The two quantifiers can be swapped without changing the meaning"],
+      answers: [0, 1],
+      hint: "The outer quantifier is chosen first; the inner one ranges afterward.",
+      explain: "One threshold $N$ is picked first (the outer $\\exists N$), and then the claim holds for all $n$ beyond it. Swapping to $(\\forall n)(\\exists N)$ changes the meaning entirely."
+    },
+    { type: "mc", id: "e4", practice: true,
+      prompt: "If $f$ is eventually greater than $g$, must $f(n) > g(n)$ hold for the small inputs (below the threshold)?",
+      choices: ["No — exceptions below the threshold are allowed", "Yes — it must hold for every $n$", "Only if $f(0) > g(0)$", "Only for even $n$"],
+      answer: 0,
+      choiceFeedback: [null, "That would be the stronger “for all $n$” claim.", "The threshold need not be $0$.", "Parity is irrelevant here."],
+      explain: "“Eventually greater” only constrains inputs at or beyond $N$; below $N$, anything goes."
+    },
+    { type: "shortnum", id: "e5", practice: true,
+      prompt: "Let $f(n) = n + 1$ and $g(n) = n$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 0,
+      placeholder: "a whole number",
+      hint: "Is $n + 1 > n$ ever false?",
+      explain: "$n + 1 > n$ holds for every $n \\ge 0$, so the smallest threshold is $N = 0$."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Let (A) be “$f(n) > g(n)$ for all $n$” and (B) “$f$ is eventually greater than $g$.” Select <strong>all</strong> true statements.",
+      choices: ["(A) implies (B)", "(A) is strictly stronger than (B)", "(B) implies (A)", "(A) and (B) are equivalent"],
+      answers: [0, 1],
+      hint: "If $f > g$ everywhere, it certainly holds past $N = 0$; but eventual dominance allows early exceptions.",
+      explain: "“For all $n$” implies “eventually” (take $N = 0$), but not the reverse, so (A) is strictly stronger — (B) does not imply (A), and they are not equivalent."
+    },
+    { type: "shortnum", id: "e7", practice: true,
+      prompt: "Let $f(n) = 2n$ and $g(n) = 10$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 6,
+      placeholder: "a whole number",
+      hint: "Solve $2n > 10$.",
+      explain: "$2n > 10 \\iff n > 5 \\iff n \\ge 6$, so the smallest threshold is $N = 6$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m1", practice: true,
+      prompt: "Let $f(n) = 3n$ and $g(n) = n + 20$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 11,
+      placeholder: "a whole number",
+      hint: "Solve $3n > n + 20$.",
+      explain: "$3n > n + 20 \\iff 2n > 20 \\iff n > 10 \\iff n \\ge 11$, so $N = 11$."
+    },
+    { type: "shortnum", id: "m2", practice: true,
+      prompt: "Let $f(n) = n^2$ and $g(n) = 5n$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 6,
+      placeholder: "a whole number",
+      hint: "For $n > 0$, divide $n^2 > 5n$ by $n$.",
+      explain: "For $n > 0$, $n^2 > 5n \\iff n > 5 \\iff n \\ge 6$, so $N = 6$."
+    },
+    { type: "shortnum", id: "m4", practice: true,
+      prompt: "Let $f(n) = 2^n$ and $g(n) = n^2$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 5,
+      placeholder: "a whole number",
+      hint: "Check small values: $n = 2, 3, 4$ fail (equal or less), then it stays ahead.",
+      explain: "$2^2 = 4 = 2^2$, $2^3 = 8 < 9$, $2^4 = 16 = 16$ all fail, but $2^5 = 32 > 25$ and $2^n > n^2$ for all $n \\ge 5$. So $N = 5$."
+    },
+    { type: "shortnum", id: "m6", practice: true,
+      prompt: "Suppose $f$ is eventually greater than $g$ past $N_1 = 10$, and $g$ is eventually greater than $h$ past $N_2 = 25$. What is the smallest threshold guaranteed to work for “$f$ is eventually greater than $h$”?",
+      answer: 25,
+      placeholder: "a whole number",
+      hint: "You need both comparisons to hold — take the later threshold.",
+      explain: "Past $\\max(10, 25) = 25$ both $f > g$ and $g > h$ hold, so $f > h$; below $25$ the second comparison might fail."
+    },
+    { type: "shortnum", id: "m9", practice: true,
+      prompt: "Let $f(n) = n^2$ and $g(n) = n + 90$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
+      answer: 11,
+      placeholder: "a whole number",
+      hint: "Solve $n^2 - n - 90 > 0$; it factors as $(n - 10)(n + 9)$.",
+      explain: "$n^2 > n + 90 \\iff (n - 10)(n + 9) > 0 \\iff n > 10 \\iff n \\ge 11$ (for $n \\ge 0$). At $n = 10$, $100 = 100$ fails; $N = 11$."
+    },
+    { type: "selectall", id: "m11", practice: true,
+      prompt: "Let $g(n) = n$. Select <strong>all</strong> functions $f$ that are eventually greater than $g$.",
+      choices: ["$f(n) = 2n$", "$f(n) = n + 5$", "$f(n) = n$", "$f(n) = 10$"],
+      answers: [0, 1],
+      hint: "Eventually greater means $f(n) > g(n)$ for all $n$ past some threshold — early exceptions are allowed.",
+      explain: "$2n > n$ for all $n \\ge 1$ and $n + 5 > n$ for every $n$, so both are eventually greater than $n$. But $f(n) = n$ only ties $g$, and the constant $f(n) = 10$ is eventually overtaken by $n$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Prove that $f(n) = n^2$ is eventually greater than $g(n) = 100n$, and find the smallest threshold, justifying that it is smallest.",
+      solution: "We claim $N = 101$ works and is smallest. For $n > 0$, $n^2 > 100n \\iff n > 100$, i.e. $n \\ge 101$. So for all $n \\ge 101$, $n^2 > 100n$, witnessing $(\\exists N)(\\forall n)(n \\ge N \\rightarrow n^2 > 100n)$ with $N = 101$. It is smallest because at $n = 100$ we get $100^2 = 10000 = 100 \\cdot 100 = g(100)$, so $f(100) > g(100)$ fails — any threshold $N \\le 100$ would include the failing input $n = 100$."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Prove in general that “eventually greater than” is transitive: if $f$ is eventually greater than $g$ and $g$ is eventually greater than $h$, then $f$ is eventually greater than $h$.",
+      solution: "By hypothesis there is $N_1$ with $f(n) > g(n)$ for all $n \\ge N_1$, and $N_2$ with $g(n) > h(n)$ for all $n \\ge N_2$. Let $N = \\max(N_1, N_2)$. Fix any $n \\ge N$. Then $n \\ge N_1$, so $f(n) > g(n)$; and $n \\ge N_2$, so $g(n) > h(n)$. By transitivity of $>$, $f(n) > h(n)$. Since $n \\ge N$ was arbitrary, $(\\forall n)(n \\ge N \\rightarrow f(n) > h(n))$ holds, so $(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > h(n))$ — $f$ is eventually greater than $h$."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Show that $f(n) = n + 10$ is <em>not</em> eventually greater than $g(n) = 2n$.",
+      solution: "We show no threshold makes $f$ permanently beat $g$. Now $f(n) > g(n)$ means $n + 10 > 2n$, that is $n < 10$; so $f(n) \\le g(n)$ for every $n \\ge 10$. Given any threshold $N$, choose $n = \\max(N, 10)$: then $n \\ge N$ yet $f(n) \\le g(n)$. Because every threshold has such a later point where $f$ fails to exceed $g$, $f$ is not eventually greater than $g$ — in fact $g$ is eventually greater than $f$ (past $N = 11$)."
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Find the smallest threshold $N$ such that $2^n > n^3$ for all $n \\ge N$, and justify that it is smallest.",
+      solution: "The smallest threshold is $N = 10$. Checking: $2^9 = 512 < 729 = 9^3$, so $n = 9$ fails. But $2^{10} = 1024 > 1000 = 10^3$, and for $n \\ge 10$ the exponential stays ahead (each step multiplies the left side by $2$, which outpaces $((n+1)/n)^3 < 2$ once $n \\ge 10$). So $2^n > n^3$ holds for all $n \\ge 10$ but fails at $n = 9$, making $N = 10$ smallest."
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "Prove that $f(n) = n^2$ is eventually greater than the constant $g(n) = 1000$, and give the smallest threshold.",
+      solution: "We need the smallest $N$ with $n^2 > 1000$ for all $n \\ge N$. Since $31^2 = 961 \\le 1000$ but $32^2 = 1024 > 1000$, and $n^2$ is increasing for $n \\ge 0$, we have $n^2 > 1000$ exactly when $n \\ge 32$. So $N = 32$ works and is smallest ($n = 31$ fails). This witnesses $(\\exists N)(\\forall n)(n \\ge N \\rightarrow n^2 > 1000)$."
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>We’ve now proved plenty of positive statements. The last connectives — negation and disjunction — let us <em>disprove</em> claims and split an argument into separate situations. That’s next.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

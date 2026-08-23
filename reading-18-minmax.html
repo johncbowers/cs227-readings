@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 18 — Max, Min, and Tree Height</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "18-minmax",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 18',
+  title: "Reading 18 — Max, Min, and Tree Height",
+  subtitle: "Reasoning about the larger and smaller of two numbers — and a payoff: tree height is built from max.",
+  prev: { href: "reading-17-contradiction.html", label: "Reading 17 — Proof by Contradiction" },
+  blocks: [
+    { type: "def", title: "Max and min", html:
+      "<p>If $x \\le y$ then $\\min(x,y) = x$ and $\\max(x,y) = y$ (and symmetrically). Basic bounds follow: $\\max(x,y) \\ge x$ and $\\max(x,y) \\ge y$ (the max is at least each input), while $\\min(x,y) \\le x$ and $\\min(x,y) \\le y$ (the min is at most each input). Also $\\min(x,y) \\le \\max(x,y)$ always, with equality only when $x = y$.</p>" +
+      "<p>Comparing to a threshold $z$ gives four biconditionals:</p>" +
+      "<ul>" +
+      "<li>$\\max(x,y) < z \\iff (x < z \\;\\wedge\\; y < z)$ — for the <em>larger</em> to be below $z$, <strong>both</strong> must be. (Same with $\\le$: $\\max(x,y) \\le z \\iff (x \\le z \\;\\wedge\\; y \\le z)$.)</li>" +
+      "<li>$\\min(x,y) < z \\iff (x < z \\;\\vee\\; y < z)$ — for the <em>smaller</em> to be below $z$, <strong>one</strong> suffices.</li>" +
+      "<li>$\\max(x,y) > z \\iff (x > z \\;\\vee\\; y > z)$ — the larger exceeds $z$ as soon as either input does.</li>" +
+      "<li>$\\min(x,y) > z \\iff (x > z \\;\\wedge\\; y > z)$ — for the smaller to exceed $z$, both must.</li>" +
+      "</ul>" +
+      "<p>Max-below and min-above use <strong>AND</strong>; min-below and max-above use <strong>OR</strong>. These extend to three or more values by nesting, e.g. $\\max(a,b,c) = \\max(a, \\max(b,c))$, so $\\max(a,b,c) < z$ exactly when all three of $a, b, c$ are below $z$.</p>"
+    },
+    { type: "prose", html:
+      "<p>Two reminders from earlier readings also surface here: a single <strong>counterexample</strong> refutes a universal $(\\forall x)\\,P(x)$, but a single example never <em>proves</em> one; and a contradiction can be any known-false statement, such as $5 < 5$.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "If $x \\le y$, then $\\min(x, y)$ equals:",
+      choices: ["$x$", "$y$", "$x + y$", "$0$"],
+      answer: 0,
+      choiceFeedback: [null, "$y$ is the larger one when $x \\le y$.", "The min is an input, not a sum.", "The min is $x$ here."],
+      explain: "The minimum is the smaller value; when $x \\le y$ that is $x$."
+    },
+    { type: "mc", id: "q2",
+      prompt: "$\\max(x, y) < z$ holds exactly when:",
+      choices: ["$x < z$ <strong>and</strong> $y < z$", "$x < z$ <strong>or</strong> $y < z$", "$x < z$ only", "$x + y < z$"],
+      answer: 0,
+      choiceFeedback: [null, "For the <em>larger</em> to be below $z$, both must be.", "You need $y < z$ too.", "Sums aren't involved."],
+      explain: "The larger of the two is below $z$ precisely when both are."
+    },
+    { type: "mc", id: "q3",
+      prompt: "$\\min(x, y) < z$ holds exactly when:",
+      choices: ["$x < z$ <strong>or</strong> $y < z$", "$x < z$ <strong>and</strong> $y < z$", "$x < z$ only", "$x \\cdot y < z$"],
+      answer: 0,
+      choiceFeedback: [null, "For the <em>smaller</em> to be below $z$, only one need be.", "Requiring both is too strong.", "Products aren't involved."],
+      explain: "The smaller of the two is below $z$ precisely when at least one is."
+    },
+    { type: "selectall", id: "q4",
+      prompt: "Select <strong>all</strong> true statements.",
+      choices: [
+        "A contradiction can be any known-false statement, such as $5 < 5$",
+        "To refute $(\\forall x)\\,P(x)$ it suffices to exhibit one $x$ with $\\neg P(x)$",
+        "To prove $(\\forall x)\\,P(x)$ it suffices to exhibit one $x$ with $P(x)$",
+        "For all reals, $\\max(x,y) \\ge x$ and $\\max(x,y) \\ge y$"
+      ],
+      answers: [0, 1, 3],
+      hint: "One counterexample refutes a universal, but one example never proves one. And the max is at least each input.",
+      explain: "A single counterexample refutes a universal; a single example never proves one. The max is at least each of its inputs."
+    },
+    { type: "prose", html:
+      "<h2>Tree height is max</h2>" +
+      "<p>A leaf has height $0$: $\\mathrm{height}(\\mathrm{leaf}) = 0$. The height of a node is defined with $\\max$: a node is one taller than its taller subtree, $\\mathrm{height}(\\mathrm{node}(l, r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$. To compute a height, work from the leaves up, applying this rule at each node. Because facts about $\\max$ become facts about trees for free, $\\max(a,b) \\ge a$ gives $\\mathrm{height}(\\mathrm{node}(l,r)) \\ge 1 + \\mathrm{height}(l)$, and likewise $\\max(a,b) \\ge b$ gives $\\mathrm{height}(\\mathrm{node}(l,r)) \\ge 1 + \\mathrm{height}(r)$.</p>"
+    },
+    { type: "mc", id: "q5",
+      prompt: "Which fact about $\\max$ immediately gives $\\mathrm{height}(\\mathrm{node}(l,r)) \\ge \\mathrm{height}(l)$?",
+      choices: ["$\\max(a, b) \\ge a$", "$\\max(a, b) = a + b$", "$\\max(a, b) \\le a$", "$\\max(a, b) < a$"],
+      answer: 0,
+      choiceFeedback: [null, "False in general ($\\max(2,3)=3\\ne5$).", "That makes the max the smaller one — wrong direction.", "False — the max is at least $a$."],
+      explain: "Since $\\max(a,b) \\ge a$, we get $1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge \\mathrm{height}(l)$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>Extend the max rule from two numbers to three.</p>"
+    },
+    { type: "mc", id: "t1", badge: "Apply it",
+      prompt: "Using $\\max(x,y) < z \\iff (x < z \\wedge y < z)$, when is $\\max(a, b, c) < z$?",
+      choices: [
+        "$a < z$ and $b < z$ and $c < z$",
+        "$a < z$ or $b < z$ or $c < z$",
+        "$a < z$ and $b < z$ (c doesn't matter)",
+        "$a + b + c < z$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "That's the rule for $\\min$; for the maximum of three to be below $z$, all three must be.",
+        "Every one of the three must be below $z$, including $c$.",
+        "Sums aren't involved — compare each of $a,b,c$ to $z$."],
+      explain: "Think of $\\max(a,b,c) = \\max(a, \\max(b,c))$: applying the rule twice, all three must be below $z$."
+    },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3>" },
+    { type:"shortnum", id:"e1", practice:true,
+      prompt:"Compute $\\max(4, 9)$.",
+      answer:9,
+      explain:"The maximum is the larger value, $9$." },
+    { type:"shortnum", id:"e2", practice:true,
+      prompt:"Compute $\\min(4, 9)$.",
+      answer:4,
+      explain:"The minimum is the smaller value, $4$." },
+    { type:"mc", id:"e3", practice:true,
+      prompt:"If $x \\le y$, then $\\max(x, y)$ equals:",
+      choices:["$y$","$x$","$x + y$","$0$"],
+      answer:0,
+      explain:"The maximum is the larger value; when $x \\le y$ that is $y$." },
+    { type:"selectall", id:"e4", practice:true,
+      prompt:"Select <strong>all</strong> correct threshold equivalences.",
+      choices:[
+        "$\\max(x, y) < z \\iff (x < z \\wedge y < z)$",
+        "$\\min(x, y) < z \\iff (x < z \\vee y < z)$",
+        "$\\min(x, y) > z \\iff (x > z \\wedge y > z)$",
+        "$\\max(x, y) < z \\iff (x < z \\vee y < z)$"
+      ],
+      answers:[0,1,2],
+      explain:"Max-below and min-above use AND; min-below and max-above use OR. The last swaps AND for OR on max-below, so it is wrong." },
+    { type:"mc", id:"e5", practice:true,
+      prompt:"$\\min(x, y) < z$ holds exactly when:",
+      choices:["$x < z$ or $y < z$","$x < z$ and $y < z$","$x < z$ only","$x \\cdot y < z$"],
+      answer:0,
+      explain:"For the smaller of the two to be below $z$, at least one must be." },
+    { type:"shortnum", id:"e6", practice:true,
+      prompt:"Compute $\\max(2, 3, 5)$.",
+      answer:5,
+      explain:"The largest of the three is $5$." },
+    { type:"selectall", id:"e7", practice:true,
+      prompt:"Select <strong>all</strong> statements that are always true for all reals $x, y$.",
+      choices:[
+        "$\\max(x, y) \\ge \\min(x, y)$",
+        "$\\max(x, y) + \\min(x, y) = x + y$",
+        "$\\max(x, y) = \\min(x, y)$",
+        "$\\min(x, y) \\le x$"
+      ],
+      answers:[0,1,3],
+      explain:"The larger is at least the smaller; the two always sum to $x + y$; and the min is at most each input. $\\max = \\min$ only when $x = y$, not always." },
+    { type:"shortnum", id:"e8", practice:true,
+      prompt:"With $\\mathrm{height}(\\mathrm{leaf}) = 0$ and $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$, what is $\\mathrm{height}(\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}))$?",
+      answer:1,
+      explain:"$1 + \\max(0, 0) = 1$." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
+    { type:"shortnum", id:"m3", practice:true,
+      prompt:"With $\\mathrm{height}(\\mathrm{leaf}) = 0$, compute $\\mathrm{height}(\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}), \\mathrm{leaf}))$.",
+      answer:2,
+      explain:"Inner node: $1 + \\max(0,0) = 1$; outer: $1 + \\max(1, 0) = 2$." },
+    { type:"shortnum", id:"m4", practice:true,
+      prompt:"With $\\mathrm{height}(\\mathrm{leaf}) = 0$, compute $\\mathrm{height}(\\mathrm{node}(\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}), \\mathrm{leaf}), \\mathrm{leaf}))$.",
+      answer:3,
+      explain:"Heights build up $0 \\to 1 \\to 2 \\to 3$ along the left spine." },
+    { type:"mc", id:"m5", practice:true,
+      prompt:"Using $\\max(x,y) < z \\iff (x < z \\wedge y < z)$, $\\max(a,b,c) < z$ holds when:",
+      choices:["$a < z$ and $b < z$ and $c < z$","$a < z$ or $b < z$ or $c < z$","$a < z$ and $b < z$ only","$a+b+c < z$"],
+      answer:0,
+      explain:"Writing $\\max(a,b,c) = \\max(a, \\max(b,c))$ and applying the rule twice: all three must be below $z$." },
+    { type:"selectall", id:"m6", practice:true,
+      prompt:"Select <strong>all</strong> statements that are always true.",
+      choices:["$\\max(x,y) \\ge x$","$\\max(x,y) \\ge y$","$\\min(x,y) \\le x$","$\\min(x,y) \\ge x$"],
+      answers:[0,1,2],
+      explain:"The max is at least each input; the min is at most each input. $\\min(x,y) \\ge x$ fails when $y < x$." },
+    { type:"matching", id:"m7", practice:true,
+      prompt:"Match each expression to the equivalent condition.",
+      pairs:[
+        { left:"$\\max(x,y) < z$", right:"x < z and y < z" },
+        { left:"$\\min(x,y) < z$", right:"x < z or y < z" },
+        { left:"$\\max(x,y) > z$", right:"x > z or y > z" },
+        { left:"$\\min(x,y) > z$", right:"x > z and y > z" }
+      ],
+      explain:"Max-below and min-above use AND; min-below and max-above use OR." },
+    { type:"selectall", id:"m8", practice:true,
+      prompt:"Select <strong>all</strong> true statements about tree height.",
+      choices:[
+        "$\\mathrm{height}(\\mathrm{leaf}) = 0$",
+        "$\\mathrm{height}(\\mathrm{node}(l, r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$",
+        "$\\mathrm{height}(\\mathrm{node}(l, r)) \\ge 1 + \\mathrm{height}(r)$",
+        "$\\mathrm{height}(\\mathrm{node}(l, r)) = \\mathrm{height}(l) + \\mathrm{height}(r)$"
+      ],
+      answers:[0,1,2],
+      explain:"A leaf has height $0$ and a node is $1 + \\max$ of its subtrees, so it is at least $1 + \\mathrm{height}(r)$. Height uses $\\max$, not the sum of the two subtree heights." },
+    { type:"shortnum", id:"m9", practice:true,
+      prompt:"$\\max(x, y) \\le 5$ holds exactly when $x \\le 5$ and $y \\le 5$. If $x = 5$ and $\\max(x,y) \\le 5$, what is the largest value $y$ can take?",
+      answer:5,
+      explain:"$\\max(x,y) \\le 5$ forces $y \\le 5$, so the largest $y$ is $5$." },
+    { type:"parsons", id:"m11", practice:true,
+      prompt:"Order the proof that $\\mathrm{height}(\\mathrm{node}(l, r)) \\ge \\mathrm{height}(l)$.",
+      steps:[
+        "By definition, $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$.",
+        "The max fact gives $\\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge \\mathrm{height}(l)$.",
+        "So $1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge 1 + \\mathrm{height}(l)$.",
+        "Since $1 + \\mathrm{height}(l) > \\mathrm{height}(l)$, we get $\\mathrm{height}(\\mathrm{node}(l,r)) \\ge \\mathrm{height}(l)$."
+      ],
+      explain:"Unfold the definition, use $\\max \\ge$ its argument, add $1$, and conclude." },
+    { type:"shortnum", id:"m12", practice:true,
+      prompt:"Compute $\\max(\\min(3, 7), \\min(8, 2))$.",
+      answer:3,
+      explain:"$\\min(3,7) = 3$ and $\\min(8,2) = 2$, so $\\max(3, 2) = 3$." },
+    { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
+    { type:"challenge", id:"ch1",
+      prompt:"Prove that $\\max(x, y) < z$ if and only if $x < z$ and $y < z$.",
+      solution:"By the axiom, either $x \\le y$ or $y \\le x$; take $x \\le y$ (the other case is symmetric), so $\\max(x,y) = y$. <strong>($\\Rightarrow$)</strong> If $\\max(x,y) = y < z$, then $y < z$; and since $x \\le y < z$, also $x < z$. <strong>($\\Leftarrow$)</strong> If $x < z$ and $y < z$, then $\\max(x,y) = y < z$. Hence $\\max(x,y) < z \\iff (x < z \\wedge y < z)$. $\\blacksquare$" },
+    { type:"challenge", id:"ch2",
+      prompt:"Prove that $\\min(x, y) < z$ if and only if $x < z$ or $y < z$.",
+      solution:"Assume $x \\le y$ (symmetric otherwise), so $\\min(x,y) = x$. <strong>($\\Rightarrow$)</strong> If $\\min(x,y) = x < z$, then the disjunct $x < z$ holds. <strong>($\\Leftarrow$)</strong> Suppose $x < z$ or $y < z$. If $x < z$, then $\\min(x,y) = x < z$. If $y < z$, then since $x \\le y < z$, again $\\min(x,y) = x < z$. Either way $\\min(x,y) < z$. $\\blacksquare$" },
+    { type:"challenge", id:"ch3",
+      prompt:"Prove by structural induction that $\\mathrm{height}(t) \\ge 0$ for every tree $t$ (with $\\mathrm{height}(\\mathrm{leaf}) = 0$).",
+      solution:"<strong>Base ($t = \\mathrm{leaf}$):</strong> $\\mathrm{height}(\\mathrm{leaf}) = 0 \\ge 0$. <strong>Step ($t = \\mathrm{node}(l, r)$):</strong> assume $\\mathrm{height}(l) \\ge 0$ and $\\mathrm{height}(r) \\ge 0$. Then $\\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge 0$, so $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge 1 \\ge 0$. By induction, $\\mathrm{height}(t) \\ge 0$ for all $t$. $\\blacksquare$" },
+    { type:"challenge", id:"ch4",
+      prompt:"Prove that a node is strictly taller than each of its subtrees: $\\mathrm{height}(\\mathrm{node}(l, r)) > \\mathrm{height}(l)$ and $> \\mathrm{height}(r)$.",
+      solution:"By definition $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$. Since $\\max(\\mathrm{height}(l), \\mathrm{height}(r)) \\ge \\mathrm{height}(l)$, we get $\\mathrm{height}(\\mathrm{node}(l,r)) \\ge 1 + \\mathrm{height}(l) > \\mathrm{height}(l)$. The same argument with $\\max(\\cdot) \\ge \\mathrm{height}(r)$ gives $\\mathrm{height}(\\mathrm{node}(l,r)) > \\mathrm{height}(r)$. $\\blacksquare$" },
+    { type:"challenge", id:"ch5",
+      prompt:"Prove that $\\max$ is associative: $\\max(x, \\max(y, z)) = \\max(\\max(x, y), z)$.",
+      solution:"Both sides equal the largest of $x, y, z$. Formally, for any threshold $w$, applying $\\max(a,b) < w \\iff (a < w \\wedge b < w)$ twice gives $\\max(x, \\max(y,z)) < w \\iff x < w \\wedge y < w \\wedge z < w \\iff \\max(\\max(x,y), z) < w$. Two values below exactly the same set of thresholds are equal, so $\\max(x,\\max(y,z)) = \\max(\\max(x,y), z)$. $\\blacksquare$" },
+    { type:"challenge", id:"ch6",
+      prompt:"Prove that $\\max(x, y) + \\min(x, y) = x + y$ for all reals.",
+      solution:"By the axiom, either $x \\le y$ or $y \\le x$. <strong>Case $x \\le y$:</strong> $\\min(x,y) = x$ and $\\max(x,y) = y$, so $\\max + \\min = y + x = x + y$. <strong>Case $y \\le x$:</strong> $\\min(x,y) = y$ and $\\max(x,y) = x$, so $\\max + \\min = x + y$. In both cases the sum is $x + y$. $\\blacksquare$" },
+    { type:"challenge", id:"ch7",
+      prompt:"A student claims “$\\max(x, y) < z$ if and only if $x < z$ or $y < z$.” Give a counterexample and explain the error.",
+      solution:"Take $x = 1$, $y = 10$, $z = 5$. Then $x < z$ is true (so the right side “$x < z$ or $y < z$” holds), but $\\max(1, 10) = 10$, which is <em>not</em> $< 5$. So the biconditional fails. The error swaps the rules: $\\max(x,y) < z$ needs <strong>both</strong> $x < z$ and $y < z$ (AND); the OR version is the rule for $\\min(x,y) < z$. $\\blacksquare$" },
+    { type: "prose", html:
+      "<h2>You’ve reached the end of the strand</h2>" +
+      "<p>That completes CS 227’s core logic and proof techniques — quantifiers, every connective, structural and numeric induction, and contradiction. All of it scales up to reasoning about the structures at the heart of computer science.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>
