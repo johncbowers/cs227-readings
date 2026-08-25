@@ -24,7 +24,7 @@ function recursionUnfolder(el, api) {
       '<button class="r-btn ghost" id="ru-reset" type="button">Reset</button>' +
       '<span class="r-stat">step <b id="ru-step" style="display:inline">0</b></span>' +
     '</div><div class="r-frame" id="ru-frame"></div>' +
-    '<p style="font-size:14px;color:var(--r-muted);margin:.6rem 0 0">Each step applies f(n) = f(n−1) + f(n−1). Every f(n) becomes two copies of f(n−1) — the count doubles.</p>';
+    '<p style="font-size:14px;color:var(--r-muted);margin:.6rem 0 0">Each step uses the successor equation f(n+1) = f(n) + f(n). Unfolding reverses one successor at a time until it reaches the base 0.</p>';
   var frame = el.querySelector("#ru-frame"), stepOut = el.querySelector("#ru-step");
   function draw() { frame.innerHTML = frames.slice(0, i + 1).join("<br>"); stepOut.textContent = i; }
   el.querySelector("#ru-next").onclick = function () { if (i < frames.length - 1) i++; draw(); };
@@ -36,32 +36,38 @@ Reading.init({
   id: "12-induction-naturals",
   crumb: '<a href="index.html">CS 227 Readings</a> · Reading 12',
   title: "Reading 12 — Induction on the Natural Numbers",
-  subtitle: "ℕ is the simplest inductive structure of all — one base object and one building rule. Everything from Reading 11 specializes to it.",
+  subtitle: "ℕ is another one-base, one-input generated collection. Its familiar induction rule is a specialization of Reading 11.",
   prev: { href: "reading-11-structural-induction.html", label: "Reading 11 — Structural Induction" },
   next: { href: "reading-13-existentials.html", label: "Reading 13 — Existentials & Conjunction" },
   blocks: [
     { type: "prose", html:
-      "<p>The natural numbers are built exactly like strings and trees, with the fewest possible constructors: start at $0$, and the only building rule is “add one” ($n \\mapsto n+1$). In fact ℕ is just strings over a one-letter alphabet — $n$ is a run of $n$ tally marks. So the structural induction you just learned specializes here to its most familiar form.</p>"
+      "<p>The natural numbers form another inductively generated collection. The <strong>base</strong> is $0$. The <strong>construction rule</strong> says that if $n\\in\\mathbb N$, then its successor $n+1\\in\\mathbb N$. The natural numbers are the smallest set containing $0$ and closed under successor.</p>" +
+      "<p>This is the same pattern as the languages and trees from Reading 11:</p>" +
+      "<table><thead><tr><th>Collection</th><th>Base objects</th><th>Construction rule</th><th>Hypotheses for the rule</th></tr></thead><tbody>" +
+      "<tr><td>Generated language $L$</td><td>$aa, aaaa$</td><td>$s\\mapsto ab\\,s\\,ba$ and $s\\mapsto a\\,s\\,a$</td><td>one: $P(s)$</td></tr>" +
+      "<tr><td>Full binary trees</td><td>$\\mathrm{leaf}$</td><td>$(l,r)\\mapsto\\mathrm{node}(l,r)$</td><td>two: $P(l),P(r)$</td></tr>" +
+      "<tr><td>$\\mathbb N$</td><td>$0$</td><td>$n\\mapsto n+1$</td><td>one: $P(n)$</td></tr>" +
+      "</tbody></table>"
     },
     { type: "def", title: "Recursive definition on ℕ", html:
-      "<p>Give a value at the base $0$ and a value at $n$ in terms of smaller inputs, e.g. $f(0) = 1,\\ f(n) = f(n-1) + f(n-1)$. Unfold until you bottom out at $0$.</p>"
+      "<p>A recursive definition follows the same clauses: give a value at the base and an equation for the successor. For example, $f(0)=1$ and $f(n+1)=f(n)+f(n)$. The successor equation uses the function's value on the recursively supplied input $n$. Unfolding eventually reaches the base $0$.</p>"
     },
     { type: "custom", id: "unfold", activity: false, render: recursionUnfolder },
     { type: "shortnum", id: "q1", badge: "Challenge",
-      prompt: "For $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$, compute $f(3)$.",
+      prompt: "For $f(0)=1,\\ f(n+1)=f(n)+f(n)$, compute $f(3)$.",
       answer: 8, placeholder: "a whole number",
       hint: "Unfold once — $f(3)=f(2)+f(2)$ — and keep going, or note the values double.",
       explain: "$1, 2, 4, 8$: $f(n) = 2^n$."
     },
     { type: "shortnum", id: "q2", badge: "Challenge",
-      prompt: "For $h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$, compute $h(3)$.",
+      prompt: "For $h(0)=1,\\ h(n+1)=h(n)+h(n)+1$, compute $h(3)$.",
       answer: 15, placeholder: "a whole number",
       hint: "Compute $h(0),h(1),h(2),h(3)$ — each is twice the previous plus one.",
       explain: "$1, 3, 7, 15$: $h(n) = 2^{n+1}-1$."
     },
     { type: "def", title: "Proof by induction on ℕ", html:
-      "<p>To prove $(\\forall n \\in \\mathbb{N})\\,P(n)$: prove the <strong>base case</strong> $P(0)$, and the <strong>inductive step</strong> $(\\forall n)(P(n) \\rightarrow P(n+1))$. This is the tree rule with one base ($0$ instead of $\\mathrm{leaf}$) and one subpart ($n$ instead of two subtrees). A property with $P(n) \\rightarrow P(n+1)$ always holding is <strong>hereditary</strong>.</p>" +
-      "<p>Why this reaches everything: the base gives $P(0)$, and the hereditary step then hands you $P(0) \\rightarrow P(1) \\rightarrow P(2) \\rightarrow \\cdots$, so climbing one rung at a time you reach <em>every</em> natural number (like a line of dominoes). The step must advance by exactly one. A step that jumps by $2$ from base $0$ would only reach the even numbers, leaving $P(1), P(3), \\ldots$ unproved — to cover the odds you would also need $P(1)$ as a second base case.</p>"
+      "<p>The base $0$ gives the obligation $P(0)$. The successor rule has one recursively supplied input $n$, so it gives the preservation obligation $(\\forall n)(P(n)\\rightarrow P(n+1))$. These are not new rules invented for numbers; they are what the inductive definition of $\\mathbb N$ requires.</p>" +
+      "<p>Why this reaches everything: $P$ holds for the base and is preserved by the constructor that generates every other natural number. Equivalently, $P(0)$ and the hereditary step give $P(1),P(2),\\ldots$. A proposed step $P(n)\\rightarrow P(n+2)$ does not match the successor constructor and, from base $0$, reaches only the even numbers. It would describe a different generated collection unless another base and corresponding obligation were supplied.</p>"
     },
     { type: "mc", id: "q3",
       prompt: "To prove $(\\forall n \\in \\mathbb{N})\\,P(n)$, what is the base case?",
@@ -104,26 +110,20 @@ Reading.init({
       hint: "Name $P$, prove the base, assume the hypothesis before using it, simplify the recursion, then conclude.",
       explain: "State $P$, base case, assume $P(n)$, apply the recursion, simplify to $P(n+1)$, conclude by induction."
     },
-    { type: "shortnum", id: "q7", badge: "Challenge",
-      prompt: "Using $0 + 1 + \\cdots + n = \\dfrac{n(n+1)}{2}$, what is $0 + 1 + \\cdots + 10$?",
-      answer: 55, placeholder: "a whole number",
-      hint: "Substitute $n = 10$.",
-      explain: "$\\frac{10 \\cdot 11}{2} = 55$."
-    },
     { type: "prose", html:
       "<h2>Apply it</h2>" +
       "<p>A recursion you haven’t seen — unfold it from the base case; the pattern differs from $f$ and $h$.</p>"
     },
     { type: "shortnum", id: "t1", badge: "Apply it",
-      prompt: "Let $t(0) = 2$ and $t(n) = 3 \\cdot t(n-1)$. Compute $t(3)$.",
+      prompt: "Let $t(0) = 2$ and $t(n+1) = 3 \\cdot t(n)$. Compute $t(3)$.",
       answer: 54, placeholder: "a whole number",
       hint: "From $t(0)=2$, multiply by 3 each step.",
       explain: "$2, 6, 18, 54$: $t(n) = 2 \\cdot 3^n$."
     },
-    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
-    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3><p>Recurrences used below: $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$; $\\ h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$; $\\ g(0)=0,\\ g(n)=g(n-1)+2$; $\\ t(0)=2,\\ t(n)=3\\cdot t(n-1)$.</p>" },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Optional transfer practice</h2><p>The required reading above establishes natural-number induction as a specialization of structural induction. The ungraded problems below offer additional transfer to recursive sequences, sums, and inequalities. They are <em>optional</em>, do not define the conceptual center of this reading, and don’t affect your progress bar. Challenge solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3><p>Recurrences used below: $f(0)=1,\\ f(n+1)=f(n)+f(n)$; $\\ h(0)=1,\\ h(n+1)=h(n)+h(n)+1$; $\\ g(0)=0,\\ g(n+1)=g(n)+2$; $\\ t(0)=2,\\ t(n+1)=3\\cdot t(n)$.</p>" },
     { type:"shortnum", id:"e1", practice:true,
-      prompt:"For $f(0)=1,\\ f(n)=f(n-1)+f(n-1)$, compute $f(4)$.",
+      prompt:"For $f(0)=1,\\ f(n+1)=f(n)+f(n)$, compute $f(4)$.",
       answer:16, placeholder:"a whole number",
       hint:"Each value doubles: $1, 2, 4, 8, \\ldots$",
       explain:"$f(n)=2^n$, so $f(4)=2^4=16$."
@@ -153,7 +153,7 @@ Reading.init({
       explain:"You must prove the base case $P(0)$ and the hereditary step $(\\forall n)(P(n)\\rightarrow P(n+1))$. Asserting $P(n+1)$ outright skips the hypothesis, and a single instance cannot cover all $n$."
     },
     { type:"shortnum", id:"e4", practice:true,
-      prompt:"For $g(0)=0,\\ g(n)=g(n-1)+2$, compute $g(5)$.",
+      prompt:"For $g(0)=0,\\ g(n+1)=g(n)+2$, compute $g(5)$.",
       answer:10, placeholder:"a whole number",
       hint:"Add $2$ five times starting from $0$.",
       explain:"$g(n)=2n$, so $g(5)=10$."
@@ -174,7 +174,7 @@ Reading.init({
       explain:"Hereditary means the property is inherited by each successor: $P(n)\\rightarrow P(n+1)$ for all $n$."
     },
     { type:"shortnum", id:"e6", practice:true,
-      prompt:"For $h(0)=1,\\ h(n)=h(n-1)+h(n-1)+1$, compute $h(2)$.",
+      prompt:"For $h(0)=1,\\ h(n+1)=h(n)+h(n)+1$, compute $h(2)$.",
       answer:7, placeholder:"a whole number",
       hint:"$h(1) = 1+1+1 = 3$; then $h(2) = 3+3+1$.",
       explain:"$h(0)=1,\\ h(1)=3,\\ h(2)=7$ (the pattern is $2^{n+1}-1$)."
@@ -206,7 +206,7 @@ Reading.init({
       explain:"$\\frac{n(n+1)}{2} + (n+1) = \\frac{(n+1)(n+2)}{2}$, matching $P(n+1)$."
     },
     { type:"mc", id:"m3", practice:true,
-      prompt:"In proving $(\\forall n)\\,f(n) = 2^n$ (with $f(n) = f(n-1)+f(n-1)$), which is the correct inductive step calculation?",
+      prompt:"In proving $(\\forall n)\\,f(n) = 2^n$ (with $f(n+1)=f(n)+f(n)$), which is the correct inductive step calculation?",
       choices:[
         "$f(n+1) = f(n) + f(n) = 2f(n) = 2\\cdot 2^n = 2^{n+1}$",
         "$f(n+1) = f(n) + 1 = 2^n + 1$",
@@ -245,7 +245,7 @@ Reading.init({
       explain:"$\\frac{5\\cdot 6\\cdot 11}{6} = 55$."
     },
     { type:"mc", id:"m8", practice:true,
-      prompt:"For $h(0)=1,\\ h(n)=2h(n-1)+1$, which closed form is correct?",
+      prompt:"For $h(0)=1,\\ h(n+1)=2h(n)+1$, which closed form is correct?",
       choices:["$h(n) = 2^{n+1}-1$", "$h(n) = 2^n$", "$h(n) = 2n+1$", "$h(n) = 2^{n}-1$"],
       answer:0,
       choiceFeedback:[null,
@@ -269,10 +269,10 @@ Reading.init({
     { type:"matching", id:"m10", practice:true,
       prompt:"Match each recurrence (with base as given) to its closed form.",
       pairs:[
-        { left:"$f(0)=1,\\ f(n)=2f(n-1)$", right:"2 to the n" },
-        { left:"$g(0)=0,\\ g(n)=g(n-1)+2$", right:"2n" },
-        { left:"$h(0)=1,\\ h(n)=2h(n-1)+1$", right:"2 to the (n+1), minus 1" },
-        { left:"$t(0)=2,\\ t(n)=3t(n-1)$", right:"2 times 3 to the n" }
+        { left:"$f(0)=1,\\ f(n+1)=2f(n)$", right:"2 to the n" },
+        { left:"$g(0)=0,\\ g(n+1)=g(n)+2$", right:"2n" },
+        { left:"$h(0)=1,\\ h(n+1)=2h(n)+1$", right:"2 to the (n+1), minus 1" },
+        { left:"$t(0)=2,\\ t(n+1)=3t(n)$", right:"2 times 3 to the n" }
       ],
       explain:"Pure doubling gives $2^n$; add-2 gives $2n$; double-plus-one gives $2^{n+1}-1$; triple from base $2$ gives $2\\cdot 3^n$."
     },
@@ -292,13 +292,13 @@ Reading.init({
       explain:"With base $P(0)$ and step $+2$, only even numbers are covered. To reach every $n$ you'd also need $P(1)$ as a base (or a $+1$ step)."
     },
     { type:"shortnum", id:"m13", practice:true,
-      prompt:"For $t(0)=2,\\ t(n)=3\\cdot t(n-1)$, compute $t(4)$.",
+      prompt:"For $t(0)=2,\\ t(n+1)=3\\cdot t(n)$, compute $t(4)$.",
       answer:162, placeholder:"a whole number",
       hint:"$t(n)=2\\cdot 3^n$, so $t(4)=2\\cdot 81$.",
       explain:"$t(4)=2\\cdot 3^4 = 2\\cdot 81 = 162$."
     },
     { type:"parsons", id:"m14", practice:true,
-      prompt:"Order the induction proof that $g(n)=2n$ for $g(0)=0,\\ g(n)=g(n-1)+2$.",
+      prompt:"Order the induction proof that $g(n)=2n$ for $g(0)=0,\\ g(n+1)=g(n)+2$.",
       steps:[
         "Let $P(n)$ be the statement $g(n) = 2n$.",
         "Base case: $g(0) = 0 = 2\\cdot 0$, so $P(0)$ holds.",
@@ -312,7 +312,7 @@ Reading.init({
     },
     { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
     { type:"challenge", id:"ch1",
-      prompt:"Prove by induction that $f(n) = 2^n$ for all $n$, where $f(0)=1$ and $f(n)=f(n-1)+f(n-1)$.",
+      prompt:"Prove by induction that $f(n) = 2^n$ for all $n$, where $f(0)=1$ and $f(n+1)=f(n)+f(n)$.",
       solution:"Let $P(n)$ be $f(n) = 2^n$. <em>Base</em>: $f(0) = 1 = 2^0$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $f(n) = 2^n$. Then $f(n+1) = f(n) + f(n) = 2\\,f(n) = 2\\cdot 2^n = 2^{n+1}$, which is $P(n+1)$. By induction, $f(n) = 2^n$ for all $n \\in \\mathbb{N}$."
     },
     { type:"challenge", id:"ch2",
@@ -324,7 +324,7 @@ Reading.init({
       solution:"Let $P(n)$ be “the sum of the first $n$ odd numbers equals $n^2$.” <em>Base</em>: for $n=0$ the (empty) sum is $0 = 0^2$; equivalently for $n=1$ the sum is $1 = 1^2$. <em>Step</em>: assume $P(n)$, i.e. $1 + 3 + \\cdots + (2n-1) = n^2$. The next odd number is $2(n+1)-1 = 2n+1$. Adding it: $1 + 3 + \\cdots + (2n-1) + (2n+1) = n^2 + (2n+1) = (n+1)^2$, which is $P(n+1)$. By induction, the sum of the first $n$ odd numbers is $n^2$ for all $n$."
     },
     { type:"challenge", id:"ch4",
-      prompt:"Prove by induction that $h(n) = 2^{n+1} - 1$ for all $n$, where $h(0)=1$ and $h(n) = h(n-1) + h(n-1) + 1$.",
+      prompt:"Prove by induction that $h(n) = 2^{n+1} - 1$ for all $n$, where $h(0)=1$ and $h(n+1)=h(n)+h(n)+1$.",
       solution:"Let $P(n)$ be $h(n) = 2^{n+1} - 1$. <em>Base</em>: $h(0) = 1 = 2^{1} - 1$, so $P(0)$ holds. <em>Step</em>: assume $P(n)$, i.e. $h(n) = 2^{n+1} - 1$. Then $h(n+1) = h(n) + h(n) + 1 = 2\\,h(n) + 1 = 2(2^{n+1} - 1) + 1 = 2^{n+2} - 2 + 1 = 2^{n+2} - 1 = 2^{(n+1)+1} - 1$, which is $P(n+1)$. By induction, $h(n) = 2^{n+1} - 1$ for all $n$."
     },
     { type:"challenge", id:"ch5",
@@ -353,7 +353,7 @@ Reading.init({
     },
     { type: "prose", html:
       "<h2>Where this is headed</h2>" +
-      "<p>That completes induction. We return to the connectives — starting with the existential quantifier and “and.”</p>"
+      "<p>We now have the general structural principle and its natural-number specialization. We will keep using inductive reasoning whenever our objects or definitions are generated recursively. Next we return to the connectives — starting with the existential quantifier and “and.”</p>"
     }
   ]
 });

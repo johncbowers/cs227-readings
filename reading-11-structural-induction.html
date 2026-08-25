@@ -13,71 +13,63 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script src="assets/reading-engine.js"></script>
 <script>
-function treeGrower(el, api) {
-  var W = 560, gap = 46, h = 2, maxH = 3;
-  el.innerHTML =
-    '<div class="r-controls">' +
-      '<label style="font-size:14px;color:var(--r-muted)">height</label>' +
-      '<input type="range" id="tg-h" min="0" max="' + maxH + '" step="1" value="2" style="width:180px" aria-label="tree height" />' +
-      '<span class="r-stat">height <b id="tg-hv" style="display:inline">2</b></span>' +
-      '<span class="r-stat">nodes <b id="tg-n" style="display:inline"></b></span>' +
-      '<span class="r-stat">leaves <b id="tg-l" style="display:inline"></b></span>' +
-    '</div>' +
-    '<div id="tg-svg" style="overflow-x:auto"></div>' +
-    '<p style="font-size:14px;color:var(--r-muted);margin:.6rem 0 0">A <em>perfect</em> binary tree of height h. Drag the slider: nodes = 2<sup>h+1</sup>−1, leaves = 2<sup>h</sup> — closed forms you can prove by induction.</p>';
-  var svgBox = el.querySelector("#tg-svg");
-  function render(H) {
-    var levels = H + 1, height = levels * gap + 24, nodes = [];
-    for (var k = 0; k <= H; k++) { var cnt = Math.pow(2, k); for (var j = 0; j < cnt; j++) nodes.push({ x: (j + 0.5) * (W / cnt), y: 22 + k * gap, k: k }); }
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + height + '" width="100%" style="max-width:' + W + 'px" role="img" aria-label="A perfect binary tree of height ' + H + '">';
-    for (var k2 = 0; k2 < H; k2++) { var cnt2 = Math.pow(2, k2); for (var j2 = 0; j2 < cnt2; j2++) {
-      var px = (j2 + 0.5) * (W / cnt2), py = 22 + k2 * gap, ccnt = cnt2 * 2;
-      [2 * j2, 2 * j2 + 1].forEach(function (cj) { var cx = (cj + 0.5) * (W / ccnt), cy = 22 + (k2 + 1) * gap;
-        svg += '<line class="r-edge" x1="' + px + '" y1="' + py + '" x2="' + cx + '" y2="' + cy + '" stroke-width="1.5" />'; });
-    } }
-    nodes.forEach(function (nd) { var isLeaf = nd.k === H;
-      svg += '<circle class="' + (isLeaf ? "r-leaf" : "r-node") + '" cx="' + nd.x + '" cy="' + nd.y + '" r="11" stroke-width="1.5" />'; });
-    svg += "</svg>"; svgBox.innerHTML = svg;
-    el.querySelector("#tg-hv").textContent = H;
-    el.querySelector("#tg-n").textContent = Math.pow(2, H + 1) - 1;
-    el.querySelector("#tg-l").textContent = Math.pow(2, H);
-  }
-  el.querySelector("#tg-h").addEventListener("input", function (e) { render(Number(e.target.value)); });
-  render(h);
-}
-
 Reading.init({
   id: "11-structural-induction",
   crumb: '<a href="index.html">CS 227 Readings</a> · Reading 11',
   title: "Reading 11 — Structural Induction on Strings and Trees",
-  subtitle: "Some objects are built up from smaller ones by fixed rules. That build-up gives us both a way to define and a way to prove.",
+  subtitle: "Base objects and construction rules generate collections. Those same rules tell us how to prove properties of every generated object.",
   prev: { href: "reading-10-algebra.html", label: "Reading 10 — Algebra in proofs" },
   next: { href: "reading-12-induction-naturals.html", label: "Reading 12 — Induction on ℕ" },
   blocks: [
     { type: "prose", html:
-      "<p>Many objects in computing are <strong>built up from smaller ones</strong> by a fixed set of <strong>constructors</strong>. Two we’ll use all the time:</p>" +
-      "<ul>" +
-      "<li>A <strong>string</strong> is either the empty string $\\varepsilon$, <em>or</em> a character followed by a smaller string, $a \\cdot w$.</li>" +
-      "<li>A <strong>binary tree</strong> is either a $\\mathrm{leaf}$, <em>or</em> a $\\mathrm{node}(l, r)$ built from two smaller trees $l$ and $r$.</li>" +
-      "</ul>" +
-      "<p>Each definition has a <strong>base</strong> constructor and a <strong>building</strong> constructor. That shape gives us two gifts: we can <em>define functions</em> by giving one equation per constructor, and we can <em>prove</em> $(\\forall t)\\,P(t)$ by matching the constructors.</p>" +
-      "<p>When you define a function this way, you need <em>exactly one</em> equation per constructor, and the equation for a building constructor may refer only to the function's values on the strictly <em>smaller</em> pieces — e.g. $g(\\mathrm{node}(l,r))$ in terms of $g(l)$ and $g(r)$. That is what makes the recursion bottom out; an equation whose right side mentions the whole object (like $g(\\mathrm{node}(l,r)) = 1 + g(\\mathrm{node}(l,r))$) never terminates and is not a valid definition.</p>"
+      "<p>An <strong>inductively generated collection</strong> starts with specified <strong>base objects</strong> and grows by specified <strong>construction rules</strong>. The collection contains the bases, is closed under the rules, and contains nothing that the bases and rules do not generate. In other words, it is the <strong>smallest set</strong> containing the bases and closed under the rules.</p>" +
+      "<p>The word <em>smallest</em> matters. Merely saying that a set contains the bases and is closed under the rules would allow unrelated objects to be included. An inductive definition says that every object in the collection has a finite construction from the bases using the rules.</p>"
     },
-    { type: "def", title: "Structural induction (for trees)", html:
-      "<p>To prove $(\\forall t)\\,P(t)$ for every tree:</p>" +
-      "<ul>" +
-      "<li><strong>base case:</strong> prove $P(\\mathrm{leaf})$;</li>" +
-      "<li><strong>inductive step:</strong> assuming $P(l)$ <em>and</em> $P(r)$, prove $P(\\mathrm{node}(l, r))$.</li>" +
-      "</ul>" +
-      "<p>The hypothesis is a <em>conjunction</em> — you get to assume the property for <em>both</em> subtrees. (Strings work the same way: base $P(\\varepsilon)$, step assume $P(w)$ prove $P(a\\cdot w)$.)</p>"
+    { type: "def", title: "A generated language over an alphabet", html:
+      "<p>Let $L$ be the language over the alphabet $\\{a,b\\}$ generated as follows:</p>" +
+      "<ul><li><strong>Bases:</strong> $aa \\in L$ and $aaaa \\in L$.</li>" +
+      "<li><strong>Rule 1:</strong> if $s \\in L$, then $ab\\,s\\,ba \\in L$.</li>" +
+      "<li><strong>Rule 2:</strong> if $s \\in L$, then $a\\,s\\,a \\in L$.</li></ul>" +
+      "<p>Here $ab\\,s\\,ba$ means the string obtained by putting $ab$ before $s$ and $ba$ after it. Thus $aa$, $aaaa$, $abaaba$, and $aaaaaa$ are generated; a string is in $L$ only when some finite chain of these rules builds it from a base.</p>"
     },
-    { type: "custom", id: "tree", activity: false, render: treeGrower },
-    { type: "def", title: "Full and perfect binary trees", html:
-      "<p>Two named shapes recur:</p>" +
-      "<ul>" +
-      "<li>A <strong>full</strong> binary tree is one in which every node has either $0$ children (a leaf) or $2$ children — no node has exactly one child. In our setup every $\\mathrm{node}(l,r)$ is built from two subtrees, so all the trees here are full, and for them $\\mathrm{leaves}(t) = \\mathrm{internal}(t) + 1$ (proved below).</li>" +
-      "<li>A <strong>perfect</strong> binary tree is a full tree in which, additionally, all leaves lie at the same depth. A perfect tree of height $h$ has exactly $\\mathrm{leaves} = 2^{h}$ leaves and $\\mathrm{size} = 2^{h+1} - 1$ nodes in total (both closed forms are provable by induction).</li>" +
-      "</ul>"
+    { type: "def", title: "Induction for a generated collection", html:
+      "<p>To prove that every generated object has property $P$:</p>" +
+      "<ul><li>prove $P$ for <strong>every base object</strong>;</li>" +
+      "<li>for <strong>every construction rule</strong>, assume $P$ for each recursively supplied input and prove $P$ for the object constructed by that rule.</li></ul>" +
+      "<p>Each base creates one base obligation. Each construction rule creates one preservation obligation. Each recursive input to a rule supplies one induction hypothesis. When the rules preserve $P$, we call $P$ <strong>hereditary</strong>. Since every generated object comes from the bases by those rules, every generated object inherits $P$.</p>"
+    },
+    { type: "parsons", id: "language-proof",
+      prompt: "Order the proof that every string in $L$ has an even number of $a$'s and an even number of $b$'s.",
+      steps: [
+        "Let $P(s)$ mean: $s$ has an even number of $a$'s and an even number of $b$'s.",
+        "Base $aa$: it has $2$ $a$'s and $0$ $b$'s, so $P(aa)$ holds. Base $aaaa$: it has $4$ $a$'s and $0$ $b$'s, so $P(aaaa)$ holds.",
+        "For Rule 1, assume $P(s)$. The string $ab\\,s\\,ba$ adds $2$ $a$'s and $2$ $b$'s, so both counts remain even.",
+        "For Rule 2, assume $P(s)$. The string $a\\,s\\,a$ adds $2$ $a$'s and $0$ $b$'s, so both counts remain even.",
+        "The property holds for every base and is preserved by every construction rule.",
+        "By structural induction, every string in $L$ has an even number of $a$'s and an even number of $b$'s."
+      ],
+      hint: "Name the property, check both bases, check both rules using the hypothesis about $s$, then conclude.",
+      explain: "The two base obligations and two preservation obligations exactly match the definition of $L$."
+    },
+    { type: "selectall", id: "language-obligations",
+      prompt: "To prove $(\\forall s \\in L)\\,Q(s)$ by induction, select <strong>all</strong> obligations you must discharge.",
+      choices: ["$Q(aa)$", "$Q(aaaa)$", "$Q(s)\\rightarrow Q(ab\\,s\\,ba)$ for every $s\\in L$", "$Q(s)\\rightarrow Q(a\\,s\\,a)$ for every $s\\in L$", "$Q(\\varepsilon)$"],
+      answers: [0, 1, 2, 3],
+      hint: "Match every base and every construction rule in the definition of $L$.",
+      explain: "There are two bases and two rules, hence four obligations. The empty string is not a base of this language."
+    },
+    { type: "prose", html:
+      "<h2>Full binary trees: the same idea, a different shape</h2>" +
+      "<p>Let $T$ be the smallest set generated by these clauses:</p>" +
+      "<ul><li><strong>Base:</strong> $\\mathrm{leaf} \\in T$.</li>" +
+      "<li><strong>Rule:</strong> if $l,r \\in T$, then $\\mathrm{node}(l,r) \\in T$.</li></ul>" +
+      "<p>These are <strong>full binary trees</strong>: every internal node has exactly two children. The rule has two recursively supplied inputs, so its inductive case gives two hypotheses, $P(l)$ and $P(r)$.</p>" +
+      "<p>The pattern is now visible: each language rule takes one generated string and gives one induction hypothesis; the tree rule takes two generated trees and gives two induction hypotheses. The hypotheses come from the rule, not from a template chosen afterward.</p>"
+    },
+    { type: "def", title: "Structural induction for full binary trees", html:
+      "<p>To prove $(\\forall t \\in T)\\,P(t)$:</p><ul>" +
+      "<li><strong>base:</strong> prove $P(\\mathrm{leaf})$;</li>" +
+      "<li><strong>preservation:</strong> for arbitrary trees $l,r$, assume $P(l)$ and $P(r)$ and prove $P(\\mathrm{node}(l,r))$.</li></ul>"
     },
     { type: "mc", id: "q1",
       prompt: "In structural induction on trees, the inductive step asks you to prove:",
@@ -101,7 +93,7 @@ Reading.init({
       choiceFeedback: [null,
         "That's the built-up object handled in the step, not the base.",
         "$P(0)$ is the base for the natural numbers, not trees.",
-        "$P(\\varepsilon)$ is the base for <em>strings</em>; a tree's base is the leaf."],
+        "$P(\\varepsilon)$ is the base for the separately generated collection $\\{a,b\\}^*$ used in the practice section; a tree's base is the leaf."],
       explain: "The base constructor of a tree is $\\mathrm{leaf}$, so the base case is $P(\\mathrm{leaf})$."
     },
     { type: "selectall", id: "q3",
@@ -144,7 +136,7 @@ Reading.init({
       hint: "Apply $\\mathrm{leaves} = \\mathrm{internal} + 1$.",
       explain: "By the theorem, $\\mathrm{leaves} = \\mathrm{internal} + 1 = 5 + 1 = 6$ — regardless of the tree's shape."
     },
-    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p><p>Some exercises use a <strong>separate generated collection</strong>: $\\Sigma^*$ for $\\Sigma=\\{a,b\\}$ is the smallest language with base $\\varepsilon$ and the rule schema: if $x\\in\\Sigma$ and $w\\in\\Sigma^*$, then $x\\cdot w\\in\\Sigma^*$. (This schema has the two instances $a\\cdot w$ and $b\\cdot w$.) Thus an induction over all strings in $\\Sigma^*$ has one base obligation and a preservation obligation for arbitrary $x\\in\\Sigma$. Do not confuse this language with $L$, whose bases and rules are different.</p>" },
     { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3><p>Throughout, use these recursive definitions: $\\mathrm{size}(\\mathrm{leaf}) = 1$, $\\mathrm{size}(\\mathrm{node}(l,r)) = 1 + \\mathrm{size}(l) + \\mathrm{size}(r)$; $\\mathrm{leaves}(\\mathrm{leaf}) = 1$, $\\mathrm{leaves}(\\mathrm{node}(l,r)) = \\mathrm{leaves}(l) + \\mathrm{leaves}(r)$; $\\mathrm{internal}(\\mathrm{leaf}) = 0$, $\\mathrm{internal}(\\mathrm{node}(l,r)) = 1 + \\mathrm{internal}(l) + \\mathrm{internal}(r)$; $\\mathrm{height}(\\mathrm{leaf}) = 0$, $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + \\max(\\mathrm{height}(l), \\mathrm{height}(r))$.</p>" },
     { type:"shortnum", id:"e1", practice:true,
       prompt:"Compute $\\mathrm{size}(\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}))$.",
@@ -158,30 +150,24 @@ Reading.init({
       hint:"Read it straight off the base equation.",
       explain:"By definition $\\mathrm{height}(\\mathrm{leaf}) = 0$."
     },
-    { type:"mc", id:"e3", practice:true,
-      prompt:"What is the base case of a structural induction on <strong>strings</strong>?",
-      choices:["$P(\\varepsilon)$", "$P(\\mathrm{leaf})$", "$P(0)$", "$P(a\\cdot w)$"],
-      answer:0,
-      choiceFeedback:[null,
-        "That's the base for <em>trees</em>; the empty string is the string base.",
-        "$P(0)$ is the base for the natural numbers.",
-        "$a\\cdot w$ is the built-up string handled in the step."],
-      explain:"The base constructor for strings is the empty string $\\varepsilon$, so the base case is $P(\\varepsilon)$."
+    { type:"selectall", id:"e3", practice:true,
+      prompt:"For the language $L$ generated above, select <strong>all</strong> base-case obligations for proving every string has property $P$.",
+      choices:["$P(aa)$", "$P(aaaa)$", "$P(\\varepsilon)$", "$P(\\mathrm{leaf})$"],
+      answers:[0,1],
+      hint:"The base obligations come from the specified starting strings, not from the fact that the objects happen to be strings.",
+      explain:"This language has two bases, $aa$ and $aaaa$. The empty string is not automatically a base of every inductively generated language."
     },
-    { type:"mc", id:"e4", practice:true,
-      prompt:"In structural induction on strings, the inductive step asks you to prove:",
+    { type:"selectall", id:"e4", practice:true,
+      prompt:"For the language $L$ generated above, select <strong>all</strong> preservation obligations.",
       choices:[
-        "$P(a\\cdot w)$, assuming $P(w)$",
-        "$P(w)$, assuming $P(a\\cdot w)$",
-        "$P(\\varepsilon)$, assuming $P(w)$",
-        "$P(a\\cdot w)$, assuming $P(\\varepsilon)$"
+        "Assuming $P(s)$, prove $P(ab\\,s\\,ba)$",
+        "Assuming $P(s)$, prove $P(a\\,s\\,a)$",
+        "Assuming $P(ab\\,s\\,ba)$, prove $P(s)$",
+        "Assuming $P(aa)$, prove $P(aaaa)$"
       ],
-      answer:0,
-      choiceFeedback:[null,
-        "That's backwards — you build up from the smaller string $w$ to $a\\cdot w$.",
-        "$P(\\varepsilon)$ is the base case, proved outright.",
-        "The hypothesis is about the substructure $w$, not the base."],
-      explain:"Assuming the property for the smaller string $w$, you prove it for $a\\cdot w$."
+      answers:[0,1],
+      hint:"Each construction rule produces one obligation in the same direction as the rule.",
+      explain:"The definition has two construction rules, and each must preserve $P$."
     },
     { type:"selectall", id:"e5", practice:true,
       prompt:"A tree is $\\mathrm{leaf}$ or $\\mathrm{node}(l, r)$ from two trees. Select <strong>all</strong> valid trees.",
@@ -210,8 +196,8 @@ Reading.init({
         "The base case is $P(\\mathrm{node}(l,r))$"
       ],
       answers:[0,1],
-      hint:"The base constructor of a tree is the $\\mathrm{leaf}$; $\\varepsilon$ belongs to strings and $\\mathrm{node}(l,r)$ is the step.",
-      explain:"A tree's base constructor is $\\mathrm{leaf}$, so the base case is $P(\\mathrm{leaf})$, proved outright with no assumptions; $\\varepsilon$ is the string base and $\\mathrm{node}(l,r)$ is the inductive step."
+      hint:"The base constructor of a tree is the $\\mathrm{leaf}$; $\\varepsilon$ is the base of the separately defined $\\Sigma^*$ and $\\mathrm{node}(l,r)$ is the tree step.",
+      explain:"A tree's base constructor is $\\mathrm{leaf}$, so the base case is $P(\\mathrm{leaf})$, proved outright with no assumptions; $\\varepsilon$ is the base for $\\Sigma^*$ and $\\mathrm{node}(l,r)$ is the tree's inductive step."
     },
     { type:"shortnum", id:"e8", practice:true,
       prompt:"Compute $\\mathrm{internal}(\\mathrm{node}(\\mathrm{leaf}, \\mathrm{leaf}))$.",
@@ -246,17 +232,17 @@ Reading.init({
       explain:"Substitute the two hypotheses into the recursive equation for $\\mathrm{size}$ and factor out the $2$."
     },
     { type:"parsons", id:"m2", practice:true,
-      prompt:"Let $\\mathrm{len}(\\varepsilon) = 0$ and $\\mathrm{len}(a\\cdot w) = 1 + \\mathrm{len}(w)$, and let $u \\mathbin{{+}\\mkern-6mu{+}} w$ append $w$ after $u$ (with $\\varepsilon \\mathbin{{+}\\mkern-6mu{+}} w = w$ and $(a\\cdot u) \\mathbin{{+}\\mkern-6mu{+}} w = a\\cdot(u \\mathbin{{+}\\mkern-6mu{+}} w)$). Order the proof (induction on $u$) that $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(u) + \\mathrm{len}(w)$.",
+      prompt:"For arbitrary $x\\in\\Sigma$, let $\\mathrm{len}(\\varepsilon) = 0$ and $\\mathrm{len}(x\\cdot w) = 1 + \\mathrm{len}(w)$, and let $u \\mathbin{{+}\\mkern-6mu{+}} w$ append $w$ after $u$ (with $\\varepsilon \\mathbin{{+}\\mkern-6mu{+}} w = w$ and $(x\\cdot u) \\mathbin{{+}\\mkern-6mu{+}} w = x\\cdot(u \\mathbin{{+}\\mkern-6mu{+}} w)$). Order the proof (induction on $u$) that $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(u) + \\mathrm{len}(w)$.",
       steps:[
         "Fix $w$. Let $P(u)$ be: $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(u) + \\mathrm{len}(w)$.",
         "Base case: $\\mathrm{len}(\\varepsilon \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(w) = 0 + \\mathrm{len}(w) = \\mathrm{len}(\\varepsilon) + \\mathrm{len}(w)$.",
         "Inductive step: assume $P(u)$, i.e. $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(u) + \\mathrm{len}(w)$.",
-        "$\\mathrm{len}((a\\cdot u) \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(a\\cdot(u \\mathbin{{+}\\mkern-6mu{+}} w)) = 1 + \\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w)$.",
-        "$= 1 + \\mathrm{len}(u) + \\mathrm{len}(w) = \\mathrm{len}(a\\cdot u) + \\mathrm{len}(w)$, which is $P(a\\cdot u)$.",
+        "$\\mathrm{len}((x\\cdot u) \\mathbin{{+}\\mkern-6mu{+}} w) = \\mathrm{len}(x\\cdot(u \\mathbin{{+}\\mkern-6mu{+}} w)) = 1 + \\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} w)$.",
+        "$= 1 + \\mathrm{len}(u) + \\mathrm{len}(w) = \\mathrm{len}(x\\cdot u) + \\mathrm{len}(w)$, which is $P(x\\cdot u)$.",
         "By structural induction on $u$, the equation holds for all strings $u$ (and the fixed $w$)."
       ],
       hint:"Induct on the first string $u$. Use the append and length equations, then the hypothesis.",
-      explain:"Push the recursion of append through length, apply the hypothesis, and repackage as $\\mathrm{len}(a\\cdot u)+\\mathrm{len}(w)$."
+      explain:"For arbitrary $x\\in\\Sigma$, push the recursion of append through length, apply the hypothesis, and repackage as $\\mathrm{len}(x\\cdot u)+\\mathrm{len}(w)$."
     },
     { type:"shortnum", id:"m4", practice:true,
       prompt:"A <em>perfect</em> binary tree of height $3$ has how many leaves? (Perfect: every internal node has two children and all leaves are at the same depth; $\\mathrm{leaves} = 2^{\\mathrm{height}}$.)",
@@ -293,7 +279,7 @@ Reading.init({
       explain:"$\\mathrm{size}$ and $\\mathrm{leaves}$ are $1$ at a leaf; $\\mathrm{internal}$ and $\\mathrm{height}$ are $0$."
     },
     { type:"selectall", id:"m9", practice:true,
-      prompt:"A recursive definition on trees needs one equation per constructor. Select <strong>all</strong> well-formed recursive definitions of a function $g$ on trees.",
+      prompt:"In the simple constructor-by-constructor format used here, select <strong>all</strong> well-formed recursive definitions of a function $g$ on trees.",
       choices:[
         "$g(\\mathrm{leaf}) = 0;\\quad g(\\mathrm{node}(l,r)) = 1 + g(l) + g(r)$",
         "$g(\\mathrm{leaf}) = 1;\\quad g(\\mathrm{node}(l,r)) = g(l) \\cdot g(r)$",
@@ -301,14 +287,14 @@ Reading.init({
         "$g(\\mathrm{leaf}) = 0;\\quad g(\\mathrm{node}(l,r)) = 1 + g(\\mathrm{node}(l,r))$"
       ],
       answers:[0,1],
-      hint:"You need exactly one equation per constructor, and the right side must only refer to <em>smaller</em> trees.",
+      hint:"In the simple constructor-by-constructor format used here, give an equation covering each constructor, and make recursive calls only on <em>smaller</em> trees.",
       explain:"The first two give a base and a step over the subtrees. The third omits the leaf case; the fourth refers to the whole tree $\\mathrm{node}(l,r)$ on the right, so it never bottoms out."
     },
     { type:"mc", id:"m10", practice:true,
-      prompt:"Define $\\mathrm{rev}$ by $\\mathrm{rev}(\\varepsilon) = \\varepsilon$ and $\\mathrm{rev}(a\\cdot w) = \\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (a\\cdot\\varepsilon)$. In a proof about $\\mathrm{rev}$ by induction on strings, what is the base case obligation?",
+      prompt:"For arbitrary $x\\in\\Sigma$, define $\\mathrm{rev}$ by $\\mathrm{rev}(\\varepsilon) = \\varepsilon$ and $\\mathrm{rev}(x\\cdot w) = \\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (x\\cdot\\varepsilon)$. In a proof about $\\mathrm{rev}$ by induction on $\\Sigma^*$, what is the base case obligation?",
       choices:[
         "Establish the property for $\\varepsilon$, using $\\mathrm{rev}(\\varepsilon) = \\varepsilon$",
-        "Establish the property for $a\\cdot w$, assuming it for $w$",
+        "For arbitrary $x\\in\\Sigma$, establish the property for $x\\cdot w$, assuming it for $w$",
         "Establish the property for $\\mathrm{leaf}$",
         "Establish the property for $\\mathrm{rev}(w)$"
       ],
@@ -316,8 +302,8 @@ Reading.init({
       choiceFeedback:[null,
         "That's the inductive step, not the base.",
         "Leaves belong to trees, not strings.",
-        "$\\mathrm{rev}(w)$ isn't a base constructor."],
-      explain:"The base constructor for strings is $\\varepsilon$, and $\\mathrm{rev}(\\varepsilon) = \\varepsilon$ is what you use there."
+        "$\\mathrm{rev}(w)$ is not the base object specified in the generation of $\\Sigma^*$."],
+      explain:"The base object for $\\Sigma^*$ as generated here is $\\varepsilon$, and $\\mathrm{rev}(\\varepsilon) = \\varepsilon$ is what you use there."
     },
     { type:"shortnum", id:"m12", practice:true,
       prompt:"Compute $\\mathrm{height}(\\mathrm{node}(\\mathrm{node}(\\mathrm{node}(\\mathrm{leaf},\\mathrm{leaf}),\\mathrm{leaf}),\\mathrm{leaf}))$.",
@@ -328,12 +314,12 @@ Reading.init({
     { type:"matching", id:"m15", practice:true,
       prompt:"Match each constructor to the structure it builds.",
       pairs:[
-        { left:"$\\varepsilon$", right:"the base of a string" },
-        { left:"$a\\cdot w$", right:"a string built from a smaller string" },
+        { left:"$\\varepsilon$", right:"the base of $\\Sigma^*$ as generated above" },
+        { left:"$x\\cdot w$ ($x\\in\\Sigma$)", right:"a string built from a smaller string" },
         { left:"$\\mathrm{leaf}$", right:"the base of a tree" },
         { left:"$\\mathrm{node}(l,r)$", right:"a tree built from two smaller trees" }
       ],
-      explain:"Each inductive type has one base constructor and one (or more) building constructors."
+      explain:"The base objects and construction rules of each generated collection determine its induction obligations."
     },
     { type:"prose", html:"<h3 class='r-diff-head'>Challenge</h3>" },
     { type:"challenge", id:"ch1",
@@ -353,8 +339,8 @@ Reading.init({
       solution:"Let $P(t)$ be $\\mathrm{size}(t) \\le 2^{\\mathrm{height}(t)+1} - 1$. <em>Base</em> ($\\mathrm{leaf}$): $\\mathrm{size}(\\mathrm{leaf}) = 1$ and $2^{0+1} - 1 = 2 - 1 = 1$, so $1 \\le 1$. <em>Step</em> ($\\mathrm{node}(l,r)$): assume the bound for $l$ and $r$, and let $H = \\max(\\mathrm{height}(l),\\mathrm{height}(r))$, so $\\mathrm{height}(\\mathrm{node}(l,r)) = 1 + H$. Then $\\mathrm{size}(\\mathrm{node}(l,r)) = 1 + \\mathrm{size}(l) + \\mathrm{size}(r) \\le 1 + (2^{\\mathrm{height}(l)+1}-1) + (2^{\\mathrm{height}(r)+1}-1) \\le 1 + (2^{H+1}-1) + (2^{H+1}-1) = 2\\cdot 2^{H+1} - 1 = 2^{H+2} - 1 = 2^{\\mathrm{height}(\\mathrm{node}(l,r))+1} - 1$. By structural induction the bound holds for every tree. (Equality holds exactly for perfect trees.)"
     },
     { type:"challenge", id:"ch5",
-      prompt:"Prove by structural induction on strings that $\\mathrm{len}(\\mathrm{rev}(w)) = \\mathrm{len}(w)$, where $\\mathrm{rev}(\\varepsilon)=\\varepsilon$, $\\mathrm{rev}(a\\cdot w) = \\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (a\\cdot\\varepsilon)$, and you may use the lemma $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} v) = \\mathrm{len}(u) + \\mathrm{len}(v)$.",
-      solution:"Let $P(w)$ be $\\mathrm{len}(\\mathrm{rev}(w)) = \\mathrm{len}(w)$. <em>Base</em> ($\\varepsilon$): $\\mathrm{len}(\\mathrm{rev}(\\varepsilon)) = \\mathrm{len}(\\varepsilon) = 0 = \\mathrm{len}(\\varepsilon)$. <em>Step</em> ($a\\cdot w$): assume $P(w)$, i.e. $\\mathrm{len}(\\mathrm{rev}(w)) = \\mathrm{len}(w)$. Then $\\mathrm{len}(\\mathrm{rev}(a\\cdot w)) = \\mathrm{len}(\\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (a\\cdot\\varepsilon))$. By the append-length lemma this equals $\\mathrm{len}(\\mathrm{rev}(w)) + \\mathrm{len}(a\\cdot\\varepsilon) = \\mathrm{len}(w) + 1$ (using the hypothesis and $\\mathrm{len}(a\\cdot\\varepsilon) = 1 + \\mathrm{len}(\\varepsilon) = 1$). Meanwhile $\\mathrm{len}(a\\cdot w) = 1 + \\mathrm{len}(w) = \\mathrm{len}(w) + 1$. The two agree, so $P(a\\cdot w)$ holds. By structural induction, $P(w)$ holds for every string."
+      prompt:"Prove by structural induction on $\\Sigma^*$ that $\\mathrm{len}(\\mathrm{rev}(w)) = \\mathrm{len}(w)$, where $\\mathrm{rev}(\\varepsilon)=\\varepsilon$, $\\mathrm{rev}(x\\cdot w) = \\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (x\\cdot\\varepsilon)$ for $x\\in\\Sigma$, and you may use the lemma $\\mathrm{len}(u \\mathbin{{+}\\mkern-6mu{+}} v) = \\mathrm{len}(u) + \\mathrm{len}(v)$.",
+      solution:"Let $P(w)$ be $\\mathrm{len}(\\mathrm{rev}(w)) = \\mathrm{len}(w)$. <em>Base</em> ($\\varepsilon$): $\\mathrm{len}(\\mathrm{rev}(\\varepsilon)) = \\mathrm{len}(\\varepsilon) = 0$. <em>Step</em>: take arbitrary $x\\in\\Sigma$ and assume $P(w)$. Then $\\mathrm{len}(\\mathrm{rev}(x\\cdot w)) = \\mathrm{len}(\\mathrm{rev}(w) \\mathbin{{+}\\mkern-6mu{+}} (x\\cdot\\varepsilon)) = \\mathrm{len}(\\mathrm{rev}(w)) + 1 = \\mathrm{len}(w)+1 = \\mathrm{len}(x\\cdot w)$. Thus the rule schema preserves $P$, so by structural induction $P(w)$ holds for every $w\\in\\Sigma^*$."
     },
     { type:"challenge", id:"ch6",
       prompt:"Prove by structural induction that $\\mathrm{height}(t) < \\mathrm{size}(t)$ for every tree $t$.",
@@ -378,7 +364,7 @@ Reading.init({
     },
     { type: "prose", html:
       "<h2>Where this is headed</h2>" +
-      "<p>The natural numbers are the very simplest thing built this way — just a base and one building rule. Reading 12 revisits induction there, where the closed forms are cleanest.</p>"
+      "<p>The natural numbers are another one-base, one-input generated collection. Reading 12 derives their induction rule from that construction.</p>"
     }
   ]
 });
