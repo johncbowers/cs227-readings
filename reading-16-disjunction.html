@@ -25,7 +25,7 @@ Reading.init({
       "<ul>" +
       "<li><strong>DeMorgan:</strong> $\\neg(P \\wedge Q) \\equiv \\neg P \\vee \\neg Q$ &nbsp;and&nbsp; $\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$. The same rule works for any number of operands: push the negation inward and flip every $\\wedge$ to $\\vee$ (and vice versa), so $\\neg(A \\wedge B \\wedge C) \\equiv \\neg A \\vee \\neg B \\vee \\neg C$. Nested formulas negate one layer at a time: $\\neg\\big(P \\wedge (Q \\vee R)\\big) \\equiv \\neg P \\vee \\neg(Q \\vee R) \\equiv \\neg P \\vee (\\neg Q \\wedge \\neg R)$.</li>" +
       "<li>Two negations from earlier readings pair naturally with DeMorgan: $\\neg(P \\rightarrow Q) \\equiv P \\wedge \\neg Q$, and $\\neg(\\forall x)\\,P(x) \\equiv (\\exists x)\\,\\neg P(x)$.</li>" +
-      "<li>To <strong>prove</strong> a goal $P \\vee Q$, prove <em>one</em> disjunct. Equivalently, you may assume $\\neg P$ and derive $Q$ — if $P$ fails, the other side must hold.</li>" +
+      "<li>To <strong>prove</strong> a goal $P \\vee Q$, prove <em>one</em> disjunct. Reading 17 will introduce additional proof strategies that use negation and contradiction.</li>" +
       "<li>To <strong>use</strong> a known $P \\vee Q$, argue by <strong>cases</strong>: reach the goal assuming $P$, and again assuming $Q$. A disjunction with $k$ alternatives (say $P \\vee Q \\vee R$) requires the goal to be derived in all $k$ cases.</li>" +
       "</ul>"
     },
@@ -104,7 +104,7 @@ Reading.init({
         "Splitting off $n=0$ leaves the hard part unproven."],
       explain: "Every integer is even or odd. If $n$ is even, $n(n+1)$ has an even factor; if $n$ is odd, $n+1$ is even — either way the product is even."
     },
-    { type:"prose", html:"<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type:"prose", html:"<div class='r-practice-head'></div><h2>Practice and optional enrichment</h2><p>De Morgan and direct proof-by-cases problems reinforce the assessed unit. Problems explicitly using modular arithmetic or contraposition are optional enrichment and are not assumed course content. None affects your progress bar.</p>" },
     { type:"prose", html:"<h3 class='r-diff-head'>Easy</h3>" },
     { type:"selectall", id:"e5", practice:true,
       prompt:"Select <strong>all</strong> statements equivalent to $\\neg(P \\vee Q)$.",
@@ -113,10 +113,10 @@ Reading.init({
       explain:"$\\neg(P \\vee Q) \\equiv \\neg P \\wedge \\neg Q$; the first two say the same thing." },
     { type:"selectall", id:"e8", practice:true,
       prompt:"Select <strong>all</strong> valid ways to establish the goal “$7$ is prime or $7$ is even.”",
-      choices:["Show $7$ is prime","Assume $7$ is not prime and show $7$ is even","Show $7$ is prime and $7$ is even","Show $7$ is odd"],
-      answers:[0,1],
-      hint:"A disjunction holds once one disjunct does; equivalently, assume the first disjunct fails and derive the second.",
-      explain:"Proving one disjunct ($7$ is prime) settles the disjunction; so does assuming the first fails and deriving the other. Proving both, or showing $7$ is odd, does not." },
+      choices:["Show $7$ is prime","Show $7$ is even","Show only that $7$ is an integer","Show $7$ is odd"],
+      answers:[0],
+      hint:"A disjunction holds once you establish one of its stated disjuncts.",
+      explain:"Showing that $7$ is prime establishes the first disjunct. The other statements do not establish either stated disjunct." },
     { type:"prose", html:"<h3 class='r-diff-head'>Medium</h3>" },
     { type:"selectall", id:"m1", practice:true,
       prompt:"Select <strong>all</strong> statements equivalent to $\\neg\\big(P \\wedge (Q \\vee R)\\big)$.",

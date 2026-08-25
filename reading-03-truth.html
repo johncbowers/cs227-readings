@@ -54,21 +54,21 @@ Reading.init({
       "<p>Condition $X$ <strong>entails</strong> $Y$ (written $X \\models Y$) when every object satisfying $X$ also satisfies $Y$. To refute an entailment, exhibit one object satisfying $X$ but falsifying $Y$.</p>"
     },
     { type: "mc", id: "q3",
-      prompt: "Over the integers, does “$n$ is divisible by 4” entail “$n$ is even”?",
+      prompt: "Over the integers, does “$n > 5$” entail “$n > 0$”?",
       choices: [
-        "Yes — every multiple of 4 is even",
-        "No — because 2 is even but not a multiple of 4",
-        "Yes — because every even number is a multiple of 4",
-        "No — divisibility and parity are unrelated"
+        "Yes — every integer greater than 5 is positive",
+        "No — because 3 is positive but not greater than 5",
+        "Yes — because every positive integer is greater than 5",
+        "No — inequalities cannot entail other inequalities"
       ],
       answer: 0,
       choiceFeedback: [
         null,
-        "That fact concerns the <em>reverse</em> direction; entailment here asks only whether every multiple of 4 is even.",
-        "That claim is false ($2$ is even, not a multiple of 4) — and it's the wrong direction anyway.",
-        "They're related: every multiple of 4 is even, which is exactly the entailment."
+        "That concerns the reverse direction. Entailment asks whether every integer satisfying $n>5$ also satisfies $n>0$.",
+        "That reverses the claim, and it is false: positive integers such as $1$ are not greater than $5$.",
+        "Inequalities can entail one another: $n>5$ guarantees $n>0$."
       ],
-      explain: "Every object satisfying “divisible by 4” also satisfies “even.” (The reverse direction fails, but that's a separate question.)"
+      explain: "Every integer satisfying $n>5$ also satisfies $n>0$. The reverse direction fails, but that is a separate question."
     },
     { type: "prose", html:
       "<h2>Complementation</h2>" +
@@ -196,14 +196,14 @@ Reading.init({
     { type: "selectall", id: "m10", practice: true,
       prompt: "Over the integers, select <strong>all</strong> entailments that hold.",
       choices: [
-        "“$n$ divisible by 6” $\\models$ “$n$ is even”",
+        "“$n > 10$” $\\models$ “$n > 5$”",
         "“$n > 5$” $\\models$ “$n > 0$”",
         "“$n$ is even” $\\models$ “$n > 0$”",
         "“$n = 4$” $\\models$ “$n$ is even”"
       ],
       answers: [0, 1, 3],
       hint: "$X \\models Y$ holds unless some object satisfies $X$ but falsifies $Y$.",
-      explain: "Every multiple of 6 is even, every integer past 5 is positive, and $4$ is even. But “$n$ is even” does not entail “$n>0$” — take $n = -2$."
+      explain: "Every integer past 10 is past 5, every integer past 5 is positive, and $4$ is even. But “$n$ is even” does not entail “$n>0$” — take $n = -2$."
     },
     { type: "shortnum", id: "m11", practice: true,
       prompt: "How many integers $n$ with $1 \\le n \\le 10$ satisfy “$n$ is even <strong>and</strong> $n > 5$”?",
@@ -228,8 +228,8 @@ Reading.init({
       solution: "An entailment $X \\models Y$ fails as soon as one object satisfies $X$ but falsifies $Y$. Take $n = 1$: it satisfies “$n > 0$” (since $1 > 0$) but falsifies “$n > 1$” (since $1 > 1$ is false). So $n = 1$ is a witness, and “$n > 0$” $\\not\\models$ “$n > 1$.” One counterexample is all it takes to refute a universal claim like an entailment."
     },
     { type: "challenge", id: "ch2",
-      prompt: "Over the integers, prove that “$n$ is divisible by 6” entails “$n$ is even.”",
-      solution: "We must show every integer satisfying “divisible by 6” also satisfies “even.” Suppose $n$ is divisible by 6. Then $n = 6k$ for some integer $k$. Rewrite: $n = 6k = 2\\cdot(3k)$. Since $3k$ is an integer, $n$ is $2$ times an integer, which is exactly what it means to be even. As $n$ was an arbitrary multiple of 6, every such $n$ is even, so the entailment holds. (This is a proof, not a check of examples — it covers all multiples of 6 at once.)"
+      prompt: "Over the integers, prove that “$n > 10$” entails “$n > 5$.”",
+      solution: "Let $n$ be an arbitrary integer satisfying $n>10$. Since $10>5$, transitivity of $>$ gives $n>5$. Thus every object satisfying the first condition satisfies the second, so the entailment holds. This argument covers every integer greater than $10$ rather than checking examples."
     },
     { type: "challenge", id: "ch3",
       prompt: "Over the integers, give the complement of “$n$ is even <strong>and</strong> ($n > 0$ <strong>or</strong> $n = -4$),” simplified.",

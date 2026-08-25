@@ -93,14 +93,13 @@ Reading.init({
       explain: "$f(a)$ has $2$ allowed values; $f(b), f(c)$ have $3$ each: $2 \\cdot 3 \\cdot 3 = 18$."
     },
     { type: "prose", html:
-      "<h2>Restrictions, injections, and complements</h2>" +
+      "<h2>Restrictions and constrained counting</h2>" +
       "<p><strong>Restricting a choice.</strong> When one choice is limited, count how many values it may still take, then multiply by the free choices as usual. Forbidding some values just shrinks that stage’s count; forcing one specific value — a fixed first letter of a string, a required output — makes that stage contribute a factor of $1$. The other positions stay free. (So a length-$n$ string with its first symbol fixed has $1$ choice there and the full alphabet at each remaining position.)</p>" +
-      "<p><strong>Injective functions.</strong> A function is <strong>injective</strong> (one-to-one) if no two inputs map to the same output. Count injective functions by choosing outputs one input at a time, each new output avoiding the ones already used: the first input has all $n$ values, the next $n - 1$, then $n - 2$, and so on — a <em>falling product</em>.</p>" +
       "<p><strong>Complement counting.</strong> Sometimes it is easier to count what you don’t want and subtract. A function is <strong>constant</strong> if it sends every input to the same output (all-$0$, all-$1$, …); there are exactly as many constant functions as output values. To count the <em>non-constant</em> functions, take the total and subtract the constant ones. The same “total minus the bad cases” move handles “at least one …” questions.</p>" +
       "<p><strong>Constrained subsets.</strong> The “each element is in or out” idea handles constraints too. Force an element to be <em>in</em> (or <em>out</em>) and it no longer has a free choice, so the remaining $k$ free elements give $2^k$ subsets. Requiring a subset to avoid a whole class of elements just means choosing freely from the allowed ones — a subset of $\\{1,2,3,4\\}$ with no odd elements is exactly a subset of $\\{2,4\\}$.</p>" +
       "<p><strong>Subsets as functions.</strong> Subsets of a set and functions from that set to $\\{0,1\\}$ are two views of the same thing: a subset corresponds to its <strong>indicator function</strong>, sending each member to $1$ and each non-member to $0$. This one-to-one correspondence is why both are counted by $2^n$.</p>"
     },
-    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Practice and optional enrichment</h2><p>The function, string, subset, sum-rule, and product-rule problems reinforce the assessed unit. Items explicitly using injective, surjective, or indicator-function language are optional enrichment and are not assumed course content. None of these problems affects your progress bar.</p>" },
     { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
     { type: "mc", id: "e1", practice: true,
       prompt: "The number of functions from a set of size $m$ to a set of size $n$ is:",

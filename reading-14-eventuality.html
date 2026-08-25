@@ -25,36 +25,36 @@ Reading.init({
       "<p>When we compare how two functions grow, we often don’t care about small inputs — only about what happens <em>eventually</em>. This is a nested quantifier pattern you’ll see again in algorithms: “there is a threshold beyond which something always holds.”</p>"
     },
     { type: "def", title: "Eventually greater than", html:
-      "<p>A function $f$ is <strong>eventually greater than</strong> $g$ when there is a threshold $N$ past which $f$ always beats $g$:</p>" +
-      "<p>$$(\\exists N)(\\forall n)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big).$$</p>" +
-      "<p>The $\\exists N$ comes first (one threshold), then $\\forall n$ beyond it.</p>"
+      "<p>For functions $f,g:\\mathbb{R}\\to\\mathbb{R}$, $f$ is <strong>eventually greater than</strong> $g$ when there is a real threshold $x_0$ past which $f$ always beats $g$:</p>" +
+      "<p>$$(\\exists x_0\\in\\mathbb{R})(\\forall x\\in\\mathbb{R})\\big(x > x_0 \\rightarrow f(x) > g(x)\\big).$$</p>" +
+      "<p>The $\\exists x_0$ comes first (one threshold), then $\\forall x$ beyond it. For sequences indexed by natural numbers, the analogous definition replaces real $x$ by natural $n$.</p>"
     },
     { type: "prose", html:
       "<h2>Reading the definition</h2>" +
-      "<p>The guard $n \\ge N$ is doing real work: “eventually greater” says nothing about inputs <em>below</em> the threshold. For small $n$ we may well have $f(n) \\le g(n)$ — only from $N$ onward must $f$ win. Exceptions before the threshold are allowed.</p>" +
-      "<p><strong>“For all $n$” is stronger than “eventually.”</strong> If $f(n) > g(n)$ for <em>every</em> $n$, then it certainly holds past the threshold $N = 0$, so $f$ is eventually greater than $g$. The converse fails, since eventual dominance permits early exceptions. Thus “for all $n$” implies “eventually,” but not the reverse.</p>" +
-      "<h2>Finding the smallest threshold</h2>" +
-      "<p>To find the smallest threshold $N$ making $f(n) > g(n)$ for all $n \\ge N$, solve the inequality $f(n) > g(n)$ for $n$. If it reduces to $n > c$, the smallest integer that works is the next whole number above $c$, and that value is the smallest $N$; for instance $n > 100$ gives $N = 101$ (not $100$, since $100 > 100$ is false). If it reduces to $n \\ge c$, then $N = c$. When both sides share a factor of $n$ (as in $n^2 > 5n$), you may divide by $n$ for $n > 0$; when the inequality is not linear, test successive values until $f$ pulls ahead and stays ahead.</p>" +
+      "<p>The guard $x>x_0$ is doing real work: eventuality says nothing about inputs at or below the threshold. Earlier exceptions are allowed.</p>" +
+      "<p><strong>“For all $x$” is stronger than “eventually.”</strong> If $f(x)>g(x)$ for every real $x$, then threshold $x_0=0$ certainly works. The converse fails because eventual dominance permits earlier exceptions.</p>" +
+      "<h2>Finding a threshold</h2>" +
+      "<p>To find a threshold, solve or otherwise prove the inequality $f(x)>g(x)$ under an assumption $x>x_0$. For example, $x^2>5x$ follows whenever $x>5$: because $x>5>0$, multiplying $x>5$ by the positive number $x$ gives $x^2>5x$. Examples can suggest a threshold, but checking successive values cannot prove the inequality stays true forever; the final justification must cover every $x$ beyond the chosen threshold.</p>" +
       "<h2>Transitivity</h2>" +
-      "<p>“Eventually greater than” is <strong>transitive</strong>. If $f$ eventually beats $g$ past $N_1$ and $g$ eventually beats $h$ past $N_2$, then past $N = \\max(N_1, N_2)$ both comparisons hold at once, so $f(n) > g(n) > h(n)$ and hence $f(n) > h(n)$. Taking the <em>larger</em> of the two thresholds guarantees both hold; the smaller one might still leave one comparison failing.</p>"
+      "<p>“Eventually greater than” is <strong>transitive</strong>. If $f$ eventually beats $g$ past $x_1$ and $g$ eventually beats $h$ past $x_2$, then past $x_0=\\max(x_1,x_2)$ both comparisons hold at once, so $f(x)>g(x)>h(x)$ and hence $f(x)>h(x)$.</p>"
     },
     { type: "mc", id: "q1",
       prompt: "Which formula says “$f$ is eventually greater than $g$”?",
       choices: [
-        "$(\\exists N)(\\forall n)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big)$",
-        "$(\\forall n)(\\exists N)\\big(n \\ge N \\rightarrow f(n) > g(n)\\big)$",
-        "$(\\exists N)(\\forall n)\\big(f(n) > g(n)\\big)$",
-        "$(\\forall N)(\\exists n)\\big(n \\ge N \\wedge f(n) > g(n)\\big)$"
+        "$(\\exists x_0)(\\forall x)\\big(x>x_0 \\rightarrow f(x)>g(x)\\big)$",
+        "$(\\forall x)(\\exists x_0)\\big(x>x_0 \\rightarrow f(x)>g(x)\\big)$",
+        "$(\\exists x_0)(\\forall x)\\big(f(x)>g(x)\\big)$",
+        "$(\\forall x_0)(\\exists x)\\big(x>x_0 \\wedge f(x)>g(x)\\big)$"
       ],
       answer: 0,
       choiceFeedback: [null,
-        "Swapping to $(\\forall n)(\\exists N)$ makes it nearly trivial — you could pick $N = n+1$ every time.",
-        "Dropping the $n \\ge N$ guard says $f > g$ <em>everywhere</em>, not just eventually.",
+        "Swapping to $(\\forall x)(\\exists x_0)$ makes the threshold depend on the input and changes the meaning.",
+        "Dropping the $x>x_0$ guard says $f>g$ <em>everywhere</em>, not just eventually.",
         "That's “infinitely often greater” (for every threshold there's a later point where $f > g$) — a different, weaker idea."],
-      explain: "One threshold $N$ (chosen first), beyond which $f > g$ for all $n$: $(\\exists N)(\\forall n)(n \\ge N \\rightarrow f(n) > g(n))$."
+      explain: "One threshold $x_0$ is chosen first; beyond it, $f(x)>g(x)$ for every real $x$."
     },
     { type: "mc", id: "q2",
-      prompt: "Which is the <strong>stronger</strong> statement: (A) $f(n) > g(n)$ for all $n$, or (B) $f$ is eventually greater than $g$?",
+      prompt: "Which is the <strong>stronger</strong> statement: (A) $f(x)>g(x)$ for all real $x$, or (B) $f$ is eventually greater than $g$?",
       choices: [
         "(A) is stronger — it implies (B)",
         "(B) is stronger — it implies (A)",
@@ -65,39 +65,39 @@ Reading.init({
       choiceFeedback: [null,
         "(B) allows $f \\le g$ on small inputs, so it can hold when (A) fails — it's weaker.",
         "(A) holds everywhere, so in particular past any threshold — that's (B).",
-        "(A) implies (B) (take $N = 0$) but not conversely, so they're not equivalent."],
-      explain: "“For all $n$” implies “eventually” (use $N = 0$), but eventually-greater allows exceptions on small inputs, so (A) is strictly stronger."
+        "(A) implies (B) (for example, take $x_0=0$) but not conversely, so they are not equivalent."],
+      explain: "“For all $x$” implies “eventually,” but eventually-greater allows earlier exceptions, so (A) is strictly stronger."
     },
     { type: "mc", id: "q3",
-      prompt: "Suppose $f$ is eventually greater than $g$ past threshold $N_1$, and $g$ is eventually greater than $h$ past threshold $N_2$. A threshold that works for “$f$ is eventually greater than $h$” is:",
-      choices: ["$N = \\max(N_1, N_2)$", "$N = \\min(N_1, N_2)$", "$N = 0$", "No single threshold works"],
+      prompt: "Suppose $f$ is eventually greater than $g$ past $x_1$, and $g$ is eventually greater than $h$ past $x_2$. A threshold that works for $f$ versus $h$ is:",
+      choices: ["$x_0=\\max(x_1,x_2)$", "$x_0=\\min(x_1,x_2)$", "$x_0=0$", "No single threshold works"],
       answer: 0,
       choiceFeedback: [null,
         "Below the larger threshold, one of the two comparisons might fail — $\\min$ is too small.",
         "$0$ only works if both comparisons hold from the start, which isn't given.",
         "It does work — take the later of the two thresholds and both comparisons hold, so $f > g > h$."],
-      explain: "Past $\\max(N_1, N_2)$ both $f > g$ and $g > h$ hold, so $f > h$ — “eventually greater than” is transitive."
+      explain: "Past $\\max(x_1,x_2)$ both $f>g$ and $g>h$ hold, so $f>h$."
     },
     { type: "shortnum", id: "q4", badge: "Challenge",
-      prompt: "Let $f(n) = n$ and $g(n) = 100$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
-      answer: 101,
+      prompt: "Let $f(x)=x$ and $g(x)=100$. Give a threshold $x_0$ such that $f(x)>g(x)$ for every $x>x_0$.",
+      answer: 100,
       placeholder: "a whole number",
-      hint: "You need $n > 100$; what's the smallest integer $n$ that works, and hence the smallest $N$?",
-      explain: "$n > 100$ means $n \\ge 101$, so the smallest threshold is $N = 101$."
+      hint: "Choose the boundary after which $x>100$ is guaranteed.",
+      explain: "Take $x_0=100$. Whenever $x>x_0$, we have $f(x)=x>100=g(x)$."
     },
     { type: "prose", html:
       "<h2>Apply it</h2>" +
       "<p>Find the exact crossover threshold for two growing functions.</p>"
     },
     { type: "shortnum", id: "t1", badge: "Apply it",
-      prompt: "Let $f(n) = 2n$ and $g(n) = n + 50$. What is the smallest threshold $N$ such that $f(n) > g(n)$ for all $n \\ge N$?",
-      answer: 51,
+      prompt: "Let $f(x)=2x$ and $g(x)=x+50$. Give a threshold $x_0$ such that $f(x)>g(x)$ for every $x>x_0$.",
+      answer: 50,
       placeholder: "a whole number",
-      hint: "Solve $2n > n + 50$ for $n$, then take the smallest integer that satisfies it.",
-      explain: "$2n > n + 50 \\iff n > 50 \\iff n \\ge 51$, so the smallest threshold is $N = 51$."
+      hint: "Solve $2x>x+50$ and use its boundary as the threshold.",
+      explain: "$2x>x+50$ exactly when $x>50$, so $x_0=50$ works."
     },
     { type: "prose", html:
-      "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>"
+      "<div class='r-practice-head'></div><h2>Optional discrete-sequence practice</h2><p>The assessed definition above follows the course notes for real functions. The problems below explore the analogous natural-number version, using $n\\ge N$; they are optional enrichment, not assumed course content, and do not affect your progress bar.</p>"
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
     { type: "selectall", id: "e1", practice: true,

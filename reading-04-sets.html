@@ -71,6 +71,16 @@ Reading.init({
       ],
       explain: "Intersection corresponds to “and”: the objects in both sets are exactly those satisfying both conditions."
     },
+    { type: "def", title: "Subset is entailment in set language", html:
+      "<p>Let $\mathrm{Sol}(P)$ be the set of objects satisfying condition $P$. Then $P \models Q$ exactly when $\mathrm{Sol}(P) \subseteq \mathrm{Sol}(Q)$. Saying “every object satisfying $P$ also satisfies $Q$” and saying “the solution set of $P$ is a subset of the solution set of $Q$” describe the same relationship.</p>"
+    },
+    { type: "mc", id: "q4",
+      prompt: "If $P \models Q$, which set relationship must hold?",
+      choices: ["$\mathrm{Sol}(P) \subseteq \mathrm{Sol}(Q)$", "$\mathrm{Sol}(Q) \subseteq \mathrm{Sol}(P)$", "$\mathrm{Sol}(P) \cap \mathrm{Sol}(Q)=\varnothing$", "$\mathrm{Sol}(P)=\overline{\mathrm{Sol}(Q)}$"],
+      answer: 0,
+      choiceFeedback: [null, "That reverses the entailment.", "Entailment does not require disjoint solution sets.", "Entailment is a subset relationship, not complementation."],
+      explain: "Every solution of $P$ must also be a solution of $Q$, precisely $\mathrm{Sol}(P) \subseteq \mathrm{Sol}(Q)$."
+    },
     { type: "prose", html:
       "<h2>Apply it</h2>" +
       "<p>One more computation — mind the elements of $C$ that aren’t even in $A$.</p>"

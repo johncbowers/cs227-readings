@@ -58,17 +58,14 @@ Reading.init({
       explain: "From a known conjunction you may keep whichever piece you need."
     },
     { type: "prose", html:
-      "<h2>Vocabulary for checking witnesses</h2>" +
-      "<p>Most existence claims below ask for a natural number meeting several conditions joined by $\\wedge$. A <strong>witness</strong> must satisfy <em>every</em> conjunct at once; miss even one and it is not a witness.</p>" +
+      "<h2>Checking witnesses</h2>" +
+      "<p>Many existence claims ask for an object meeting several conditions joined by $\\wedge$. A <strong>witness</strong> must satisfy <em>every</em> conjunct at once; miss even one and it is not a witness. The examples below use familiar parity, inequalities, and shapes:</p>" +
       "<ul>" +
       "<li>$n$ is <strong>even</strong> if it is a multiple of $2$ ($0, 2, 4, \\dots$) and <strong>odd</strong> otherwise ($1, 3, 5, \\dots$).</li>" +
-      "<li>$n$ is <strong>divisible by</strong> $k$ if $n = k \\cdot m$ for some whole number $m$; the multiples of $k$ are $0, k, 2k, 3k, \\dots$.</li>" +
-      "<li>$n$ is <strong>prime</strong> if $n > 1$ and its only divisors are $1$ and $n$ ($2, 3, 5, 7, 11, \\dots$); note $2$ is the only even prime.</li>" +
       "<li>$n$ is a <strong>perfect square</strong> if $n = k^2$ for some whole number $k$ ($0, 1, 4, 9, 16, 25, \\dots$).</li>" +
-      "<li>$n$ is a <strong>perfect cube</strong> if $n = k^3$ for some whole number $k$ ($0, 1, 8, 27, 64, 125, \\dots$).</li>" +
       "</ul>" +
       "<p>A double inequality such as $10 < n < 14$ means $n$ is <em>strictly between</em> the bounds: greater than $10$ and less than $14$, so here $n \\in \\{11, 12, 13\\}$.</p>" +
-      "<p>The <strong>smallest witness</strong> is the least value satisfying all the conditions. To find it, walk upward through the candidates (the multiples of $k$, or the squares $1, 4, 9, \\dots$, and so on) and take the first that clears every requirement.</p>"
+      "<p>The <strong>smallest witness</strong> is the least value satisfying all the conditions. To find it, examine the candidates in increasing order and take the first that clears every requirement.</p>"
     },
     { type: "mc", id: "q5",
       prompt: "To prove $(\\exists x)(x \\text{ is even} \\wedge x > 100)$ over the integers, which is a valid witness?",
@@ -139,7 +136,7 @@ Reading.init({
       explain: "The only even integer with $10 < n < 14$ is $12$, which isn't a perfect square — so no number meets all three conditions."
     },
     { type: "prose", html:
-      "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for exam review. These are <em>not</em> graded and don’t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>"
+      "<div class='r-practice-head'></div><h2>Practice and optional enrichment</h2><p>Problems using the course's creature, tree, parity, and inequality examples are exam-aligned practice. Problems involving primes, divisibility, or composite numbers are optional enrichment and are not assumed course content. None affects your progress bar.</p>"
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
     { type: "mc", id: "e1", practice: true,
