@@ -59,6 +59,7 @@ function guidedProof(el, api) {
     shuffleLocal(s.options.map(function (_, idx) { return idx; })).forEach(function (idx) {
       var btn = document.createElement("button"); btn.className = "r-choice"; btn.type = "button";
       btn.innerHTML = '<span class="r-tick"></span><span>' + s.options[idx] + "</span>";
+      btn.setAttribute("aria-label", Reading.plainText(s.options[idx]));
       btn.onclick = function () {
         if (idx === s.correct) {
           Array.prototype.forEach.call(wrap.children, function (c) { c.disabled = true; });

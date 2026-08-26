@@ -96,7 +96,7 @@ Reading.init({
         "$P(\\varepsilon)$ is the base for the separately generated collection $\\{a,b\\}^*$ used in the practice section; a tree's base is the leaf."],
       explain: "The base constructor of a tree is $\\mathrm{leaf}$, so the base case is $P(\\mathrm{leaf})$."
     },
-    { type: "selectall", id: "q3",
+    { type: "selectall", id: "trees-valid", practice: true,
       prompt: "A tree is a $\\mathrm{leaf}$ or $\\mathrm{node}(l, r)$ from two trees. Select <strong>all</strong> that are valid trees.",
       choices: [
         "$\\mathrm{leaf}$",
@@ -124,6 +124,18 @@ Reading.init({
       ],
       hint: "Name $P$, prove the leaf case, state what you may assume about the subtrees, combine those assumptions, then conclude.",
       explain: "Base at the leaf; in the step, add the two subtree equations and regroup to match $\\mathrm{internal}(\\mathrm{node}) + 1$."
+    },
+    { type: "selectall", id: "q3",
+      prompt: "In the node case of a proof that $\\mathrm{leaves}(t)=\\mathrm{internal}(t)+1$ for every full binary tree, select <strong>all</strong> statements that belong in the induction step.",
+      choices: [
+        "Assume $\\mathrm{leaves}(l)=\\mathrm{internal}(l)+1$",
+        "Assume $\\mathrm{leaves}(r)=\\mathrm{internal}(r)+1$",
+        "Prove $\\mathrm{leaves}(\\mathrm{node}(l,r))=\\mathrm{internal}(\\mathrm{node}(l,r))+1$",
+        "Assume the desired equation already holds for $\\mathrm{node}(l,r)$"
+      ],
+      answers: [0, 1, 2],
+      hint: "The hypotheses come from the two subtrees; the goal is the equation for the node built from them.",
+      explain: "Structural induction supplies the result on each subtree $l$ and $r$ as hypotheses and asks you to prove it for $\\mathrm{node}(l,r)$. Assuming it already holds for the node would assume what you must prove."
     },
     { type: "prose", html:
       "<h2>Apply it</h2>" +

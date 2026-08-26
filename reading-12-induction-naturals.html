@@ -59,7 +59,7 @@ Reading.init({
       hint: "Unfold once — $f(3)=f(2)+f(2)$ — and keep going, or note the values double.",
       explain: "$1, 2, 4, 8$: $f(n) = 2^n$."
     },
-    { type: "shortnum", id: "q2", badge: "Challenge",
+    { type: "shortnum", id: "q2b", badge: "Challenge", practice: true,
       prompt: "For $h(0)=1,\\ h(n+1)=h(n)+h(n)+1$, compute $h(3)$.",
       answer: 15, placeholder: "a whole number",
       hint: "Compute $h(0),h(1),h(2),h(3)$ — each is twice the previous plus one.",
@@ -69,22 +69,47 @@ Reading.init({
       "<p>The base $0$ gives the obligation $P(0)$. The successor rule has one recursively supplied input $n$, so it gives the preservation obligation $(\\forall n)(P(n)\\rightarrow P(n+1))$. These are not new rules invented for numbers; they are what the inductive definition of $\\mathbb N$ requires.</p>" +
       "<p>Why this reaches everything: $P$ holds for the base and is preserved by the constructor that generates every other natural number. Equivalently, $P(0)$ and the hereditary step give $P(1),P(2),\\ldots$. A proposed step $P(n)\\rightarrow P(n+2)$ does not match the successor constructor and, from base $0$, reaches only the even numbers. It would describe a different generated collection unless another base and corresponding obligation were supplied.</p>"
     },
-    { type: "mc", id: "q3",
-      prompt: "To prove $(\\forall n \\in \\mathbb{N})\\,P(n)$, what is the base case?",
-      choices: ["$P(0)$", "$P(1)$", "$P(n) \\rightarrow P(n+1)$", "$(\\forall n)\\,P(n)$"],
-      answer: 0,
-      choiceFeedback: [null, "ℕ's base object is $0$, not $1$.", "That's the inductive step.", "That's the whole statement to prove."],
-      explain: "The base object of ℕ is $0$, so the base case is $P(0)$."
+    { type: "selectall", id: "q3",
+      prompt: "The natural numbers are generated from base $0$ by the rule $n\\mapsto n+1$. To prove $P(n)$ for every natural number, select <strong>all</strong> proof obligations determined by those clauses.",
+      choices: [
+        "Prove $P(0)$",
+        "For every $n$, assume $P(n)$ and prove $P(n+1)$",
+        "For every $n$, assume $P(n+1)$ and prove $P(n)$",
+        "Prove $P(1)$ as a separate base case"
+      ],
+      answers: [0, 1],
+      hint: "One obligation per clause: the base $0$ and the single successor rule.",
+      explain: "The base $0$ gives $P(0)$; the successor rule gives the hereditary step $P(n)\\rightarrow P(n+1)$. Running the rule backward (assume $P(n+1)$, get $P(n)$) is not an obligation, and $0$ is the only base, so $P(1)$ is not separate."
     },
     { type: "mc", id: "q4",
-      prompt: "Which statement is the inductive step?",
-      choices: ["$(\\forall n)\\,(P(n) \\rightarrow P(n+1))$", "$(\\forall n)\\,P(n+1)$", "$P(0) \\rightarrow P(1)$", "$(\\exists n)\\,(P(n) \\rightarrow P(n+1))$"],
+      prompt: "Why does induction for full binary trees use two induction hypotheses in its node case, while induction on $\\mathbb N$ uses one hypothesis in its successor case?",
+      choices: [
+        "The tree rule has two recursively supplied inputs, while successor has one",
+        "Trees have more base objects than $\\mathbb N$",
+        "The number proof silently uses a second hypothesis",
+        "Tree proofs are always stronger than number proofs"
+      ],
       answer: 0,
       choiceFeedback: [null,
-        "That asserts $P(n+1)$ outright; the step only needs $P(n)$ to <em>imply</em> $P(n+1)$.",
-        "That's a single instance; the step is for every $n$.",
-        "The step is universal, not existential."],
-      explain: "The step says the property is hereditary: $P(n) \\rightarrow P(n+1)$ for every $n$."
+        "Both have exactly one base ($\\mathrm{leaf}$ and $0$); the difference is in the rule.",
+        "It uses exactly one hypothesis, $P(n)$, for the single input $n$.",
+        "Strength isn't the issue — the count of hypotheses matches the count of recursive inputs."],
+      explain: "Each induction hypothesis matches a recursively supplied input of the constructor: $\\mathrm{node}(l,r)$ supplies two, the successor $n+1$ supplies one."
+    },
+    { type: "mc", id: "q4b",
+      prompt: "A proposed proof uses only the base case $P(0)$ and the step $P(n)\\rightarrow P(n+2)$. What is the problem?",
+      choices: [
+        "It reaches only the even natural numbers, because the step does not match the successor rule",
+        "It proves only the odd natural numbers",
+        "It reaches every natural number but repeats some of them",
+        "There is no problem; any fixed positive step works from base $0$"
+      ],
+      answer: 0,
+      choiceFeedback: [null,
+        "From $0$ the step lands on $0,2,4,\\ldots$ — the evens, not the odds.",
+        "A $+2$ step from $0$ skips half the numbers; matching the $+1$ constructor is what reaches them all.",
+        "The $+2$ step from base $0$ never lands on an odd number at all."],
+      explain: "The successor constructor is $+1$; a $+2$ step from base $0$ generates only $0,2,4,\\ldots$, so the odd numbers are never covered."
     },
     { type: "selectall", id: "q5",
       prompt: "Select <strong>all</strong> hereditary properties (those with $P(n) \\rightarrow P(n+1)$ for every $n$).",
