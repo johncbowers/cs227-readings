@@ -78,6 +78,39 @@
   }
   Reading.renderMath = renderMath;
 
+  // Build a plain-text accessible label from HTML/LaTeX source, so buttons whose
+  // visible content is KaTeX (aria-hidden after rendering) still have a
+  // discernible accessible name. (Fixes the axe "button-name" rule.)
+  var MATHWORDS = [
+    ["\\leftrightarrow", "if and only if"], ["\\Leftrightarrow", "if and only if"],
+    ["\\rightarrow", "implies"], ["\\Rightarrow", "implies"], ["\\implies", "implies"],
+    ["\\mapsto", "maps to"], ["\\forall", "for all"], ["\\exists", "there exists"],
+    ["\\nexists", "there is no"], ["\\subseteq", "subset of"], ["\\subset", "subset of"],
+    ["\\emptyset", "empty set"], ["\\setminus", "minus"], ["\\varepsilon", "epsilon"],
+    ["\\epsilon", "epsilon"], ["\\models", "entails"], ["\\notin", "not in"],
+    ["\\leq", "<="], ["\\geq", ">="], ["\\neq", "not equal"], ["\\nmid", "does not divide"],
+    ["\\wedge", "and"], ["\\land", "and"], ["\\vee", "or"], ["\\lor", "or"],
+    ["\\neg", "not"], ["\\lnot", "not"], ["\\cup", "union"], ["\\cap", "intersect"],
+    ["\\times", "times"], ["\\cdot", "times"], ["\\mid", "divides"], ["\\to", "implies"],
+    ["\\le", "<="], ["\\ge", ">="], ["\\ne", "not equal"], ["\\in", "in"],
+    ["\\ldots", "..."], ["\\cdots", "..."], ["\\dots", "..."],
+    ["\\mathbb{N}", "N"], ["\\mathbb{Z}", "Z"], ["\\mathbb{R}", "R"], ["\\qed", ""]
+  ]; // longer tokens first so prefixes (\\le vs \\leq) don't collide
+  function plainText(s) {
+    var t = String(s == null ? "" : s);
+    t = t.replace(/<[^>]*>/g, " ");                 // strip HTML tags
+    t = t.replace(/\$\$?/g, " ");                    // strip math delimiters
+    t = t.replace(/\\(?:mathrm|text|mathbf|mathit|mathsf|operatorname)\s*\{([^{}]*)\}/g, "$1");
+    for (var i = 0; i < MATHWORDS.length; i++) {
+      t = t.split(MATHWORDS[i][0]).join(" " + MATHWORDS[i][1] + " ");
+    }
+    t = t.replace(/\\[a-zA-Z]+/g, " ").replace(/\\[^a-zA-Z]/g, " "); // leftover commands, \, \\ etc
+    t = t.replace(/[{}^_]/g, " ");
+    t = t.replace(/\s+/g, " ").trim();
+    return t || "option";
+  }
+  Reading.plainText = plainText;
+
   /* ---------- activity chrome ---------- */
   function activityCard(badge, id) {
     var card = el("div", "r-activity");
@@ -133,6 +166,7 @@
       var btn = el("button", "r-choice r-radio");
       btn.type = "button";
       btn.innerHTML = '<span class="r-tick"></span><span>' + it.txt + "</span>";
+      btn.setAttribute("aria-label", plainText(it.txt));
       if (settled && it.correct) btn.classList.add("correct");
       btn.onclick = function () {
         if (btn.disabled) return;
@@ -172,6 +206,7 @@
       var btn = el("button", "r-choice");
       btn.type = "button";
       btn.innerHTML = '<span class="r-tick"></span><span>' + it.txt + "</span>";
+      btn.setAttribute("aria-label", plainText(it.txt));
       it.btn = btn;
       btn.onclick = function () {
         it.chosen = !it.chosen;
@@ -292,6 +327,7 @@
       var btn = el("button", "r-step");
       btn.type = "button";
       btn.innerHTML = b.steps[i];
+      btn.setAttribute("aria-label", plainText(b.steps[i]));
       btn.dataset.i = i;
       btn.onclick = function () {
         if (where === "bank") { order.push(i); redraw(); }

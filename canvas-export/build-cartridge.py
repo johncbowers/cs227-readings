@@ -21,6 +21,9 @@ Produces:  out/cs227-course.imscc
 import os, re, glob, html, hashlib, zipfile, sys
 
 USE_EMBED = "--embed" in sys.argv   # embed the LIVE hosted reading (iframe) in each Page
+BASE_URL = ""                       # public host of the readings (for the quiz->reading link)
+if "--base" in sys.argv:
+    BASE_URL = sys.argv[sys.argv.index("--base") + 1].rstrip("/")
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(HERE, "out")
 PAGES_DIR   = os.path.join(OUT, "pages")
@@ -79,10 +82,23 @@ for r in readings:
     mod_id    = gid("module_" + num)
     mi_page   = gid("mi_page_" + num)
     mi_quiz   = gid("mi_quiz_" + num)
-    page_href = f"wiki_content/reading-{num}-{r['slug']}.html"
-    qti_href  = f"{quiz_id}/{quiz_id}.xml"
+    reading_file = f"reading-{num}-{r['slug']}.html"
+    page_href = f"wiki_content/{reading_file}"
+    # Canvas-native quiz layout: QTI under non_cc_assessments/, meta in the quiz folder.
+    qti_href  = f"non_cc_assessments/{quiz_id}.xml.qti"
     meta_href = f"{quiz_id}/assessment_meta.xml"
     quiz_title = f"{r['disp']} — Reading Check"
+
+    # Link from the quiz back to its reading. If the readings are hosted, link the
+    # live reading directly; otherwise link the Canvas Page by its wiki reference.
+    if BASE_URL:
+        reading_link = f"{BASE_URL}/{reading_file}"
+    else:
+        pslug = re.sub(r"[^a-z0-9]+", "-", r["disp"].lower()).strip("-")
+        reading_link = f"$WIKI_REFERENCE$/pages/{pslug}"
+    desc_html = (f'<p>First work through the reading: '
+                 f'<a href="{reading_link}">{esc(r["disp"])}</a>. '
+                 f'Then complete this short check.</p>')
 
     # ---- wiki page (Canvas Page) with required meta head ----
     files[page_href] = (
@@ -110,49 +126,12 @@ for r in readings:
                       f'<assignment identifier="{assign_id}"', meta, count=1)
         meta = re.sub(r"<title>.*?</title>",
                       f"<title>{esc(quiz_title)}</title>", meta, count=2)
+        meta = re.sub(r"<description>.*?</description>",
+                      f"<description>{esc(desc_html)}</description>", meta, count=1, flags=re.S)
         files[meta_href] = meta
 
-    # ---- imsmanifest organization hierarchy (mirrors module_meta by shared ids) ----
-    org_items.append(
-        f'      <item identifier="{mod_id}">\n'
-        f"        <title>{esc(r['disp'])}</title>\n"
-        f'        <item identifier="{mi_page}" identifierref="{page_id}">\n'
-        f"          <title>{esc(r['disp'])}</title>\n"
-        f"        </item>\n"
-        f'        <item identifier="{mi_quiz}" identifierref="{quiz_id}">\n'
-        f"          <title>{esc(quiz_title)}</title>\n"
-        f"        </item>\n"
-        f"      </item>"
-    )
-
-    # ---- module_meta module ----
-    mod_items.append(
-        f'  <module identifier="{mod_id}">\n'
-        f"    <title>{esc(r['disp'])}</title>\n"
-        f"    <workflow_state>active</workflow_state>\n"
-        f"    <position>{int(num)}</position>\n"
-        f"    <require_sequential_progress>false</require_sequential_progress>\n"
-        f"    <locked>false</locked>\n"
-        f"    <items>\n"
-        f'      <item identifier="{mi_page}">\n'
-        f"        <content_type>WikiPage</content_type>\n"
-        f"        <workflow_state>active</workflow_state>\n"
-        f"        <title>{esc(r['disp'])}</title>\n"
-        f"        <identifierref>{page_id}</identifierref>\n"
-        f"        <position>1</position>\n"
-        f"        <indent>0</indent>\n"
-        f"      </item>\n"
-        f'      <item identifier="{mi_quiz}">\n'
-        f"        <content_type>Quizzes::Quiz</content_type>\n"
-        f"        <workflow_state>active</workflow_state>\n"
-        f"        <title>{esc(quiz_title)}</title>\n"
-        f"        <identifierref>{quiz_id}</identifierref>\n"
-        f"        <position>2</position>\n"
-        f"        <indent>0</indent>\n"
-        f"      </item>\n"
-        f"    </items>\n"
-        f"  </module>"
-    )
+    # Modules are intentionally NOT generated — the instructor builds those manually.
+    # Pages and quizzes still import as standalone Canvas Pages and Quizzes.
 
     # ---- imsmanifest resources ----
     resources.append(

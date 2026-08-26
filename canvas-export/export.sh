@@ -21,8 +21,9 @@ echo "Zipped $n quiz packages into out/quizzes/"
 # + numbered/ordered Modules. Built in Python (needs ZIP_STORED + strict layout).
 cd "$DIR"
 if [ -n "$1" ]; then
-  # A BASE_URL was given: pages are hosted, so embed the LIVE interactive readings.
-  python3 build-cartridge.py --embed
+  # A BASE_URL was given: pages are hosted, so embed the LIVE interactive readings
+  # and point each quiz's "read this first" link at the hosted reading.
+  python3 build-cartridge.py --embed --base "$1"
 else
   # No host: static prose pages + separate graded quiz.
   python3 build-cartridge.py

@@ -38,20 +38,21 @@ overwrites `out/`.
 ## Fastest path: import the whole course at once
 
 `export.sh` also builds **`out/cs227-course.imscc`** — a **Canvas course export
-package** that, in a single import, creates all 18 reading **Pages**, all 18
-**check quizzes**, and 18 **Modules** (each module holds that reading's Page then
-its Quiz), numbered and in order (Reading 01 … Reading 18).
+package** that, in a single import, creates all 18 reading **Pages** and all 18
+**check quizzes**, numbered Reading 01 … Reading 18. Each quiz description links back
+to its reading. **Modules are not created** — you build/organize those yourself.
 
 1. In the target course → **Settings → Import Course Content**.
 2. Content Type → **Canvas Course Export Package**.
 3. Choose `out/cs227-course.imscc` → **Import** → wait for **Completed**.
-4. Check **Modules** (should read Reading 01 … 18 in order), **Pages**, and
-   **Quizzes**. Quizzes import as Classic; migrate to New Quizzes per the notes
-   below if you want.
+4. Check **Pages** and **Quizzes** (both should list Reading 01 … 18). Quizzes
+   import as Classic; migrate to New Quizzes per the notes below if you want.
 
-> This uses Canvas's *native* export format (not a plain Common Cartridge) — that's
-> what makes the reading HTML come in as real **Pages** (a generic cartridge would
-> import them as Files) and what carries the module numbering/order.
+> This uses Canvas's *native* export format (not a plain Common Cartridge). That's
+> what makes the reading HTML come in as real **Pages** (a generic cartridge imports
+> them as Files) and puts the quizzes in `non_cc_assessments/` where Canvas's native
+> importer looks for them (a generic cartridge's QTI location is ignored on this
+> code path, which is why an earlier build imported pages but not quizzes).
 
 Use this once to stand the course up. After that, for ongoing edits you'll normally
 re-import **one quiz at a time** using the per-quiz zips in `out/quizzes/` (next
