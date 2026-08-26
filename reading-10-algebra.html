@@ -92,7 +92,8 @@ Reading.init({
         "Detach with $0 < x$: $\\ 0 < x \\rightarrow 0 < x \\cdot x$.",
         "Detach with $0 < x$ again: $\\ 0 < x \\cdot x$."
       ],
-      hint: "Open the goal (generalize, then assume the hypothesis) before you instantiate the axiom; then you must detach twice — once for each copy of $0 < x$.",
+      requires: [[], [0], [0], [1, 2], [1, 3]],
+      hint: "Introduce arbitrary $x$ before using it. The axiom may be instantiated before or after assuming $0<x$; both must be in place before the two detachments.",
       explain: "Generalize and assume $0 < x$, instantiate the curried axiom at $x,x$, then detach twice using the assumption."
     },
     { type: "shortnum", id: "q4", badge: "Challenge",

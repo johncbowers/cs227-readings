@@ -93,6 +93,7 @@ Reading.init({
         "Detach with $S(c)$ to get $M(c)$.",
         "Existential generalization with witness $c$: $(\\exists x)\\,M(x)$."
       ],
+      requires: [[], [0], [0, 1], [2]],
       hint: "You need a concrete $c$ before instantiating or detaching, and can only generalize once you have $M(c)$.",
       explain: "Name the squirrel, push it through the universal to a mammal, then generalize back."
     },
@@ -273,6 +274,7 @@ Reading.init({
         "Conjunction on the goal: combine $S(c)$ and $M(c)$ into $S(c) \\wedge M(c)$.",
         "Existential generalization with witness $c$: $(\\exists x)(S(x) \\wedge M(x))$."
       ],
+      requires: [[], [0], [0, 1], [0, 2], [3]],
       hint: "You need a concrete $c$ with $S(c)$ before instantiating; keep $S(c)$ around so you can pair it with $M(c)$ at the end.",
       explain: "Name the squirrel, derive that it's a mammal, keep both facts, combine, and generalize."
     },

@@ -217,6 +217,7 @@ Reading.init({
         "Instantiate $(\\forall x)(M(x) \\rightarrow F(\\text{Fafnir}, x))$ at Scrat: $M(\\text{Scrat}) \\rightarrow F(\\text{Fafnir}, \\text{Scrat})$.",
         "Detach with $M(\\text{Scrat})$ to get $F(\\text{Fafnir}, \\text{Scrat})$."
       ],
+      requires: [[], [0], [], [1, 2]],
       hint: "You can only detach an implication once you already have its hypothesis.",
       explain: "Instantiate to get the squirrel-to-mammal instance, detach with $S(\\text{Scrat})$, instantiate the mammal-to-fear instance, then detach again."
     },
@@ -242,6 +243,7 @@ Reading.init({
         "Instantiate the third known at $k$: $C(k) \\rightarrow D(k)$.",
         "Detach with $C(k)$ to get $D(k)$."
       ],
+      requires: [[], [0], [], [1, 2], [], [3, 4]],
       hint: "Work down the chain: each detachment needs the fact produced by the previous one.",
       explain: "Instantiate and detach three times, feeding each derived fact into the next implication."
     },

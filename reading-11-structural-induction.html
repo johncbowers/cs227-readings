@@ -48,6 +48,7 @@ Reading.init({
         "The property holds for every base and is preserved by every construction rule.",
         "By structural induction, every string in $L$ has an even number of $a$'s and an even number of $b$'s."
       ],
+      requires: [[], [0], [0], [0], [1, 2, 3], [4]],
       hint: "Name the property, check both bases, check both rules using the hypothesis about $s$, then conclude.",
       explain: "The two base obligations and two preservation obligations exactly match the definition of $L$."
     },
@@ -122,6 +123,7 @@ Reading.init({
         "$= (1 + \\mathrm{internal}(l) + \\mathrm{internal}(r)) + 1 = \\mathrm{internal}(\\mathrm{node}(l,r)) + 1$, which is $P(\\mathrm{node}(l,r))$.",
         "By structural induction, $P(t)$ holds for every tree."
       ],
+      requires: [[], [0], [0], [2], [3], [1, 4]],
       hint: "Name $P$, prove the leaf case, state what you may assume about the subtrees, combine those assumptions, then conclude.",
       explain: "Base at the leaf; in the step, add the two subtree equations and regroup to match $\\mathrm{internal}(\\mathrm{node}) + 1$."
     },

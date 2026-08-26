@@ -11,6 +11,8 @@
  *   { type:'shortnum',  id, prompt, answer:<number>, tol:<number?>, explain }
  *   { type:'shorttext', id, prompt, answer:'...', accept:[...alts], explain }
  *   { type:'parsons',   id, prompt, steps:[...in correct order], explain }
+ *     Optional `requires`: one array per step, listing the indices of steps
+ *     that must occur earlier. This accepts every dependency-valid order.
  *   { type:'custom',    id?, activity:false, render:function(el, api){...} }
  *
  * Progress is stored in localStorage per reading id. No network/back end.
@@ -364,9 +366,21 @@
     }
     check.onclick = function () {
       if (order.length !== b.steps.length) { setFeedback(fb, false, "Place all the steps first.", ""); return; }
-      var ok = order.every(function (v, i) { return v === i; });
+      var ok;
+      if (b.requires) {
+        var position = {};
+        order.forEach(function (step, pos) { position[step] = pos; });
+        ok = order.every(function (step, pos) {
+          var prerequisites = b.requires[step] || [];
+          return prerequisites.every(function (requiredStep) {
+            return position[requiredStep] < pos;
+          });
+        });
+      } else {
+        ok = order.every(function (v, i) { return v === i; });
+      }
       if (ok) settle();
-      else setFeedback(fb, false, b.hint || "Not quite — the order isn't valid yet. Reset and rethink which step each one depends on (what does each step need to already be true?).", "");
+      else setFeedback(fb, false, b.hint || "Not quite — at least one step appears before something it depends on. Check what must already be known before each step.", "");
     };
     reset.onclick = function () { order = []; check.disabled = false; fb.textContent = ""; redraw(); };
 

@@ -70,6 +70,7 @@ Reading.init({
         "But we assumed $x + y > 100$ — a contradiction.",
         "Therefore $x > 50 \\vee y > 50$."
       ],
+      requires: [[], [0], [1], [0, 2], [3]],
       hint: "Assume the hypothesis, negate the disjunctive goal (DeMorgan → both $\\le 50$), add the inequalities, reach the contradiction, then conclude.",
       explain: "Assume the hypothesis, negate the goal to “both $\\le 50$,” add to get $x+y \\le 100$, contradicting $x+y>100$."
     },

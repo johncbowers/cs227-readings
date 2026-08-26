@@ -132,6 +132,7 @@ Reading.init({
         "$= 2 \\cdot 2^n = 2^{n+1}$, which is $P(n+1)$.",
         "By induction, $f(n) = 2^n$ for all $n$."
       ],
+      requires: [[], [0], [0], [2], [3], [1, 4]],
       hint: "Name $P$, prove the base, assume the hypothesis before using it, simplify the recursion, then conclude.",
       explain: "State $P$, base case, assume $P(n)$, apply the recursion, simplify to $P(n+1)$, conclude by induction."
     },
