@@ -17,13 +17,16 @@ Reading.init({
   id: "04-counting",
   crumb: '<a href="index.html">CS 227 Readings</a> · Reading 4',
   title: "Reading 4 — Counting",
-  subtitle: "Build a big total from small independent choices: ordered tuples, the product rule, and the sum rule.",
+  subtitle: "Functions, and how to count them — arrow diagrams, ordered tuples, the product rule, and the sum rule.",
   prev: { href: "reading-03-truth.html", label: "Reading 3 — Truth & Entailment" },
   next: { href: "reading-05-sets.html", label: "Reading 5 — Sets & Operations" },
   blocks: [
     { type: "prose", html:
-      "<p>To <strong>count</strong> a collection is to say how many members it has without listing them all. The key move is to describe each member as the result of a short sequence of <em>choices</em>, and then count the choices. In class you counted functions this way; here we turn that idea into two rules — the <strong>product rule</strong> and the <strong>sum rule</strong> — that organize almost all of the counting we do.</p>" +
-      "<p>Two pieces of notation. We write $x \\in A$ for &ldquo;$x$ is a member of $A$,&rdquo; and $|A|$ for the number of members of $A$, called its <strong>cardinality</strong> or size. (Some books, and our activity, also write $\\#A$ for the same thing.)</p>"
+      "<p>This reading develops two ideas that come up all across computer science: <strong>functions</strong> and <strong>counting</strong>. They are different ideas, but they fit together closely, and each leans on the other.</p>" +
+      "<p>A <strong>function</strong> is how we describe an <em>assignment</em> — a rule that hands each input a single output. Placing each student in a dorm, sorting each file into a folder, giving each pixel a color, mapping each input of a program to the output it produces: every one of these is a function, and functions are among the most basic objects you will model with in this course. <strong>Counting</strong> is the art of saying how many objects of some kind there are <em>without</em> listing them all — how many passwords of a given length exist, how many ways a set of courses could be scheduled, how large a space of possibilities a program might have to search. </p>" +
+      "<p>We begin by pinning down exactly what a function is (you met these in class as arrow diagrams), including the special kinds that matter later on: <em>one-to-one</em>, <em>onto</em>, and <em>one-to-one correspondences</em>. Then we build the two rules that organize almost all of our counting — the <strong>product rule</strong>, for choices made one after another, and the <strong>sum rule</strong>, for separate cases. Finally we put them to work: counting functions, counting strings, and seeing why one object, a string, can be read at the same time as a function and as a tuple.</p>" +
+      "<p>We will also rely on the terminology of sets. A <strong>set</strong> is a collection of distinct objects. We write $\\{a, b, c\\}$ for the set containing the elements $a$, $b$, and $c$. We can assign a name to a set, like $A = \\{a, b, c\\}$. Note that unlike lists you have encountered in programming classes, which have order (or an index for each element), sets have no order. Similarly, unlike lists, which allow duplicate elements, sets only contain distinct elements. So the sets $\\{a, b, c\\}$, $\\{b, a, c\\}$, and $\\{a, b, a, c, a\\}$ are all the same set.</p>" +
+      "<p>We write $x \\in A$ to say that $x$ is a member of set $A$, and we write $|A|$ (or sometimes $#A$) for the number of members of $A$, called its <strong>cardinality</strong> or size.</p>"
     },
     { type: "prose", html:
       "<h2>Functions</h2>" +
