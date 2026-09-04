@@ -120,6 +120,68 @@ Reading.init({
       explain: "The first two give each of $0$ and $1$ exactly one output, so they are functions (reusing $a$, as in the first, is fine). The third leaves $1$ unmapped; the fourth sends $0$ to two outputs. Neither of those is a function."
     },
     { type: "prose", html:
+      "<h2>One-to-one, onto, and one-to-one correspondences</h2>" +
+      "<p>Some functions are especially well-behaved, and in class you gave these behaviors names. Look again at the two functions we started with. Function $g$ (which sent $0 \\mapsto a$ and $1 \\mapsto b$) never reuses an output <em>and</em> reaches every element of $Y$. Function $f$ (which sent both inputs to $a$) does neither: it repeats the output $a$, and it misses $b$ entirely. These two behaviors are worth separating.</p>" +
+      "<ul>" +
+      "<li>A function is <strong>one-to-one</strong> (also called <strong>injective</strong>) if different inputs always land on different outputs — no output is used more than once.</li>" +
+      "<li>A function is <strong>onto</strong> (also called <strong>surjective</strong>) if every element of the range is reached by some input — nothing in $Y$ is left out.</li>" +
+      "</ul>" +
+      "<p>The two properties are independent — a function can have either one without the other — so it helps to see each in isolation:</p>" +
+      "<div style=\"display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin:16px 0\">" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 170\" width=\"220\" role=\"img\" aria-label=\"A function from a 2-element set to a 3-element set: 0 maps to a and 1 maps to b, while c is never reached. It is one-to-one but not onto.\">" +
+          "<defs><marker id=\"ah-inj\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"88\" rx=\"32\" ry=\"58\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"88\" rx=\"32\" ry=\"64\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"73\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"113\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"185\" y=\"57\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"93\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<text x=\"185\" y=\"129\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">c</text>" +
+          "<line x1=\"89\" y1=\"68\" x2=\"151\" y2=\"52\" stroke=\"currentColor\" marker-end=\"url(#ah-inj)\"/>" +
+          "<line x1=\"89\" y1=\"108\" x2=\"151\" y2=\"88\" stroke=\"currentColor\" marker-end=\"url(#ah-inj)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">One-to-one but <em>not</em> onto: no output repeats, but $c$ is never reached.</figcaption>" +
+        "</figure>" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 170\" width=\"220\" role=\"img\" aria-label=\"A function from a 3-element set to a 2-element set: 0 maps to a, 1 maps to b, and 2 maps to b. Every output is reached but b is reached twice. It is onto but not one-to-one.\">" +
+          "<defs><marker id=\"ah-surj\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"88\" rx=\"32\" ry=\"64\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"88\" rx=\"32\" ry=\"58\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"57\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"93\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"55\" y=\"129\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">2</text>" +
+          "<text x=\"185\" y=\"73\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"113\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"89\" y1=\"52\" x2=\"151\" y2=\"68\" stroke=\"currentColor\" marker-end=\"url(#ah-surj)\"/>" +
+          "<line x1=\"89\" y1=\"88\" x2=\"151\" y2=\"108\" stroke=\"currentColor\" marker-end=\"url(#ah-surj)\"/>" +
+          "<line x1=\"89\" y1=\"124\" x2=\"151\" y2=\"110\" stroke=\"currentColor\" marker-end=\"url(#ah-surj)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">Onto but <em>not</em> one-to-one: every output is reached, but $b$ is reached twice.</figcaption>" +
+        "</figure>" +
+      "</div>"
+    },
+    { type: "def", title: "One-to-one correspondence", html:
+      "<p>A function that is <em>both</em> one-to-one and onto is a <strong>one-to-one correspondence</strong> (also called <strong>bijective</strong>, or a <strong>bijection</strong>). It pairs the domain and range perfectly: every input has its own output, and every output is used exactly once. Our function $g$ is a one-to-one correspondence between $\\{0,1\\}$ and $\\{a,b\\}$.</p>" +
+      "<p>A perfect pairing like this forces the two sets to have the <em>same size</em> — an idea we will lean on later to count one collection by matching it up with another.</p>"
+    },
+    { type: "selectall", id: "onto-check", practice: true,
+      prompt: "The function $g$ from $\\{0,1\\}$ to $\\{a,b\\}$ sends $0 \\mapsto a$ and $1 \\mapsto b$. Select <strong>all</strong> true statements about $g$.",
+      choices: [
+        "It is one-to-one (injective).",
+        "It is onto (surjective).",
+        "It is a one-to-one correspondence (a bijection).",
+        "It sends two different inputs to the same output."
+      ],
+      answers: [0, 1, 2],
+      hint: "Check two things: is any output repeated, and is every output reached?",
+      explain: "$g$ sends $0$ and $1$ to <em>different</em> outputs (one-to-one), and both $a$ and $b$ are reached (onto), so it is a one-to-one correspondence. It does not send two inputs to the same output — that was $f$, not $g$."
+    },
+    { type: "prose", html:
       "<h2>Ordered pairs and the Cartesian product</h2>" +
       "<p>Suppose we pick one section from $C = \\{c_1, c_2, c_3\\}$ and pair it with one professor from $P = \\{\\text{Bowers}, \\text{Lam}, \\text{Molloy}, \\text{Weikle}\\}$. Each outcome is an <strong>ordered pair</strong> $(c, p)$: the first entry is the section, the second is the professor. The set of <em>all</em> such pairs is the <strong>Cartesian product</strong> $C \\times P = \\{(c,p) : c \\in C,\\ p \\in P\\}$.</p>" +
       "<p><em>Order is part of the pair.</em> A pair in $P \\times C$ looks like $(\\text{Bowers}, c_1)$ — professor first — so $C \\times P$ and $P \\times C$ are different sets of pairs, even though you could pair them up by reversing each pair. Building a pair takes two independent choices, so $|C \\times P| = |C| \\cdot |P| = 3 \\cdot 4 = 12$.</p>"
@@ -144,10 +206,11 @@ Reading.init({
     },
     { type: "prose", html:
       "<h2>Counting functions</h2>" +
-      "<p>Now we can count them, and it is the product rule in disguise. To <em>build</em> a function $X \\to Y$, go through the inputs one at a time and choose an output for each. The choices are <strong>independent</strong>: sending $0$ somewhere uses up none of the options for $1$, because a function is free to reuse an output. With $X = \\{0,1\\}$ and $Y = \\{a,b\\}$ that is two stages with two options each, $2 \\cdot 2 = 4$ functions in all — the $f$ and $g$ above, plus the two that send $0 \\mapsto b$.</p>" +
+      "<p>Why would we want to count functions? Because a function is exactly what records an <em>assignment</em>: sorting each of your files into one of several folders, placing each student in a dorm, handing each of the day&rsquo;s jobs to one of the servers that could run it. Counting the functions of a given type answers the question &ldquo;how many different ways could that assignment turn out?&rdquo;</p>" +
+      "<p>So suppose we want to count the functions from $X = \\{0,1\\}$ to $Y = \\{a,b\\}$. It turns out this is the product rule in disguise. To <em>build</em> such a function, go through the inputs one at a time and choose an output for each. The choices are <strong>independent</strong>: sending $0$ somewhere uses up none of the options for $1$, since a function is free to reuse an output. That is two stages with two options each, $2 \\cdot 2 = 4$ functions in all — the $f$ and $g$ above, plus the two that send $0 \\mapsto b$.</p>" +
       "<p>One stage per input, with $|Y|$ options at every stage, so a domain of size $|X|$ into a range of size $|Y|$ gives</p>" +
       "<p style=\"text-align:center\">$\\underbrace{|Y| \\cdot |Y| \\cdots |Y|}_{|X| \\text{ inputs}} = |Y|^{\\,|X|}$</p>" +
-      "<p>functions. From a $2$-element set into a $3$-element set there are $3^2 = 9$; from a $3$-element set into a $2$-element set there are $2^3 = 8$. Watch the roles: the size of the <em>domain</em> is the exponent, because each input is one independent choice.</p>"
+      "<p>functions. For a concrete case, the number of ways to color a row of $4$ pixels using $3$ colors is just the number of functions from the $4$ positions to the $3$ colors: $3^4 = 81$. And from a $2$-element set into a $3$-element set there are $3^2 = 9$; from a $3$-element set into a $2$-element set there are $2^3 = 8$. Watch the roles: the size of the <em>domain</em> is the exponent, because each input is one independent choice.</p>"
     },
     { type: "mc", id: "q3",
       prompt: "How many functions are there from a set of size $m$ to a set of size $n$?",
@@ -186,8 +249,36 @@ Reading.init({
       explain: "Course-and-lab: $5 \\cdot 3 = 15$. Seminar: $4$. The two cases can't be the same schedule, so add: $15 + 4 = 19$."
     },
     { type: "prose", html:
-      "<h2>A string is secretly a function</h2>" +
-      "<p>A string of length $n$ over an alphabet $\\Sigma$ assigns a character to each position $0, 1, \\dots, n-1$ — exactly a function from the positions to $\\Sigma$. So counting length-$n$ strings is the same problem as counting functions: there are $|\\Sigma|^{n}$ of them, one choice per position.</p>"
+      "<h2>Two ways to see a string</h2>" +
+      "<p>Strings are everywhere in computing, so they are worth pausing on — and they tie together the two ideas of this reading, functions and Cartesian products, in a satisfying way. Take a short string over the alphabet $\\{a,b\\}$, say the length-$3$ string $aba$. There are two equally good ways to say what that string <em>is</em>, and they turn out to agree.</p>" +
+      "<p><strong>First view: a string is a function from its positions to its characters.</strong> Number the positions of a length-$3$ string $0$, $1$, $2$. The string $aba$ simply records which character sits at each position — an $a$ at position $0$, a $b$ at position $1$, an $a$ at position $2$. That is exactly a function $f : \\{0,1,2\\} \\to \\{a,b\\}$ with $f(0)=a$, $f(1)=b$, and $f(2)=a$:</p>" +
+      "<div style=\"display:flex;justify-content:center;margin:16px 0\">" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 170\" width=\"220\" role=\"img\" aria-label=\"The length-3 string aba drawn as a function from positions {0,1,2} to characters {a,b}: position 0 maps to a, position 1 maps to b, and position 2 maps to a.\">" +
+          "<defs><marker id=\"ah-str\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"88\" rx=\"34\" ry=\"64\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"88\" rx=\"32\" ry=\"58\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" font-style=\"italic\" fill=\"currentColor\">positions</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" font-style=\"italic\" fill=\"currentColor\">characters</text>" +
+          "<text x=\"55\" y=\"57\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"93\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"55\" y=\"129\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">2</text>" +
+          "<text x=\"185\" y=\"73\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"113\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"91\" y1=\"52\" x2=\"151\" y2=\"68\" stroke=\"currentColor\" marker-end=\"url(#ah-str)\"/>" +
+          "<line x1=\"91\" y1=\"88\" x2=\"151\" y2=\"108\" stroke=\"currentColor\" marker-end=\"url(#ah-str)\"/>" +
+          "<line x1=\"91\" y1=\"124\" x2=\"151\" y2=\"70\" stroke=\"currentColor\" marker-end=\"url(#ah-str)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">The string $aba$ as a function $f : \\{0,1,2\\} \\to \\{a,b\\}$.</figcaption>" +
+        "</figure>" +
+      "</div>" +
+      "<p>This works in both directions. Every function of type $\\{0,1,2\\} \\to \\{a,b\\}$ names a character for each of the three positions, so it <em>is</em> a length-$3$ string over $\\{a,b\\}$; and every such string gives back a function. The length-$3$ strings over $\\{a,b\\}$ and the functions $\\{0,1,2\\} \\to \\{a,b\\}$ are the very same objects.</p>" +
+      "<p>So counting strings is really counting functions. A string of length $n$ over an alphabet $\\Sigma$ is a function from its $n$ positions $\\{0,1,\\dots,n-1\\}$ to $\\Sigma$, and we already counted those: there are $|\\Sigma|^{\\,n}$ of them, one independent choice of character per position.</p>"
+    },
+    { type: "prose", html:
+      "<p><strong>Second view: a string is a tuple.</strong> Read $aba$ from left to right and it is just the ordered triple $(a, b, a)$ — a member of $\\{a,b\\} \\times \\{a,b\\} \\times \\{a,b\\}$. In the same way, a string of length $n$ over $\\Sigma$ is an $n$-tuple whose every entry is drawn from $\\Sigma$: a member of the Cartesian product</p>" +
+      "<p style=\"text-align:center\">$\\underbrace{\\Sigma \\times \\Sigma \\times \\cdots \\times \\Sigma}_{n \\text{ factors}} = \\Sigma^{\\,n}.$</p>" +
+      "<p>By the product rule this set has $|\\Sigma| \\cdot |\\Sigma| \\cdots |\\Sigma| = |\\Sigma|^{\\,n}$ members — the <em>same</em> count as before. That agreement is no coincidence: the two views are exactly the counting-functions rule and the Cartesian-product rule from earlier in this reading, reaching $|\\Sigma|^{\\,n}$ from two directions. From now on we write $\\Sigma^{n}$ for the set of all length-$n$ strings over $\\Sigma$.</p>"
     },
     { type: "shortnum", id: "q5",
       prompt: "How many binary strings (over $\\{0,1\\}$) have length $6$?",
@@ -319,6 +410,24 @@ Reading.init({
       hint: "Say what determines a function, count each independent choice, then multiply.",
       explain: "Each input independently chooses one of two outputs, and the product rule multiplies those independent choices to give $2^3$."
     },
+    { type: "shortnum", id: "mn1", practice: true,
+      prompt: "<strong>Diner.</strong> A dinner special is one of $5$ entr&eacute;es, one of $4$ sides, and one of $3$ drinks. How many different dinner specials are there?",
+      answer: 60,
+      hint: "Three independent choices, one after another — the product rule.",
+      explain: "$5 \\cdot 4 \\cdot 3 = 60$ — multiply the independent choices."
+    },
+    { type: "shortnum", id: "mn2", practice: true,
+      prompt: "<strong>Lunch counter.</strong> Today's lunch is <strong>either</strong> one of $6$ sandwiches <strong>or</strong> one of $4$ salads (you pick just one). How many lunch choices are there?",
+      answer: 10,
+      hint: "Two separate groups, and you choose from only one — the sum rule.",
+      explain: "The sandwiches and the salads don't overlap, so by the sum rule $6 + 4 = 10$. (Note: <em>either/or</em> adds, whereas the &ldquo;and&rdquo; of the diner problem multiplies.)"
+    },
+    { type: "shortnum", id: "mn3", practice: true,
+      prompt: "<strong>Breakfast.</strong> A breakfast plate has one of $3$ mains and one of $2$ breads, and <strong>optionally</strong> one of $4$ drinks (or no drink). How many breakfast plates are there?",
+      answer: 30,
+      hint: "The optional drink is a stage with $4 + 1 = 5$ outcomes (the extra one is &ldquo;no drink&rdquo;).",
+      explain: "$3 \\cdot 2 \\cdot 5 = 30$ — the optional drink contributes a factor of $5$."
+    },
     { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
     { type: "challenge", id: "ch1",
       prompt: "Explain why $|A \\times B| = |A| \\cdot |B|$ for finite sets $A$ and $B$, using the product rule.",
@@ -335,6 +444,10 @@ Reading.init({
     { type: "challenge", id: "ch4",
       prompt: "How many two-character IDs over $\\{A,B,C\\} \\times \\{1,2,3\\}$ begin with $A$ <strong>or</strong> end with $1$? Split into disjoint cases.",
       solution: "The two conditions overlap ($A1$ satisfies both), so we can&rsquo;t just add the two counts. Split into disjoint cases instead: <ul><li>&ldquo;begins with $A$&rdquo;: $A1, A2, A3$ — that is $3$ IDs;</li><li>&ldquo;does not begin with $A$ but ends with $1$&rdquo;: $B1, C1$ — that is $2$ IDs.</li></ul> These cases are disjoint and cover everything wanted, so by the sum rule the total is $3 + 2 = 5$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch5",
+      prompt: "<strong>Value meal (product and sum together).</strong> A caf&eacute;'s value meal is <strong>either</strong> a burger (one of $3$ kinds) with a drink (one of $4$), <strong>or</strong> a wrap (one of $2$ kinds) with a side (one of $3$) and a drink (one of $4$). How many value meals are possible?",
+      solution: "Handle each kind of meal with the product rule, then combine the two kinds with the sum rule. <ul><li>Burger meals: a burger and a drink, $3 \\cdot 4 = 12$.</li><li>Wrap meals: a wrap, a side, and a drink, $2 \\cdot 3 \\cdot 4 = 24$.</li></ul> A value meal is one kind <em>or</em> the other and never both, so the two groups are disjoint and we add: $12 + 24 = 36$. $\\blacksquare$ <br><br>The pattern is the two rules working together: <strong>multiply the choices within each case, then add across the cases.</strong>"
     },
     { type: "prose", html:
       "<h2>Where this is headed</h2>" +
