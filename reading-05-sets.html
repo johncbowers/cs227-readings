@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 5 — Sets and Operations</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "05-sets",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 5',
+  title: "Reading 5 — Sets and Operations",
+  subtitle: "Sets package collections of objects — each set is a condition in disguise, and counting them reuses the product and sum rules.",
+  prev: { href: "reading-04-counting.html", label: "Reading 4 — Counting" },
+  next: { href: "reading-06-predicate-logic.html", label: "Reading 6 — Predicate Logic" },
+  blocks: [
+    { type: "prose", html:
+      "<p>A <strong>set</strong> is an unordered collection of distinct <strong>elements</strong>. Write $x \\in A$ for &ldquo;$x$ is in $A$,&rdquo; list small sets in braces ($\\{1,2,3\\}$), and write $|A|$ for the number of elements (the <strong>cardinality</strong>). Because a set is unordered and has no repeats, $\\{1,2,3\\}$, $\\{3,2,1\\}$, and $\\{1,1,2,3\\}$ all name the same set — unlike the ordered tuples of the last reading. We write $A \\subseteq B$ (&ldquo;$A$ is a subset of $B$&rdquo;) when every element of $A$ is also in $B$ — note the hidden &ldquo;for all.&rdquo;</p>"
+    },
+    { type: "def", title: "Three operations", html:
+      "<ul>" +
+      "<li><strong>Union</strong> $A \\cup B$: everything in $A$ or $B$ (or both).</li>" +
+      "<li><strong>Intersection</strong> $A \\cap B$: everything in both.</li>" +
+      "<li><strong>Difference</strong> $A \\setminus B$: everything in $A$ that is not in $B$.</li>" +
+      "</ul>" +
+      "<p>The <strong>complement</strong> of a set (relative to some understood universe) collects everything <em>not</em> in it.</p>"
+    },
+    { type: "mc", id: "q1",
+      prompt: "Let $A = \\{1,2,3,4,5,6\\}$ and $B = \\{2,4,6\\}$. What is $A \\cap B$?",
+      choices: ["$\\{2, 4, 6\\}$", "$\\{1, 3, 5\\}$", "$\\{1, 2, 3, 4, 5, 6\\}$", "$\\{\\,\\}$ (empty)"],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "Those are the elements of $A$ <em>not</em> in $B$ — that is $A \\setminus B$.",
+        "That is the union $A \\cup B$. Intersection keeps only what is in both.",
+        "The sets overlap ($2, 4, 6$ are in both), so the intersection is not empty."
+      ],
+      explain: "Intersection keeps what is in both sets; since $B \\subseteq A$, that is all of $B$."
+    },
+    { type: "prose", html:
+      "<h2>Sets and conditions are two sides of a coin</h2>" +
+      "<p>Every condition carves out a set — the objects that satisfy it — and every set is the condition &ldquo;belongs to this set.&rdquo; <strong>Set-builder notation</strong> writes this directly: $\\{x : P(x)\\}$ is &ldquo;the set of all $x$ for which $P(x)$ holds,&rdquo; and $\\{x \\in A : P(x)\\}$ narrows that to the elements of $A$ satisfying $P$. For instance, $\\{n : n \\text{ is even}\\}$ is the set of even integers.</p>" +
+      "<p>The operations line up with the connectives you already use in words: union with &ldquo;or,&rdquo; intersection with &ldquo;and,&rdquo; and complement with &ldquo;not.&rdquo; Combining conditions with &ldquo;and,&rdquo; &ldquo;or,&rdquo; &ldquo;not&rdquo; is the same as combining their sets with $\\cap$, $\\cup$, and complement. There is one twist: taking a complement flips the connective. &ldquo;Not (even <em>and</em> positive)&rdquo; becomes &ldquo;odd <em>or</em> not positive&rdquo; — the &ldquo;and&rdquo; turns into an &ldquo;or.&rdquo;</p>"
+    },
+    { type: "selectall", id: "q2",
+      prompt: "Select <strong>all</strong> correct correspondences between a set operation and a connective.",
+      choices: [
+        "Union $A \\cup B$ corresponds to &ldquo;or.&rdquo;",
+        "Intersection $A \\cap B$ corresponds to &ldquo;and.&rdquo;",
+        "Complement corresponds to &ldquo;not.&rdquo;",
+        "Union $A \\cup B$ corresponds to &ldquo;and.&rdquo;",
+        "Intersection $A \\cap B$ corresponds to &ldquo;or.&rdquo;"
+      ],
+      answers: [0, 1, 2],
+      hint: "Write out what $x \\in A \\cup B$ and $x \\in A \\cap B$ each mean in words.",
+      explain: "$x \\in A \\cup B$ means $x \\in A$ <em>or</em> $x \\in B$; $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$; the complement collects what is <em>not</em> in the set. So union goes with &ldquo;or,&rdquo; intersection with &ldquo;and,&rdquo; complement with &ldquo;not.&rdquo;"
+    },
+    { type: "def", title: "Counting subsets", html:
+      "<p>How many subsets does an $n$-element set have? Building a subset means deciding, for each element, a single yes/no question: <em>in</em> or <em>out</em>. That is $n$ independent two-way choices, so by the product rule there are $2^{n}$ subsets.</p>" +
+      "<p>Said another way, a subset corresponds exactly to its <strong>indicator function</strong> — the function sending each member to $1$ and each non-member to $0$. Subsets of an $n$-set and functions from that set to $\\{0,1\\}$ are two views of the same thing, which is why both count $2^{n}$.</p>"
+    },
+    { type: "shortnum", id: "q3",
+      prompt: "How many subsets does a set of $5$ elements have?",
+      answer: 32,
+      placeholder: "a whole number",
+      hint: "Each element is independently in or out: $2^5$.",
+      explain: "$2^5 = 32$ — one two-way choice per element."
+    },
+    { type: "prose", html:
+      "<h2>Counting a union</h2>" +
+      "<p>Two sets are <strong>disjoint</strong> when they share no elements ($A \\cap B$ is empty). For disjoint sets nothing is double-counted, so $|A \\cup B| = |A| + |B|$ — this is the sum rule again. When the sets <em>overlap</em>, adding $|A| + |B|$ counts each shared element twice, so we subtract the overlap back out:</p>" +
+      "<p style='text-align:center'>$|A \\cup B| = |A| + |B| - |A \\cap B|.$</p>" +
+      "<p>This is the <strong>inclusion&ndash;exclusion</strong> fix for the double-counting we first met with overlapping groups in the counting reading.</p>"
+    },
+    { type: "shortnum", id: "q4",
+      prompt: "Suppose $|A| = 10$, $|B| = 7$, and $|A \\cap B| = 3$. What is $|A \\cup B|$?",
+      answer: 14,
+      placeholder: "a whole number",
+      hint: "Add the two sizes, then subtract the overlap you counted twice.",
+      explain: "$|A \\cup B| = |A| + |B| - |A \\cap B| = 10 + 7 - 3 = 14$."
+    },
+    { type: "def", title: "Subset is entailment in set language", html:
+      "<p>Let $\\mathrm{Sol}(P)$ be the set of objects satisfying a condition $P$. Then $P \\models Q$ exactly when $\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$. Saying &ldquo;every object satisfying $P$ also satisfies $Q$&rdquo; and saying &ldquo;the solution set of $P$ is a subset of the solution set of $Q$&rdquo; describe the same relationship.</p>"
+    },
+    { type: "mc", id: "q5",
+      prompt: "If $P \\models Q$, which set relationship must hold?",
+      choices: [
+        "$\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$",
+        "$\\mathrm{Sol}(Q) \\subseteq \\mathrm{Sol}(P)$",
+        "$\\mathrm{Sol}(P) \\cap \\mathrm{Sol}(Q) = \\{\\,\\}$",
+        "$\\mathrm{Sol}(P) = \\mathrm{Sol}(Q)$ always"
+      ],
+      answer: 0,
+      choiceFeedback: [null, "That reverses the entailment.", "Entailment does not require disjoint solution sets.", "Entailment is one-directional; the solution sets need not be equal."],
+      explain: "Every solution of $P$ must also be a solution of $Q$, which is exactly $\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$."
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>One computation — mind the elements of $C$ that aren&rsquo;t even in $A$.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "With $A = \\{1,2,3,4,5,6\\}$ and $C = \\{5,6,7\\}$, what is $|A \\setminus C|$?",
+      answer: 4,
+      placeholder: "a whole number",
+      hint: "Remove from $A$ only the elements actually in both $A$ and $C$. ($7$ isn&rsquo;t in $A$.)",
+      explain: "$A \\setminus C = \\{1,2,3,4\\}$ (remove $5$ and $6$; $7$ was never in $A$), so the count is $4$."
+    },
+
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for review. These are <em>not</em> graded and don&rsquo;t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "mc", id: "e1", practice: true,
+      prompt: "Let $A = \\{1,2,3\\}$ and $B = \\{3,4,5\\}$. What is $A \\cup B$?",
+      choices: ["$\\{1, 2, 3, 4, 5\\}$", "$\\{3\\}$", "$\\{1, 2, 4, 5\\}$", "$\\{\\,\\}$ (empty)"],
+      answer: 0,
+      choiceFeedback: [null, "That is the intersection — union keeps everything in either set.", "Union keeps the shared $3$ too.", "The sets are non-empty, so their union is too."],
+      explain: "Union collects everything in $A$ or $B$ (or both); the shared $3$ is listed once."
+    },
+    { type: "shortnum", id: "e2", practice: true,
+      prompt: "What is $|\\{2,4,6,8,10\\}|$?",
+      answer: 5,
+      hint: "Cardinality counts the distinct elements.",
+      explain: "There are five distinct elements, so the cardinality is $5$."
+    },
+    { type: "mc", id: "e3", practice: true,
+      prompt: "Let $A = \\{1,2,3,4\\}$ and $B = \\{2,4\\}$. What is $A \\setminus B$?",
+      choices: ["$\\{1, 3\\}$", "$\\{2, 4\\}$", "$\\{1, 2, 3, 4\\}$", "$\\{\\,\\}$ (empty)"],
+      answer: 0,
+      choiceFeedback: [null, "That is $A \\cap B$ — difference removes those.", "That is $A$ itself; difference removes the elements of $B$.", "$A$ and $B$ overlap, so the difference is not empty."],
+      explain: "$A \\setminus B$ keeps the elements of $A$ not in $B$: $\\{1,3\\}$."
+    },
+    { type: "shortnum", id: "e4", practice: true,
+      prompt: "How many subsets does a set of $4$ elements have?",
+      answer: 16,
+      hint: "Each element is independently in or out: $2^4$.",
+      explain: "$2^4 = 16$."
+    },
+    { type: "shorttext", id: "e5", practice: true,
+      prompt: "Is $\\{1,2\\}$ a subset of $\\{1,2,3\\}$? Answer yes or no.",
+      answer: "yes",
+      accept: ["y", "Yes"],
+      explain: "Every element of $\\{1,2\\}$ is also in $\\{1,2,3\\}$, so $\\{1,2\\} \\subseteq \\{1,2,3\\}$."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Select <strong>all</strong> quantities that equal the number of subsets of an $n$-element set.",
+      choices: [
+        "$2^{n}$",
+        "The number of functions from the set to $\\{0,1\\}$",
+        "The number of indicator functions on the set",
+        "$n^{2}$",
+        "$|A| \\cdot |A|$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Each element is independently in or out; a subset is the same as its indicator function to $\\{0,1\\}$.",
+      explain: "Subsets, functions to $\\{0,1\\}$, and indicator functions all count $2^{n}$. Neither $n^2$ nor $|A| \\cdot |A|$ matches."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m1", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5,6\\}$, $B = \\{2,4,6\\}$, $C = \\{5,6,7\\}$. What is $|A \\cap (B \\cup C)|$?",
+      answer: 4,
+      hint: "First build $B \\cup C$, then keep only its elements that are in $A$ (watch out for $7$).",
+      explain: "$B \\cup C = \\{2,4,5,6,7\\}$; intersecting with $A$ drops the $7$, leaving $\\{2,4,5,6\\}$, so the count is $4$."
+    },
+    { type: "matching", id: "m2", practice: true,
+      prompt: "Match each set expression to its meaning.",
+      pairs: [
+        { left: "$A \\cap B$", right: "elements in both A and B" },
+        { left: "$A \\cup B$", right: "elements in A or B or both" },
+        { left: "$A \\setminus B$", right: "elements in A but not in B" },
+        { left: "$|A|$", right: "the number of elements in A" }
+      ],
+      explain: "Intersection = both, union = either, difference = in the first but not the second, and $|A|$ is the cardinality."
+    },
+    { type: "selectall", id: "m3", practice: true,
+      prompt: "Let $A = \\{1,2,3,4,5\\}$. Select <strong>all</strong> expressions that equal $\\{1,3,5\\}$.",
+      choices: [
+        "$A \\setminus \\{2,4\\}$",
+        "$A \\cap \\{1,3,5,7\\}$",
+        "$\\{n \\in A : n \\text{ is odd}\\}$",
+        "$A \\cup \\{1,3,5\\}$",
+        "$A \\setminus \\{1,3,5\\}$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Compute each set explicitly and compare to $\\{1,3,5\\}$.",
+      explain: "$A \\setminus \\{2,4\\} = \\{1,3,5\\}$; $A \\cap \\{1,3,5,7\\} = \\{1,3,5\\}$ (the $7$ isn&rsquo;t in $A$); the odd elements of $A$ are $\\{1,3,5\\}$. But $A \\cup \\{1,3,5\\} = A$, and $A \\setminus \\{1,3,5\\} = \\{2,4\\}$."
+    },
+    { type: "shortnum", id: "m4", practice: true,
+      prompt: "How many subsets of $\\{a,b,c,d,e\\}$ contain the element $a$?",
+      answer: 16,
+      hint: "Fix $a$ as &ldquo;in&rdquo;; each of the other four elements is still free to be in or out.",
+      explain: "With $a$ forced in, the remaining $4$ elements are each independently in or out: $2^4 = 16$."
+    },
+    { type: "shortnum", id: "m5", practice: true,
+      prompt: "$A$ and $B$ are disjoint with $|A| = 3$ and $|B| = 4$. What is $|A \\cup B|$?",
+      answer: 7,
+      hint: "With no overlap, nothing is double-counted.",
+      explain: "Disjoint means $|A \\cap B| = 0$, so $|A \\cup B| = |A| + |B| = 7$."
+    },
+    { type: "selectall", id: "m6", practice: true,
+      prompt: "Over the integers, consider the complement of $\\{n : n \\text{ is even and } n > 0\\}$ (complement read as &ldquo;not&rdquo;). Select <strong>all</strong> true statements.",
+      choices: [
+        "The complement is $\\{n : n \\text{ is odd or } n \\le 0\\}$.",
+        "$-4$ belongs to the complement.",
+        "$3$ belongs to the complement.",
+        "The complement is $\\{n : n \\text{ is odd and } n \\le 0\\}$.",
+        "$6$ belongs to the complement."
+      ],
+      answers: [0, 1, 2],
+      hint: "Complementing an &ldquo;and&rdquo; gives an &ldquo;or&rdquo;: negate each part and switch the connective.",
+      explain: "Not (even and positive) = (not even) or (not positive) = odd or $n \\le 0$. So $-4$ (even but $\\le 0$) and $3$ (odd) belong, while $6$ (even and positive) does not. The &ldquo;odd and $n \\le 0$&rdquo; version is wrong — complementing an &ldquo;and&rdquo; must give an &ldquo;or.&rdquo;"
+    },
+    { type: "shortnum", id: "m7", practice: true,
+      prompt: "How many subsets of $\\{1,2,3,4,5,6\\}$ contain $1$ but do <strong>not</strong> contain $2$?",
+      answer: 16,
+      hint: "Force $1$ in and $2$ out; the other four elements are free.",
+      explain: "Two elements are decided ($1$ in, $2$ out); the remaining $\\{3,4,5,6\\}$ are each free: $2^4 = 16$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Prove that $A \\cap B \\subseteq A$ for any sets $A$ and $B$.",
+      solution: "To show $A \\cap B \\subseteq A$, show every element of $A \\cap B$ is also in $A$ (the definition of $\\subseteq$). <br><br>Let $x$ be an arbitrary element of $A \\cap B$. By definition of intersection, $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$. In particular, $x \\in A$. <br><br>Since $x$ was arbitrary, every element of $A \\cap B$ is in $A$, so $A \\cap B \\subseteq A$. $\\blacksquare$ <br><br>The proof just drops the &ldquo;and $x \\in B$&rdquo; half — membership in an intersection is stronger than membership in either set alone."
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "Explain the inclusion–exclusion formula $|A \\cup B| = |A| + |B| - |A \\cap B|$.",
+      solution: "Adding $|A| + |B|$ counts each element of the overlap $A \\cap B$ <em>twice</em> — once as a member of $A$ and once as a member of $B$ — while every other element is counted once. Subtracting $|A \\cap B|$ removes exactly the one extra copy of each shared element, leaving each element of $A \\cup B$ counted once. $\\blacksquare$ <br><br>When $A$ and $B$ are disjoint, $|A \\cap B| = 0$ and this reduces to the plain sum rule $|A \\cup B| = |A| + |B|$."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "Prove that a set of $n$ elements has exactly $2^{n}$ subsets.",
+      solution: "List the elements as $x_1, x_2, \\dots, x_n$. A subset is completely determined by answering, for each element, one yes/no question: &ldquo;is $x_i$ in the subset?&rdquo; <br><br>Each of the $n$ answers is an independent two-way choice, different answer-patterns give different subsets, and every subset arises from exactly one pattern. By the product rule the number of patterns is $\\underbrace{2 \\cdot 2 \\cdots 2}_{n} = 2^{n}$. <br><br>Equivalently, a subset corresponds exactly to a function $\\{x_1,\\dots,x_n\\} \\to \\{0,1\\}$ (its indicator function), and there are $2^{n}$ such functions. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "Using the &ldquo;sets are conditions&rdquo; idea, argue that the complement of $A \\cup B$ equals (complement of $A$) $\\cap$ (complement of $B$).",
+      solution: "An element $x$ is in the complement of $A \\cup B$ exactly when $x \\notin A \\cup B$, i.e. it is <em>not</em> the case that ($x \\in A$ or $x \\in B$). <br><br>The complement of an &ldquo;or&rdquo; is an &ldquo;and&rdquo; of the complements: this says $x \\notin A$ <strong>and</strong> $x \\notin B$. <br><br>That is precisely the condition for $x$ to be in (complement of $A$) $\\cap$ (complement of $B$). Since both sides are carved out by equivalent conditions, they are the same set. $\\blacksquare$"
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>You have now seen the hidden &ldquo;for all&rdquo; inside $\\subseteq$ and the &ldquo;and / or / not&rdquo; inside the set operations. Next we make those quantifiers and connectives explicit: <strong>predicate logic</strong> gives us symbols for &ldquo;for all&rdquo; and &ldquo;there exists&rdquo; so we can state precisely the claims we have been making in words.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>

@@ -29,8 +29,8 @@ interactive-readings/
 ├── reading-01-why-prove.html               testing vs. verification (greedy explorer)
 ├── reading-02-conditions.html              conditions, types, arity
 ├── reading-03-truth.html                   satisfiable/…/contradictory; entailment; complement
-├── reading-04-sets.html                    sets and operations
-├── reading-05-counting.html                functions; product/sum rules; counting
+├── reading-04-counting.html                tuples, Cartesian products, product/sum rules, functions, strings
+├── reading-05-sets.html                    sets & operations; set-builder; counting subsets & unions
 ├── reading-06-predicate-logic.html         ∀/∃; formalization (matching)
 ├── reading-07-implication.html             truth conditions; vacuous truth; converse
 ├── reading-08-proofs-1.html                instantiation & detachment (guided proof)

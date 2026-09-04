@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS 227 · Reading 4 — Counting</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+<link rel="stylesheet" href="assets/reading-engine.css" />
+</head>
+<body>
+<main id="reading"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="assets/reading-engine.js"></script>
+<script>
+Reading.init({
+  id: "04-counting",
+  crumb: '<a href="index.html">CS 227 Readings</a> · Reading 4',
+  title: "Reading 4 — Counting",
+  subtitle: "Build a big total from small independent choices: ordered tuples, the product rule, and the sum rule.",
+  prev: { href: "reading-03-truth.html", label: "Reading 3 — Truth & Entailment" },
+  next: { href: "reading-05-sets.html", label: "Reading 5 — Sets & Operations" },
+  blocks: [
+    { type: "prose", html:
+      "<p>To <strong>count</strong> a collection is to say how many members it has without listing them all. The key move is to describe each member as the result of a short sequence of <em>choices</em>, and then count the choices. In class you counted functions this way; here we turn that idea into two rules — the <strong>product rule</strong> and the <strong>sum rule</strong> — that organize almost all of the counting we do.</p>" +
+      "<p>Two pieces of notation. We write $x \\in A$ for &ldquo;$x$ is a member of $A$,&rdquo; and $|A|$ for the number of members of $A$, called its <strong>cardinality</strong> or size. (Some books, and our activity, also write $\\#A$ for the same thing.)</p>"
+    },
+    { type: "def", title: "Counting functions, by construction", html:
+      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to each input in $X$ exactly one output in $Y$. To <em>build</em> one, walk through the inputs and choose an output for each. The choices are independent — a function may send two inputs to the same output — so with $m$ inputs and $n$ possible outputs there are</p>" +
+      "<p style='text-align:center'>$\\underbrace{n \\cdot n \\cdots n}_{m} = n^{m}$</p>" +
+      "<p>functions. Each sequence of choices builds a different function, and every function arises from exactly one sequence.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Ordered pairs and the Cartesian product</h2>" +
+      "<p>Suppose we pick one section from $C = \\{c_1, c_2, c_3\\}$ and pair it with one professor from $P = \\{\\text{Bowers}, \\text{Lam}, \\text{Molloy}, \\text{Weikle}\\}$. Each outcome is an <strong>ordered pair</strong> $(c, p)$: the first entry is the section, the second is the professor. The set of <em>all</em> such pairs is the <strong>Cartesian product</strong> $C \\times P = \\{(c,p) : c \\in C,\\ p \\in P\\}$.</p>" +
+      "<p><em>Order is part of the pair.</em> A pair in $P \\times C$ looks like $(\\text{Bowers}, c_1)$ — professor first — so $C \\times P$ and $P \\times C$ are different sets of pairs, even though you could pair them up by reversing each pair. Building a pair takes two independent choices, so $|C \\times P| = |C| \\cdot |P| = 3 \\cdot 4 = 12$.</p>"
+    },
+    { type: "shortnum", id: "q1",
+      prompt: "Let $A$ have $5$ elements and $B$ have $3$ elements. How many ordered pairs are in $A \\times B$?",
+      answer: 15,
+      placeholder: "a whole number",
+      hint: "Two independent choices: the first entry from $A$, the second from $B$. Multiply.",
+      explain: "$|A \\times B| = |A| \\cdot |B| = 5 \\cdot 3 = 15$."
+    },
+    { type: "def", title: "Tuples and the product rule", html:
+      "<p>An <strong>$n$-tuple</strong> is an ordered list $(a_1, a_2, \\dots, a_n)$ whose first entry is chosen from a set $A_1$, second from $A_2$, and so on. The Cartesian product $A_1 \\times A_2 \\times \\cdots \\times A_n$ is the set of all such tuples.</p>" +
+      "<p><strong>Product rule.</strong> When each member of a collection is specified by making a sequence of choices — the first with $n_1$ options, the second with $n_2$, and so on — and the procedure produces every member exactly once, the number of members is $n_1 \\cdot n_2 \\cdots n_k$. In particular $|A_1 \\times \\cdots \\times A_n| = |A_1| \\cdot |A_2| \\cdots |A_n|$.</p>"
+    },
+    { type: "shortnum", id: "q2",
+      prompt: "A password is two letters from $\\{A,B,C,D,E\\}$ (repeats allowed) followed by one digit from $\\{1,2,3\\}$. How many passwords are there?",
+      answer: 75,
+      placeholder: "a whole number",
+      hint: "Three independent choices: first letter, second letter, digit. Multiply the option counts.",
+      explain: "$5 \\cdot 5 \\cdot 3 = 75$ — one factor per position."
+    },
+    { type: "mc", id: "q3",
+      prompt: "How many functions are there from a set of size $m$ to a set of size $n$?",
+      choices: ["$n^{m}$", "$m^{n}$", "$m \\cdot n$", "$2^{mn}$"],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "The roles are swapped: the number of <em>inputs</em> goes in the exponent, because each input makes a choice.",
+        "$m \\cdot n$ counts one input paired with one output — a single pair, not a whole function.",
+        "$2^{mn}$ counts every yes/no marking of the $mn$ input–output pairs — far more than the functions, which fix exactly one output per input, giving $n^{m}$."
+      ],
+      explain: "Each of the $m$ inputs independently chooses one of $n$ outputs: $n \\cdot n \\cdots n = n^{m}$."
+    },
+    { type: "selectall", id: "q3b", practice: true,
+      prompt: "A single ordered pair in $A \\times B$ versus a whole function $A \\to B$ (with $|A|, |B| \\ge 2$). Select <strong>all</strong> true statements.",
+      choices: [
+        "One member of $A \\times B$ is fixed by two choices: its first entry and its second entry.",
+        "One function $A \\to B$ is fixed by $|A|$ choices — one output per input.",
+        "$A \\times B$ and the set of functions $A \\to B$ generally have different sizes.",
+        "A member of $A \\times B$ is the same thing as a function $A \\to B$."
+      ],
+      answers: [0, 1, 2],
+      hint: "Count the choices each one takes. A pair records two entries; a function records one output for every input.",
+      explain: "A pair needs two choices ($|A \\times B| = |A|\\,|B|$); a function needs one choice per input ($|B|^{|A|}$). These counts usually differ (they coincide only when $|A| = |B| = 2$), and in any case a pair and a function are different <em>kinds</em> of object — a single pair is never a whole function."
+    },
+    { type: "prose", html:
+      "<h2>The sum rule</h2>" +
+      "<p>Sometimes a collection splits into separate cases rather than successive choices. A cafe customer orders <em>either</em> one breakfast (say $|B| = 6$ possible orders) <em>or</em> one lunch ($|L| = 12$), but not both. The number of possible orders is $|B| + |L| = 18$ — we <strong>add</strong>, because each order is one case or the other, not a combination of both.</p>" +
+      "<p><strong>Sum rule.</strong> If a collection is divided into groups that are <strong>disjoint</strong> — no member belongs to two groups — then its size is the sum of the group sizes. The disjointness matters: the two-character IDs $R = \\{A1, A2, A3\\}$ and $T = \\{A1, B1, C1\\}$ have $|R| = |T| = 3$, but the combined collection is $\\{A1, A2, A3, B1, C1\\}$ with only $5$ members — adding $3 + 3 = 6$ double-counts the shared $A1$. A single case may itself be built from a sequence of choices: count that case with the product rule, then add the cases together. (We return to overlapping groups in the next reading.)</p>"
+    },
+    { type: "shortnum", id: "q4",
+      prompt: "A student takes <strong>either</strong> one 3-credit course (5 offerings) together with one 1-credit lab (3 offerings), <strong>or</strong> instead one 4-credit seminar (4 offerings). How many schedules are possible?",
+      answer: 19,
+      placeholder: "a whole number",
+      hint: "Count each disjoint case with the product rule, then add the cases with the sum rule.",
+      explain: "Course-and-lab: $5 \\cdot 3 = 15$. Seminar: $4$. The two cases can't be the same schedule, so add: $15 + 4 = 19$."
+    },
+    { type: "prose", html:
+      "<h2>A string is secretly a function</h2>" +
+      "<p>A string of length $n$ over an alphabet $\\Sigma$ assigns a character to each position $0, 1, \\dots, n-1$ — exactly a function from the positions to $\\Sigma$. So counting length-$n$ strings is the same problem as counting functions: there are $|\\Sigma|^{n}$ of them, one choice per position.</p>"
+    },
+    { type: "shortnum", id: "q5",
+      prompt: "How many binary strings (over $\\{0,1\\}$) have length $6$?",
+      answer: 64,
+      placeholder: "a whole number",
+      hint: "Six positions, two choices each: $2^6$.",
+      explain: "$2^6 = 64$ — the same reasoning as counting functions into a 2-element set."
+    },
+    { type: "prose", html:
+      "<h2>Restricting a choice</h2>" +
+      "<p>When one choice is limited, count how many options it still has and multiply by the free choices as usual. Forbidding some values just shrinks that stage&rsquo;s count; <em>forcing</em> one specific value makes that stage contribute a factor of $1$, while the other positions stay free. And when &ldquo;at least one …&rdquo; is awkward to count directly, it is often easier to count the outcomes you <em>don&rsquo;t</em> want and subtract them from the total.</p>"
+    },
+    { type: "prose", html:
+      "<h2>Apply it</h2>" +
+      "<p>This one restricts a single choice — count that choice under its restriction, then multiply by the free ones.</p>"
+    },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "How many functions $f : \\{a,b,c\\} \\to \\{0,1,2\\}$ satisfy $f(a) \\ne 0$?",
+      answer: 18,
+      placeholder: "a whole number",
+      hint: "Count the allowed values for $f(a)$ first, then the unrestricted choices for $f(b)$ and $f(c)$.",
+      explain: "$f(a)$ has $2$ allowed values; $f(b)$ and $f(c)$ have $3$ each: $2 \\cdot 3 \\cdot 3 = 18$."
+    },
+
+    { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for review. These are <em>not</em> graded and don&rsquo;t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
+    { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
+    { type: "shortnum", id: "e1", practice: true,
+      prompt: "How many ordered pairs are in $\\{1,2\\} \\times \\{a,b,c\\}$?",
+      answer: 6,
+      hint: "$|A| \\cdot |B|$ with $|A| = 2$, $|B| = 3$.",
+      explain: "$2 \\cdot 3 = 6$."
+    },
+    { type: "shortnum", id: "e2", practice: true,
+      prompt: "How many functions are there from $\\{a,b\\}$ to $\\{0,1,2,3\\}$?",
+      answer: 16,
+      hint: "Two inputs, four choices each: $4^2$.",
+      explain: "$4^2 = 16$."
+    },
+    { type: "shortnum", id: "e3", practice: true,
+      prompt: "You pick one of $3$ shirts and one of $4$ pairs of pants. How many outfits?",
+      answer: 12,
+      hint: "Two independent stages: multiply.",
+      explain: "Product rule: $3 \\cdot 4 = 12$."
+    },
+    { type: "shortnum", id: "e4", practice: true,
+      prompt: "A drink is <strong>either</strong> one of $3$ teas <strong>or</strong> one of $4$ coffees. How many drink choices?",
+      answer: 7,
+      hint: "Disjoint groups: add.",
+      explain: "Sum rule: the groups are disjoint, so $3 + 4 = 7$."
+    },
+    { type: "shortnum", id: "e5", practice: true,
+      prompt: "How many strings of length $2$ are there over the alphabet $\\{a,b,c\\}$?",
+      answer: 9,
+      hint: "Two positions, three choices each: $3^2$.",
+      explain: "$3^2 = 9$ — a length-$n$ string over $\\Sigma$ is a function, so the count is $|\\Sigma|^{n}$."
+    },
+    { type: "selectall", id: "e6", practice: true,
+      prompt: "Select <strong>all</strong> true statements about a length-$n$ string over an alphabet $\\Sigma$.",
+      choices: [
+        "It is a function from the positions $\\{0, 1, \\dots, n-1\\}$ to $\\Sigma$.",
+        "There are $|\\Sigma|^{n}$ such strings.",
+        "$\\Sigma$ is the domain of that function.",
+        "There are $n^{|\\Sigma|}$ such strings."
+      ],
+      answers: [0, 1],
+      hint: "A string assigns a character to each position, so the positions form the domain.",
+      explain: "A length-$n$ string is a function from the $n$ positions to $\\Sigma$, and there are $|\\Sigma|^{n}$ of them. $\\Sigma$ is the codomain, not the domain."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
+    { type: "shortnum", id: "m1", practice: true,
+      prompt: "A lunch is one of $3$ drinks, one of $2$ entrees, and one of $2$ sides, recorded as a triple $(d,e,s)$. How many lunches are there?",
+      answer: 12,
+      hint: "Three independent choices: $3 \\cdot 2 \\cdot 2$.",
+      explain: "$3 \\cdot 2 \\cdot 2 = 12$ — the size of the Cartesian product $D \\times E \\times S$."
+    },
+    { type: "shortnum", id: "m2", practice: true,
+      prompt: "A license plate is $2$ letters ($A$–$Z$) followed by $2$ digits ($0$–$9$), repeats allowed. How many plates?",
+      answer: 67600,
+      hint: "Multiply the choices for all four positions: $26 \\cdot 26 \\cdot 10 \\cdot 10$.",
+      explain: "$26^2 \\cdot 10^2 = 676 \\cdot 100 = 67600$."
+    },
+    { type: "shortnum", id: "m3", practice: true,
+      prompt: "A lunch is one of $4$ mains, one of $3$ sides, and <strong>optionally</strong> one of $2$ drinks (or none). How many lunches?",
+      answer: 36,
+      hint: "The optional drink has three outcomes: drink 1, drink 2, or none.",
+      explain: "$4 \\cdot 3 \\cdot 3 = 36$ — the optional stage contributes a factor of $3$ (the extra $1$ is &ldquo;none&rdquo;)."
+    },
+    { type: "shortnum", id: "m4", practice: true,
+      prompt: "How many functions $f : \\{a,b,c\\} \\to \\{0,1,2\\}$ satisfy $f(a) \\ne 1$ <strong>and</strong> $f(b) \\ne 2$?",
+      answer: 12,
+      hint: "Count allowed values for $f(a)$, then $f(b)$, then the free $f(c)$, and multiply.",
+      explain: "$f(a)$ has $2$ allowed values, $f(b)$ has $2$, and $f(c)$ has all $3$: $2 \\cdot 2 \\cdot 3 = 12$."
+    },
+    { type: "shortnum", id: "m5", practice: true,
+      prompt: "A campus code is one letter followed by two digits, <strong>or</strong> two letters followed by one digit. Letters come from $\\{A,B,C\\}$ and digits from $\\{1,2,3,4\\}$, repeats allowed. How many codes?",
+      answer: 84,
+      hint: "Count each form with the product rule; the two forms have different shapes, so add.",
+      explain: "$3 \\cdot 4 \\cdot 4 = 48$ and $3 \\cdot 3 \\cdot 4 = 36$; the forms are disjoint, so $48 + 36 = 84$."
+    },
+    { type: "shortnum", id: "m6", practice: true,
+      prompt: "How many strings of length $3$ over $\\{a,b,c,d\\}$ start with the letter $a$?",
+      answer: 16,
+      hint: "Position 0 is forced to $a$ (one choice); the other two positions are free.",
+      explain: "$1 \\cdot 4 \\cdot 4 = 16$ — the first position is fixed, the remaining two each have $4$ choices."
+    },
+    { type: "selectall", id: "m7", practice: true,
+      prompt: "Select <strong>all</strong> quantities that equal $64$.",
+      choices: [
+        "Functions from a 3-element set to a 4-element set",
+        "Binary strings of length 6",
+        "Ordered pairs in $A \\times B$ with $|A| = 8$ and $|B| = 8$",
+        "Ordered triples in $A \\times B \\times C$ with $|A|=|B|=|C|=4$",
+        "Functions from a 4-element set to a 3-element set"
+      ],
+      answers: [0, 1, 2, 3],
+      hint: "Compute each with $n^m$, $|\\Sigma|^n$, or a product of sizes.",
+      explain: "$4^3 = 64$ (functions 3-set to 4-set), $2^6 = 64$ (binary strings), $8 \\cdot 8 = 64$ (pairs), and $4 \\cdot 4 \\cdot 4 = 64$ (triples) all match. Only $3^4 = 81$ (functions from a 4-set to a 3-set) does not."
+    },
+    { type: "parsons", id: "m8", practice: true,
+      prompt: "Order the steps of a product-rule argument that there are $2^3$ functions from $\\{a,b,c\\}$ to $\\{0,1\\}$.",
+      steps: [
+        "A function is determined by choosing an output for each of the three inputs $a$, $b$, $c$.",
+        "The choice for $a$ has $2$ options, independent of the others.",
+        "The choices for $b$ and for $c$ likewise each have $2$ options.",
+        "By the product rule, multiply the independent choices: $2 \\cdot 2 \\cdot 2$.",
+        "So the number of functions is $2^3 = 8$."
+      ],
+      requires: [[], [0], [0], [1, 2], [3]],
+      hint: "Say what determines a function, count each independent choice, then multiply.",
+      explain: "Each input independently chooses one of two outputs, and the product rule multiplies those independent choices to give $2^3$."
+    },
+    { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
+    { type: "challenge", id: "ch1",
+      prompt: "Explain why $|A \\times B| = |A| \\cdot |B|$ for finite sets $A$ and $B$, using the product rule.",
+      solution: "A member of $A \\times B$ is an ordered pair $(a, b)$, and building one takes exactly two choices: pick the first entry $a$ from $A$ (that is $|A|$ options), then pick the second entry $b$ from $B$ (that is $|B|$ options). <br><br>Every pair is produced exactly once this way — two different sequences of choices disagree in the first entry or the second, so they give different pairs, and every pair $(a,b)$ arises from choosing that $a$ then that $b$. By the product rule the number of pairs is $|A| \\cdot |B|$. $\\blacksquare$"
+    },
+    { type: "challenge", id: "ch2",
+      prompt: "How many binary strings of length $5$ contain at least one $0$? Count the ones you don&rsquo;t want and subtract.",
+      solution: "Counting &ldquo;at least one $0$&rdquo; directly means splitting into overlapping cases — messy. Count the strings you <em>don&rsquo;t</em> want instead. <br><br>Total binary strings of length $5$: $2^5 = 32$. The strings with <em>no</em> $0$ are made entirely of $1$s — just $11111$, a single string. <br><br>So the count with at least one $0$ is $32 - 1 = 31$. $\\blacksquare$ <br><br>The lesson: &ldquo;at least one&rdquo; is almost always easier as (total) − (none)."
+    },
+    { type: "challenge", id: "ch3",
+      prompt: "A four-digit PIN uses digits $0$–$9$. How many PINs have all four digits different? Derive the count.",
+      solution: "Choose the digits left to right, each differing from those already placed: <ul><li>first digit: any of $10$,</li><li>second: any except the first, so $9$,</li><li>third: any except the first two, so $8$,</li><li>fourth: $7$.</li></ul> By the product rule, $10 \\cdot 9 \\cdot 8 \\cdot 7 = 5040$. $\\blacksquare$ <br><br>(This &ldquo;falling product&rdquo; counts an ordered selection without repetition — a pattern we will return to.)"
+    },
+    { type: "challenge", id: "ch4",
+      prompt: "How many two-character IDs over $\\{A,B,C\\} \\times \\{1,2,3\\}$ begin with $A$ <strong>or</strong> end with $1$? Split into disjoint cases.",
+      solution: "The two conditions overlap ($A1$ satisfies both), so we can&rsquo;t just add the two counts. Split into disjoint cases instead: <ul><li>&ldquo;begins with $A$&rdquo;: $A1, A2, A3$ — that is $3$ IDs;</li><li>&ldquo;does not begin with $A$ but ends with $1$&rdquo;: $B1, C1$ — that is $2$ IDs.</li></ul> These cases are disjoint and cover everything wanted, so by the sum rule the total is $3 + 2 = 5$. $\\blacksquare$"
+    },
+    { type: "prose", html:
+      "<h2>Where this is headed</h2>" +
+      "<p>The instinct you just practiced — build a big answer from independent small choices — returns constantly, and it is the seed of recursion and induction later on. Next, we study <strong>sets</strong> and their operations, and use these same two rules to count subsets and to fix the double-counting that happens when groups overlap.</p>"
+    }
+  ]
+});
+</script>
+</body>
+</html>
