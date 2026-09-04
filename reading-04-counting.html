@@ -25,10 +25,99 @@ Reading.init({
       "<p>To <strong>count</strong> a collection is to say how many members it has without listing them all. The key move is to describe each member as the result of a short sequence of <em>choices</em>, and then count the choices. In class you counted functions this way; here we turn that idea into two rules — the <strong>product rule</strong> and the <strong>sum rule</strong> — that organize almost all of the counting we do.</p>" +
       "<p>Two pieces of notation. We write $x \\in A$ for &ldquo;$x$ is a member of $A$,&rdquo; and $|A|$ for the number of members of $A$, called its <strong>cardinality</strong> or size. (Some books, and our activity, also write $\\#A$ for the same thing.)</p>"
     },
-    { type: "def", title: "Counting functions, by construction", html:
-      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to each input in $X$ exactly one output in $Y$. To <em>build</em> one, walk through the inputs and choose an output for each. The choices are independent — a function may send two inputs to the same output — so with $m$ inputs and $n$ possible outputs there are</p>" +
-      "<p style='text-align:center'>$\\underbrace{n \\cdot n \\cdots n}_{m} = n^{m}$</p>" +
-      "<p>functions. Each sequence of choices builds a different function, and every function arises from exactly one sequence.</p>"
+    { type: "prose", html:
+      "<h2>Functions</h2>" +
+      "<p>Before we count functions, we should be sure what one <em>is</em> — this is the idea you built with arrow diagrams in class. A <strong>function</strong> is a rule that takes each input and returns a single output. We picture it with an <strong>arrow diagram</strong>: the inputs sit in a set on the left, the possible outputs in a set on the right, and we draw one arrow from each input to the output it is sent to.</p>" +
+      "<p>Let $X = \\{0,1\\}$ and $Y = \\{a,b\\}$. Here are two functions of type $X \\to Y$ (read &ldquo;$X$ to $Y$&rdquo;):</p>" +
+      "<div style=\"display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin:16px 0\">" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 160\" width=\"220\" role=\"img\" aria-label=\"Arrow diagram of function f from X to Y. The input 0 has an arrow to a, and the input 1 has an arrow to a.\">" +
+          "<defs><marker id=\"ah-f\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"185\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"89\" y1=\"59\" x2=\"151\" y2=\"59\" stroke=\"currentColor\" marker-end=\"url(#ah-f)\"/>" +
+          "<line x1=\"89\" y1=\"101\" x2=\"151\" y2=\"63\" stroke=\"currentColor\" marker-end=\"url(#ah-f)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">$f$: sends $0 \\mapsto a$ and $1 \\mapsto a$</figcaption>" +
+        "</figure>" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 160\" width=\"220\" role=\"img\" aria-label=\"Arrow diagram of function g from X to Y. The input 0 has an arrow to a, and the input 1 has an arrow to b.\">" +
+          "<defs><marker id=\"ah-g\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"185\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"89\" y1=\"59\" x2=\"151\" y2=\"59\" stroke=\"currentColor\" marker-end=\"url(#ah-g)\"/>" +
+          "<line x1=\"89\" y1=\"101\" x2=\"151\" y2=\"101\" stroke=\"currentColor\" marker-end=\"url(#ah-g)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">$g$: sends $0 \\mapsto a$ and $1 \\mapsto b$</figcaption>" +
+        "</figure>" +
+      "</div>" +
+      "<p>The left-hand set $X$ is the <strong>domain</strong> (the inputs); the right-hand set $Y$ is the <strong>range</strong> (the pool of allowed outputs). We record the arrows with function notation: $f(0)=a$, $f(1)=a$, and $g(0)=a$, $g(1)=b$. Writing $f(0)=a$ just names the output that the arrow from $0$ points to. (We also write $0 \\mapsto a$, read &ldquo;$0$ maps to $a$,&rdquo; for that same arrow.)</p>"
+    },
+    { type: "prose", html:
+      "<h2>When a diagram is <em>not</em> a function</h2>" +
+      "<p>Two requirements make an arrow diagram a function of type $X \\to Y$: <strong>every</strong> input must have an arrow, and each input must have <strong>exactly one</strong>. Break either requirement and it is not a function of that type.</p>" +
+      "<div style=\"display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin:16px 0\">" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 160\" width=\"220\" role=\"img\" aria-label=\"Diagram s from X to Y. The input 0 has an arrow to b, but the input 1 has no arrow, so s is not a function.\">" +
+          "<defs><marker id=\"ah-s\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"185\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"89\" y1=\"59\" x2=\"151\" y2=\"101\" stroke=\"currentColor\" marker-end=\"url(#ah-s)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">$s$ is <strong>not</strong> a function: $1$ has no arrow</figcaption>" +
+        "</figure>" +
+        "<figure style=\"margin:0;text-align:center\">" +
+          "<svg viewBox=\"0 0 240 160\" width=\"220\" role=\"img\" aria-label=\"Diagram t from X to Y. The input 0 has two arrows, one to a and one to b, and the input 1 has no arrow, so t is not a function.\">" +
+          "<defs><marker id=\"ah-t\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"4.5\" orient=\"auto\"><path d=\"M0 0L9 4.5L0 9z\" fill=\"currentColor\"/></marker></defs>" +
+          "<ellipse cx=\"55\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<ellipse cx=\"185\" cy=\"82\" rx=\"32\" ry=\"56\" fill=\"none\" stroke=\"currentColor\" stroke-opacity=\"0.45\"/>" +
+          "<text x=\"55\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">X</text>" +
+          "<text x=\"185\" y=\"20\" text-anchor=\"middle\" font-size=\"13\" font-style=\"italic\" fill=\"currentColor\">Y</text>" +
+          "<text x=\"55\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">0</text>" +
+          "<text x=\"55\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">1</text>" +
+          "<text x=\"185\" y=\"64\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">a</text>" +
+          "<text x=\"185\" y=\"106\" text-anchor=\"middle\" font-size=\"15\" fill=\"currentColor\">b</text>" +
+          "<line x1=\"89\" y1=\"59\" x2=\"151\" y2=\"59\" stroke=\"currentColor\" marker-end=\"url(#ah-t)\"/>" +
+          "<line x1=\"89\" y1=\"59\" x2=\"151\" y2=\"101\" stroke=\"currentColor\" marker-end=\"url(#ah-t)\"/>" +
+          "</svg>" +
+          "<figcaption style=\"font-size:14px;margin-top:2px\">$t$ is <strong>not</strong> a function: $0$ has two arrows</figcaption>" +
+        "</figure>" +
+      "</div>" +
+      "<p>Mapping $s$ leaves the input $1$ unmapped. Mapping $t$ fails twice over: it sends the single input $0$ to <em>two</em> outputs, and it also leaves $1$ unmapped. A function never leaves an input unassigned and never sends one input to two different outputs.</p>" +
+      "<p>Two things that <em>are</em> allowed are worth noticing. Function $f$ above sends two different inputs to the same output — that is fine, because the requirements constrain each <em>input</em>, not each output. And an output may receive no arrow at all (nothing maps to $b$ under $f$).</p>"
+    },
+    { type: "def", title: "Function", html:
+      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to <em>each</em> element $x$ of the domain $X$ exactly one element $f(x)$ of the range $Y$ — nothing left unassigned, nothing assigned two values. The output $f(x)$ is the <strong>value</strong> of $f$ at $x$. (How <em>many</em> functions of a given type there are, we count a little later — once we have the product rule.)</p>"
+    },
+    { type: "selectall", id: "fn-id", practice: true,
+      prompt: "For $X = \\{0,1\\}$ and $Y = \\{a,b\\}$, select <strong>all</strong> of the following that describe a function of type $X \\to Y$.",
+      choices: [
+        "$0 \\mapsto a$, $1 \\mapsto a$",
+        "$0 \\mapsto b$, $1 \\mapsto a$",
+        "$0 \\mapsto a$, with $1$ left unmapped",
+        "$0 \\mapsto a$ and $0 \\mapsto b$, and $1 \\mapsto b$"
+      ],
+      answers: [0, 1],
+      hint: "Every input needs exactly one arrow — none missing, none doubled. Reusing an output is allowed.",
+      explain: "The first two give each of $0$ and $1$ exactly one output, so they are functions (reusing $a$, as in the first, is fine). The third leaves $1$ unmapped; the fourth sends $0$ to two outputs. Neither of those is a function."
     },
     { type: "prose", html:
       "<h2>Ordered pairs and the Cartesian product</h2>" +
@@ -52,6 +141,13 @@ Reading.init({
       placeholder: "a whole number",
       hint: "Three independent choices: first letter, second letter, digit. Multiply the option counts.",
       explain: "$5 \\cdot 5 \\cdot 3 = 75$ — one factor per position."
+    },
+    { type: "prose", html:
+      "<h2>Counting functions</h2>" +
+      "<p>Now we can count them, and it is the product rule in disguise. To <em>build</em> a function $X \\to Y$, go through the inputs one at a time and choose an output for each. The choices are <strong>independent</strong>: sending $0$ somewhere uses up none of the options for $1$, because a function is free to reuse an output. With $X = \\{0,1\\}$ and $Y = \\{a,b\\}$ that is two stages with two options each, $2 \\cdot 2 = 4$ functions in all — the $f$ and $g$ above, plus the two that send $0 \\mapsto b$.</p>" +
+      "<p>One stage per input, with $|Y|$ options at every stage, so a domain of size $|X|$ into a range of size $|Y|$ gives</p>" +
+      "<p style=\"text-align:center\">$\\underbrace{|Y| \\cdot |Y| \\cdots |Y|}_{|X| \\text{ inputs}} = |Y|^{\\,|X|}$</p>" +
+      "<p>functions. From a $2$-element set into a $3$-element set there are $3^2 = 9$; from a $3$-element set into a $2$-element set there are $2^3 = 8$. Watch the roles: the size of the <em>domain</em> is the exponent, because each input is one independent choice.</p>"
     },
     { type: "mc", id: "q3",
       prompt: "How many functions are there from a set of size $m$ to a set of size $n$?",
@@ -158,7 +254,7 @@ Reading.init({
       ],
       answers: [0, 1],
       hint: "A string assigns a character to each position, so the positions form the domain.",
-      explain: "A length-$n$ string is a function from the $n$ positions to $\\Sigma$, and there are $|\\Sigma|^{n}$ of them. $\\Sigma$ is the codomain, not the domain."
+      explain: "A length-$n$ string is a function from the $n$ positions to $\\Sigma$, and there are $|\\Sigma|^{n}$ of them. $\\Sigma$ is the range, not the domain."
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
     { type: "shortnum", id: "m1", practice: true,
