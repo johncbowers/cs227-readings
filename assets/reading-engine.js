@@ -88,7 +88,7 @@
     ["\\rightarrow", "implies"], ["\\Rightarrow", "implies"], ["\\implies", "implies"],
     ["\\mapsto", "maps to"], ["\\forall", "for all"], ["\\exists", "there exists"],
     ["\\nexists", "there is no"], ["\\subseteq", "subset of"], ["\\subset", "subset of"],
-    ["\\emptyset", "empty set"], ["\\setminus", "minus"], ["\\varepsilon", "epsilon"],
+    ["\\emptyset", "empty set"], ["\\varnothing", "empty set"], ["\\setminus", "minus"], ["\\varepsilon", "epsilon"],
     ["\\epsilon", "epsilon"], ["\\models", "entails"], ["\\notin", "not in"],
     ["\\leq", "<="], ["\\geq", ">="], ["\\neq", "not equal"], ["\\nmid", "does not divide"],
     ["\\wedge", "and"], ["\\land", "and"], ["\\vee", "or"], ["\\lor", "or"],
@@ -96,7 +96,7 @@
     ["\\times", "times"], ["\\cdot", "times"], ["\\mid", "divides"], ["\\to", "implies"],
     ["\\le", "<="], ["\\ge", ">="], ["\\ne", "not equal"], ["\\in", "in"],
     ["\\ldots", "..."], ["\\cdots", "..."], ["\\dots", "..."],
-    ["\\mathbb{N}", "N"], ["\\mathbb{Z}", "Z"], ["\\mathbb{R}", "R"], ["\\qed", ""]
+    ["\\mathbb{N}", "N"], ["\\mathbb{Z}", "Z"], ["\\mathbb{Q}", "Q"], ["\\mathbb{R}", "R"], ["\\qed", ""]
   ]; // longer tokens first so prefixes (\\le vs \\leq) don't collide
   function plainText(s) {
     var t = String(s == null ? "" : s);

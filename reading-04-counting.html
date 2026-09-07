@@ -17,20 +17,22 @@ Reading.init({
   id: "04-counting",
   crumb: '<a href="index.html">CS 227 Readings</a> · Reading 4',
   title: "Reading 4 — Counting",
-  subtitle: "Functions, and how to count them — arrow diagrams, ordered tuples, the product rule, and the sum rule.",
+  subtitle: "Functions and counting — bijections, infinite sets, tuples, and fundamental counting rules.",
   prev: { href: "reading-03-truth.html", label: "Reading 3 — Truth & Entailment" },
   next: { href: "reading-05-sets.html", label: "Reading 5 — Sets & Operations" },
   blocks: [
     { type: "prose", html:
-      "<p>This reading develops two ideas that come up all across computer science: <strong>functions</strong> and <strong>counting</strong>. They are different ideas, but they fit together closely, and each leans on the other.</p>" +
-      "<p>A <strong>function</strong> is how we describe an <em>assignment</em> — a rule that hands each input a single output. Placing each student in a dorm, sorting each file into a folder, giving each pixel a color, mapping each input of a program to the output it produces: every one of these is a function, and functions are among the most basic objects you will model with in this course. <strong>Counting</strong> is the art of saying how many objects of some kind there are <em>without</em> listing them all — how many passwords of a given length exist, how many ways a set of courses could be scheduled, how large a space of possibilities a program might have to search. </p>" +
-      "<p>We begin by pinning down exactly what a function is (you met these in class as arrow diagrams), including the special kinds that matter later on: <em>one-to-one</em>, <em>onto</em>, and <em>one-to-one correspondences</em>. Then we build the two rules that organize almost all of our counting — the <strong>product rule</strong>, for choices made one after another, and the <strong>sum rule</strong>, for separate cases. Finally we put them to work: counting functions, counting strings, and seeing why one object, a string, can be read at the same time as a function and as a tuple.</p>" +
-      "<p>We will also rely on the terminology of sets. A <strong>set</strong> is a collection of distinct objects. We write $\\{a, b, c\\}$ for the set containing the elements $a$, $b$, and $c$. We can assign a name to a set, like $A = \\{a, b, c\\}$. Note that unlike lists you have encountered in programming classes, which have order (or an index for each element), sets have no order. Similarly, unlike lists, which allow duplicate elements, sets only contain distinct elements. So the sets $\\{a, b, c\\}$, $\\{b, a, c\\}$, and $\\{a, b, a, c, a\\}$ are all the same set.</p>" +
-      "<p>We write $x \\in A$ to say that $x$ is a member of set $A$, and we write $|A|$ (or sometimes $#A$) for the number of members of $A$, called its <strong>cardinality</strong> or size.</p>"
+      "<p>This reading develops two ideas that appear throughout computer science: <strong>functions</strong> and <strong>counting</strong>. We will first develop them separately and then connect them by asking how many functions can be defined from one finite set to another.</p>" +
+      "<p>A <strong>function</strong> describes an <em>assignment</em>: it assigns each input a single output. Placing each student in a dorm, sorting each file into a folder, giving each pixel a color, and mapping each program input to its output can all be modeled as functions. <strong>Counting</strong> determines how many objects of a given kind exist without listing them all—for example, passwords of a given length, possible course schedules, or states a program might have to search.</p>" +
+      "<p>We will study one-to-one and onto functions; countable and uncountable sets; ordered pairs and tuples; the product and sum rules; union and intersection; and counting sets that overlap. We will then apply these ideas to functions and strings.</p>" +
+      "<p>A <strong>set</strong> is a collection of distinct objects. We write $\\{a, b, c\\}$ for the set containing $a$, $b$, and $c$, and may name it by writing $A = \\{a, b, c\\}$. Unlike a list, a set has no order and contains no duplicate members. Thus $\\{a, b, c\\}$, $\\{b, a, c\\}$, and $\\{a, b, a, c, a\\}$ are the same set.</p>" +
+      "<p>We write $x \\in A$ to say that $x$ is a member of set $A$, and we write $|A|$ (or sometimes $#A$) for the number of members of $A$, called its <strong>cardinality</strong> or size.</p>" +
+      "<p>Several number sets will appear throughout this course:</p>" +
+      "<ul><li>$\\mathbb{N}=\\{0,1,2,3,\\ldots\\}$ is the set of <strong>natural numbers</strong>.</li><li>$\\mathbb{Z}=\\{\\ldots,-3,-2,-1,0,1,2,3,\\ldots\\}$ is the set of <strong>integers</strong>.</li><li>$\\mathbb{Q}$ is the set of <strong>rational numbers</strong>: numbers $p/q$ where $p\\in\\mathbb{Z}$, $q\\in\\mathbb{Z}$, and $q\\ne0$.</li><li>$\\mathbb{R}$ is the set of <strong>real numbers</strong>, the numbers represented by points on the number line. It includes rational numbers as well as irrational numbers such as $\\sqrt{2}$ and $\\pi$.</li></ul>"
     },
     { type: "prose", html:
       "<h2>Functions</h2>" +
-      "<p>Before we count functions, we should be sure what one <em>is</em> — this is the idea you built with arrow diagrams in class. A <strong>function</strong> is a rule that takes each input and returns a single output. We picture it with an <strong>arrow diagram</strong>: the inputs sit in a set on the left, the possible outputs in a set on the right, and we draw one arrow from each input to the output it is sent to.</p>" +
+      "<p>A <strong>function</strong> is a rule that takes each input and returns a single output. We can picture it with an <strong>arrow diagram</strong>: the inputs sit in a set on the left, the possible outputs in a set on the right, and we draw one arrow from each input to the output it is sent to.</p>" +
       "<p>Let $X = \\{0,1\\}$ and $Y = \\{a,b\\}$. Here are two functions of type $X \\to Y$ (read &ldquo;$X$ to $Y$&rdquo;):</p>" +
       "<div style=\"display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin:16px 0\">" +
         "<figure style=\"margin:0;text-align:center\">" +
@@ -104,11 +106,11 @@ Reading.init({
           "<figcaption style=\"font-size:14px;margin-top:2px\">$t$ is <strong>not</strong> a function: $0$ has two arrows</figcaption>" +
         "</figure>" +
       "</div>" +
-      "<p>Mapping $s$ leaves the input $1$ unmapped. Mapping $t$ fails twice over: it sends the single input $0$ to <em>two</em> outputs, and it also leaves $1$ unmapped. A function never leaves an input unassigned and never sends one input to two different outputs.</p>" +
-      "<p>Two things that <em>are</em> allowed are worth noticing. Function $f$ above sends two different inputs to the same output — that is fine, because the requirements constrain each <em>input</em>, not each output. And an output may receive no arrow at all (nothing maps to $b$ under $f$).</p>"
+      "<p>Diagram $s$ leaves input $1$ unmapped. Diagram $t$ sends input $0$ to two outputs and leaves $1$ unmapped.</p>" +
+      "<p>A function may send different inputs to the same output, as $f$ does, and an output may receive no arrow at all. The requirements apply to each input, not to each possible output.</p>"
     },
     { type: "def", title: "Function", html:
-      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to <em>each</em> element $x$ of the domain $X$ exactly one element $f(x)$ of the range $Y$ — nothing left unassigned, nothing assigned two values. The output $f(x)$ is the <strong>value</strong> of $f$ at $x$. (How <em>many</em> functions of a given type there are, we count a little later — once we have the product rule.)</p>"
+      "<p>A <strong>function</strong> $f : X \\to Y$ assigns to <em>each</em> element $x$ of the domain $X$ exactly one element $f(x)$ of the range $Y$. The output $f(x)$ is the <strong>value</strong> of $f$ at $x$.</p>"
     },
     { type: "selectall", id: "fn-id", practice: true,
       prompt: "For $X = \\{0,1\\}$ and $Y = \\{a,b\\}$, select <strong>all</strong> of the following that describe a function of type $X \\to Y$.",
@@ -124,12 +126,14 @@ Reading.init({
     },
     { type: "prose", html:
       "<h2>One-to-one, onto, and one-to-one correspondences</h2>" +
-      "<p>Some functions are especially well-behaved, and in class you gave these behaviors names. Look again at the two functions we started with. Function $g$ (which sent $0 \\mapsto a$ and $1 \\mapsto b$) never reuses an output <em>and</em> reaches every element of $Y$. Function $f$ (which sent both inputs to $a$) does neither: it repeats the output $a$, and it misses $b$ entirely. These two behaviors are worth separating.</p>" +
+      "<p>In general, a function may send two distinct elements of its domain to the same element of its range. For example, the <strong>floor function</strong> $\\lfloor\\,\\cdot\\,\\rfloor:\\mathbb{R}\\to\\mathbb{Z}$ rounds a real number down to the greatest integer no larger than it. It sends both $2.2$ and $2.3$ to $2$.</p>" +
+      "<p>A function may also miss some elements of its range. For example, define $d:\\mathbb{N}\\to\\mathbb{N}$ by $d(x)=2x$. Its outputs are even, so no odd natural number is the value of $d(x)$ for any input $x$.</p>" +
+      "<p>These examples raise two separate questions: does a function ever reuse an output, and does it reach every possible output? The following terms name those properties.</p>" +
       "<ul>" +
       "<li>A function is <strong>one-to-one</strong> (also called <strong>injective</strong>) if different inputs always land on different outputs — no output is used more than once.</li>" +
       "<li>A function is <strong>onto</strong> (also called <strong>surjective</strong>) if every element of the range is reached by some input — nothing in $Y$ is left out.</li>" +
       "</ul>" +
-      "<p>The two properties are independent — a function can have either one without the other — so it helps to see each in isolation:</p>" +
+      "<p>A function can have either property without the other:</p>" +
       "<div style=\"display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin:16px 0\">" +
         "<figure style=\"margin:0;text-align:center\">" +
           "<svg viewBox=\"0 0 240 170\" width=\"220\" role=\"img\" aria-label=\"A function from a 2-element set to a 3-element set: 0 maps to a and 1 maps to b, while c is never reached. It is one-to-one but not onto.\">" +
@@ -185,35 +189,100 @@ Reading.init({
       explain: "$g$ sends $0$ and $1$ to <em>different</em> outputs (one-to-one), and both $a$ and $b$ are reached (onto), so it is a one-to-one correspondence. It does not send two inputs to the same output — that was $f$, not $g$."
     },
     { type: "prose", html:
+      "<h2>Using bijections to compare sizes</h2>" +
+      "<p>Two finite sets have the same cardinality exactly when a bijection pairs their members. For example, a bijection from $\\{a,b,c\\}$ to $\\{7,8,9\\}$ pairs three inputs with three outputs, so both sets have cardinality $3$.</p>" +
+      "<p>The pairing itself establishes that the sets have the same size. We do not need to count the two sets separately first. This way of comparing sizes is especially useful for infinite sets, whose members cannot be counted to a final total.</p>" +
+      "<p>We therefore use the same criterion for all sets: two sets have the <strong>same cardinality</strong> when there is a bijection between them.</p>"
+    },
+    { type: "prose", html:
+      "<h2>The natural numbers and integers have the same cardinality</h2>" +
+      "<p>The integers extend forever in both the positive and negative directions, while the natural numbers begin at $0$ and extend in only one direction. This can make the integers appear more numerous. The following pairing shows otherwise:</p>" +
+      "<div style=\"overflow-x:auto;margin:16px 0\"><table style=\"margin:0 auto;border-collapse:collapse;text-align:center;min-width:560px\"><caption style=\"font-weight:600;margin-bottom:8px\">A pairing from $\\mathbb{N}$ to $\\mathbb{Z}$</caption><thead><tr><th scope=\"row\" style=\"padding:6px 10px;border-bottom:1px solid currentColor\">natural number $n$</th><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$0$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$1$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$2$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$3$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$4$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$5$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$6$</td><td style=\"padding:6px 10px;border-bottom:1px solid currentColor\">$\\cdots$</td></tr></thead><tbody><tr><th scope=\"row\" style=\"padding:6px 10px\">integer paired with $n$</th><td style=\"padding:6px 10px\">$0$</td><td style=\"padding:6px 10px\">$1$</td><td style=\"padding:6px 10px\">$-1$</td><td style=\"padding:6px 10px\">$2$</td><td style=\"padding:6px 10px\">$-2$</td><td style=\"padding:6px 10px\">$3$</td><td style=\"padding:6px 10px\">$-3$</td><td style=\"padding:6px 10px\">$\\cdots$</td></tr></tbody></table></div>" +
+      "<p>The pattern continues forever: $0$ is paired with $0$; each positive integer $k$ is paired with the natural number $2k-1$; and each negative integer $-k$ is paired with $2k$. Every natural number participates once, and every integer is reached once. This is a bijection, so $\\mathbb{N}$ and $\\mathbb{Z}$ have the same cardinality.</p>" +
+      "<p>An infinite set is <strong>countable</strong> when it has a bijection with $\\mathbb{N}$. Equivalently, its members can be placed in a list with positions $0,1,2,\\ldots$ so that every member appears exactly once. The natural numbers and integers are both countable.</p>"
+    },
+    { type: "selectall", id: "countable-nz-check",
+      prompt: "In the displayed pairing between $\\mathbb{N}$ and $\\mathbb{Z}$, select <strong>all</strong> true statements.",
+      choices: [
+        "The natural number $5$ is paired with the integer $3$.",
+        "Every positive and negative integer eventually appears.",
+        "The pairing shows that $\\mathbb{Z}$ has the same cardinality as $\\mathbb{N}$.",
+        "The pairing fails because $\\mathbb{Z}$ contains negative numbers."
+      ],
+      answers: [0, 1, 2],
+      hint: "A bijection must use every input once and reach every output once. Follow the alternating pattern $0,1,-1,2,-2,\\ldots$.",
+      explain: "$5$ is paired with $3$. The list alternates positive and negative integers and eventually reaches every integer exactly once. The existence of that bijection establishes equal cardinality; negative values do not prevent a pairing."
+    },
+    { type: "prose", html:
+      "<h2>The rational numbers are countable</h2>" +
+      "<p>There are infinitely many rational numbers between any two distinct integers, so it may seem impossible to list them all. The key is to organize the list so that every rational number eventually receives a position.</p>" +
+      "<p>Write each rational number in <strong>reduced form</strong> $p/q$, where $p\\in\\mathbb{Z}$, $q$ is a positive integer, and $p$ and $q$ have no common positive factor greater than $1$. Requiring reduced form prevents repetitions such as $1/2=2/4$.</p>" +
+      "<p>Now arrange the reduced fractions in layers according to $|p|+q$:</p>" +
+      "<ul><li>First list the fractions with $|p|+q=1$: $0/1$.</li><li>Next list those with $|p|+q=2$: $1/1$ and $-1/1$.</li><li>Then list those with $|p|+q=3$: $1/2$, $-1/2$, $2/1$, and $-2/1$.</li><li>Continue with $|p|+q=4,5,6,\\ldots$.</li></ul>" +
+      "<p>Each layer contains only finitely many fractions, so we can finish one layer before moving to the next. Every rational number has a reduced form $p/q$ and therefore appears in the layer numbered $|p|+q$. Reading the layers in order produces a list containing every rational number exactly once. Assigning positions $0,1,2,\\ldots$ to that list gives a bijection from $\\mathbb{N}$ to $\\mathbb{Q}$. Thus $\\mathbb{Q}$ is countable.</p>"
+    },
+    { type: "prose", html:
+      "<h2>The real numbers are uncountable</h2>" +
+      "<p>Not every infinite set can be placed in a list. An infinite set that has no bijection with $\\mathbb{N}$ is <strong>uncountable</strong>. Cantor&rsquo;s diagonal argument shows that even the real numbers from $0$ up to, but not including, $1$ are uncountable.</p>" +
+      "<p>Suppose we try to list every real number in this interval. Write $d_{ij}$ for the digit in decimal position $j$ of the number in list position $i$:</p>" +
+      "<p style=\"text-align:center\">$r_0=0.d_{00}d_{01}d_{02}\\cdots$<br>$r_1=0.d_{10}d_{11}d_{12}\\cdots$<br>$r_2=0.d_{20}d_{21}d_{22}\\cdots$<br>$\\vdots$</p>" +
+      "<p>For numbers with two decimal representations, such as $0.5000\\ldots=0.4999\\ldots$, choose the representation that does not end in an endless string of $9$s.</p>" +
+      "<p>Construct a new number $s=0.c_0c_1c_2\\cdots$. Choose $c_n=1$ when the $n$th digit of $r_n$ is not $1$, and choose $c_n=2$ when that digit is $1$. Thus $s$ differs from $r_0$ in digit $0$, from $r_1$ in digit $1$, from $r_2$ in digit $2$, and so on.</p>" +
+      "<p>The number $s$ lies between $0$ and $1$, but it cannot be any number on the list: it differs from the number in position $n$ at digit $n$. Therefore no proposed list can contain every real number from $0$ up to, but not including, $1$. This interval is uncountable, and because it is part of $\\mathbb{R}$, the set $\\mathbb{R}$ is uncountable as well.</p>"
+    },
+    { type: "mc", id: "diagonal-check",
+      prompt: "Why is the number $s$ constructed in the diagonal argument absent from the proposed list?",
+      choices: [
+        "For every position $n$, $s$ differs from $r_n$ in digit $n$.",
+        "$s$ has infinitely many decimal digits.",
+        "$s$ is irrational.",
+        "The proposed list contains only rational numbers."
+      ],
+      answer: 0,
+      choiceFeedback: [
+        null,
+        "Numbers already on the list may also have infinitely many decimal digits.",
+        "The construction does not need to establish whether $s$ is rational or irrational.",
+        "The proposed list was assumed to contain every real number, not only rational numbers."
+      ],
+      explain: "For each $n$, the construction deliberately makes digit $n$ of $s$ different from digit $n$ of $r_n$. Therefore $s\\ne r_n$ for every position $n$, so $s$ is missing from the list."
+    },
+    { type: "prose", html:
       "<h2>Ordered pairs and the Cartesian product</h2>" +
       "<p>Suppose we pick one section from $C = \\{c_1, c_2, c_3\\}$ and pair it with one professor from $P = \\{\\text{Bowers}, \\text{Lam}, \\text{Molloy}, \\text{Weikle}\\}$. Each outcome is an <strong>ordered pair</strong> $(c, p)$: the first entry is the section, the second is the professor. The set of <em>all</em> such pairs is the <strong>Cartesian product</strong> $C \\times P = \\{(c,p) : c \\in C,\\ p \\in P\\}$.</p>" +
-      "<p><em>Order is part of the pair.</em> A pair in $P \\times C$ looks like $(\\text{Bowers}, c_1)$ — professor first — so $C \\times P$ and $P \\times C$ are different sets of pairs, even though you could pair them up by reversing each pair. Building a pair takes two independent choices, so $|C \\times P| = |C| \\cdot |P| = 3 \\cdot 4 = 12$.</p>"
+      "<p><em>Order is part of the pair.</em> A pair in $P \\times C$ looks like $(\\text{Bowers}, c_1)$ — professor first — so $C \\times P$ and $P \\times C$ are different sets of pairs, even though you could pair them up by reversing each pair. Each of the three section choices can be paired with any of the four professors, so $|C \\times P| = |C| \\cdot |P| = 3 \\cdot 4 = 12$.</p>"
     },
     { type: "shortnum", id: "q1",
       prompt: "Let $A$ have $5$ elements and $B$ have $3$ elements. How many ordered pairs are in $A \\times B$?",
       answer: 15,
       placeholder: "a whole number",
-      hint: "Two independent choices: the first entry from $A$, the second from $B$. Multiply.",
+      hint: "Choose the first entry from $A$ and the second from $B$. Every first-entry choice can be followed by any second-entry choice.",
       explain: "$|A \\times B| = |A| \\cdot |B| = 5 \\cdot 3 = 15$."
+    },
+    { type: "prose", html:
+      "<h2>From pairs to tuples</h2>" +
+      "<p>A pair records two entries in a specified order. The same idea extends to any fixed number of entries. Suppose a lunch contains one drink from $D=\\{\\text{tea},\\text{soda},\\text{water}\\}$, one entree from $E=\\{\\text{sandwich},\\text{salad}\\}$, and one side from $S=\\{\\text{fruit},\\text{chips}\\}$. We record a lunch as an ordered triple $(d,e,s)$, where $d\\in D$, $e\\in E$, and $s\\in S$.</p>" +
+      "<p>For a fixed drink, such as tea, there are four entree-side possibilities. The same four possibilities occur after choosing soda and after choosing water. Thus there are $3\\cdot2\\cdot2=12$ lunches.</p>" +
+      "<p>The position of each entry carries meaning. In $(\\text{tea},\\text{salad},\\text{fruit})$, the first entry is a drink, the second is an entree, and the third is a side. Rearranging those entries would not describe the same lunch—and might not describe a valid lunch at all.</p>"
     },
     { type: "def", title: "Tuples and the product rule", html:
       "<p>An <strong>$n$-tuple</strong> is an ordered list $(a_1, a_2, \\dots, a_n)$ whose first entry is chosen from a set $A_1$, second from $A_2$, and so on. The Cartesian product $A_1 \\times A_2 \\times \\cdots \\times A_n$ is the set of all such tuples.</p>" +
-      "<p><strong>Product rule.</strong> When each member of a collection is specified by making a sequence of choices — the first with $n_1$ options, the second with $n_2$, and so on — and the procedure produces every member exactly once, the number of members is $n_1 \\cdot n_2 \\cdots n_k$. In particular $|A_1 \\times \\cdots \\times A_n| = |A_1| \\cdot |A_2| \\cdots |A_n|$.</p>"
+      "<p><strong>Product rule.</strong> Suppose an object is completely specified by a sequence of choices. If the first choice has $n_1$ possibilities, the second has $n_2$ possibilities after every possible first choice, and so on, then the number of objects is $n_1 \\cdot n_2 \\cdots n_k$—provided that the procedure produces every object exactly once. In particular, $|A_1 \\times \\cdots \\times A_n|=|A_1|\\cdot\\cdots\\cdot|A_n|$. The sets need not have the same size; each factor counts the possibilities for one position in the tuple.</p>"
     },
     { type: "shortnum", id: "q2",
       prompt: "A password is two letters from $\\{A,B,C,D,E\\}$ (repeats allowed) followed by one digit from $\\{1,2,3\\}$. How many passwords are there?",
       answer: 75,
       placeholder: "a whole number",
-      hint: "Three independent choices: first letter, second letter, digit. Multiply the option counts.",
+      hint: "Choose the first letter, second letter, and digit in order. Each earlier choice can be followed by any allowed later choice.",
       explain: "$5 \\cdot 5 \\cdot 3 = 75$ — one factor per position."
     },
     { type: "prose", html:
       "<h2>Counting functions</h2>" +
-      "<p>Why would we want to count functions? Because a function is exactly what records an <em>assignment</em>: sorting each of your files into one of several folders, placing each student in a dorm, handing each of the day&rsquo;s jobs to one of the servers that could run it. Counting the functions of a given type answers the question &ldquo;how many different ways could that assignment turn out?&rdquo;</p>" +
-      "<p>So suppose we want to count the functions from $X = \\{0,1\\}$ to $Y = \\{a,b\\}$. It turns out this is the product rule in disguise. To <em>build</em> such a function, go through the inputs one at a time and choose an output for each. The choices are <strong>independent</strong>: sending $0$ somewhere uses up none of the options for $1$, since a function is free to reuse an output. That is two stages with two options each, $2 \\cdot 2 = 4$ functions in all — the $f$ and $g$ above, plus the two that send $0 \\mapsto b$.</p>" +
+      "<p>A function records an <em>assignment</em>: sorting each file into a folder, placing each student in a dorm, or assigning each job to a server. Counting functions tells us how many such assignments are possible.</p>" +
+      "<p>Consider functions from $X = \\{0,1\\}$ to $Y = \\{a,b\\}$. To build one, choose an output for each input. Sending $0$ somewhere uses up none of the options for $1$, since a function may reuse an output. Each stage therefore has two possibilities, giving $2 \\cdot 2 = 4$ functions—the $f$ and $g$ above, plus the two that send $0 \\mapsto b$.</p>" +
       "<p>One stage per input, with $|Y|$ options at every stage, so a domain of size $|X|$ into a range of size $|Y|$ gives</p>" +
       "<p style=\"text-align:center\">$\\underbrace{|Y| \\cdot |Y| \\cdots |Y|}_{|X| \\text{ inputs}} = |Y|^{\\,|X|}$</p>" +
-      "<p>functions. For a concrete case, the number of ways to color a row of $4$ pixels using $3$ colors is just the number of functions from the $4$ positions to the $3$ colors: $3^4 = 81$. And from a $2$-element set into a $3$-element set there are $3^2 = 9$; from a $3$-element set into a $2$-element set there are $2^3 = 8$. Watch the roles: the size of the <em>domain</em> is the exponent, because each input is one independent choice.</p>"
+      "<p>functions. For example, coloring a row of $4$ pixels using $3$ colors is the same as choosing a function from the $4$ positions to the $3$ colors, so there are $3^4 = 81$ colorings. From a $2$-element set into a $3$-element set there are $3^2 = 9$ functions; from a $3$-element set into a $2$-element set there are $2^3 = 8$. The domain size is the exponent because one output is chosen for each input.</p>"
     },
     { type: "mc", id: "q3",
       prompt: "How many functions are there from a set of size $m$ to a set of size $n$?",
@@ -240,9 +309,24 @@ Reading.init({
       explain: "A pair needs two choices ($|A \\times B| = |A|\\,|B|$); a function needs one choice per input ($|B|^{|A|}$). These counts usually differ (they coincide only when $|A| = |B| = 2$), and in any case a pair and a function are different <em>kinds</em> of object — a single pair is never a whole function."
     },
     { type: "prose", html:
+      "<h2>Union, intersection, and disjoint sets</h2>" +
+      "<p>Two set operations describe the members belonging to one set, another set, or both.</p>" +
+      "<ul><li>The <strong>union</strong> $A\\cup B$ is the set of members that are in $A$, in $B$, or in both. Here &ldquo;or&rdquo; includes the possibility of being in both sets.</li><li>The <strong>intersection</strong> $A\\cap B$ is the set of members that are in both $A$ and $B$.</li></ul>" +
+      "<p>For example, let $A=\\{\\text{cat},\\text{dog}\\}$ and $B=\\{\\text{dog},\\text{owl}\\}$. Then $A\\cup B=\\{\\text{cat},\\text{dog},\\text{owl}\\}$, while $A\\cap B=\\{\\text{dog}\\}$. The dog is written only once in the union because a set never contains duplicate copies of a member.</p>" +
+      "<p>The symbol $\\varnothing$ denotes the <strong>empty set</strong>, the set with no members. Sets are <strong>disjoint</strong> when they have no members in common; equivalently, $A$ and $B$ are disjoint when $A\\cap B=\\varnothing$.</p>"
+    },
+    { type: "selectall", id: "union-intersection-check",
+      prompt: "Let $A=\\{1,2,3\\}$ and $B=\\{3,4\\}$. Select <strong>all</strong> true statements.",
+      choices: ["$A\\cup B=\\{1,2,3,4\\}$", "$A\\cap B=\\{3\\}$", "$|A\\cup B|=5$", "$A$ and $B$ are disjoint"],
+      answers: [0, 1],
+      hint: "The union lists each member appearing in either set once. The intersection contains only shared members.",
+      explain: "$A\\cup B=\\{1,2,3,4\\}$ and $A\\cap B=\\{3\\}$. The union has four members, not five, and the sets are not disjoint because they share $3$."
+    },
+    { type: "prose", html:
       "<h2>The sum rule</h2>" +
-      "<p>Sometimes a collection splits into separate cases rather than successive choices. A cafe customer orders <em>either</em> one breakfast (say $|B| = 6$ possible orders) <em>or</em> one lunch ($|L| = 12$), but not both. The number of possible orders is $|B| + |L| = 18$ — we <strong>add</strong>, because each order is one case or the other, not a combination of both.</p>" +
-      "<p><strong>Sum rule.</strong> If a collection is divided into groups that are <strong>disjoint</strong> — no member belongs to two groups — then its size is the sum of the group sizes. The disjointness matters: the two-character IDs $R = \\{A1, A2, A3\\}$ and $T = \\{A1, B1, C1\\}$ have $|R| = |T| = 3$, but the combined collection is $\\{A1, A2, A3, B1, C1\\}$ with only $5$ members — adding $3 + 3 = 6$ double-counts the shared $A1$. A single case may itself be built from a sequence of choices: count that case with the product rule, then add the cases together. (We return to overlapping groups in the next reading.)</p>"
+      "<p>First consider disjoint sets $A=\\{A1,A2,A3\\}$ and $B=\\{B1,B2,B3\\}$. Their union has six members. Adding $|A|+|B|=3+3$ works because every member of $A\\cup B$ occurs in exactly one of the two sets; nothing is counted twice.</p>" +
+      "<p><strong>Sum rule.</strong> If a finite collection is divided into disjoint sets $S_1,S_2,\\ldots,S_k$ so that every member belongs to exactly one $S_i$, then $|S_1\\cup S_2\\cup\\cdots\\cup S_k|=|S_1|+|S_2|+\\cdots+|S_k|$.</p>" +
+      "<p>A case may itself require several successive choices. In that situation, use the product rule to count within each case and the sum rule to add across the disjoint cases.</p>"
     },
     { type: "shortnum", id: "q4",
       prompt: "A student takes <strong>either</strong> one 3-credit course (5 offerings) together with one 1-credit lab (3 offerings), <strong>or</strong> instead one 4-credit seminar (4 offerings). How many schedules are possible?",
@@ -252,8 +336,24 @@ Reading.init({
       explain: "Course-and-lab: $5 \\cdot 3 = 15$. Seminar: $4$. The two cases can't be the same schedule, so add: $15 + 4 = 19$."
     },
     { type: "prose", html:
+      "<h2>When the sets overlap</h2>" +
+      "<p>Now compare $R=\\{A1,A2,A3\\}$ and $T=\\{A1,A2,B1\\}$. Both sets have three members, but their union is $R\\cup T=\\{A1,A2,A3,B1\\}$, which has only four. The sum $|R|+|T|=3+3$ counts $A1$ twice and counts $A2$ twice. These are exactly the two members of $R\\cap T$.</p>" +
+      "<p>To count the union correctly, subtract one extra count for every member of the intersection: $|R\\cup T|=|R|+|T|-|R\\cap T|=3+3-2=4$.</p>"
+    },
+    { type: "def", title: "Counting a union of two sets", html:
+      "<p>For finite sets $A$ and $B$, $|A\\cup B|=|A|+|B|-|A\\cap B|$.</p>" +
+      "<p>Adding $|A|$ and $|B|$ counts every member of the intersection twice, so subtracting $|A\\cap B|$ leaves one count for each shared member. If the sets are disjoint, then $A\\cap B=\\varnothing$ and $|A\\cap B|=0$, so this formula reduces to the sum rule.</p>"
+    },
+    { type: "shortnum", id: "q4b",
+      prompt: "A repository contains $42$ files labeled <code>Python</code> and $31$ files labeled <code>Testing</code>. Nine files have both labels. How many files have at least one of the two labels?",
+      answer: 64,
+      placeholder: "a whole number",
+      hint: "Add the two set sizes, then account for the files included in both counts.",
+      explain: "$42+31-9=64$. Each of the nine files in the intersection was counted twice by the addition, so one copy of each is subtracted."
+    },
+    { type: "prose", html:
       "<h2>Two ways to see a string</h2>" +
-      "<p>Strings are everywhere in computing, so they are worth pausing on — and they tie together the two ideas of this reading, functions and Cartesian products, in a satisfying way. Take a short string over the alphabet $\\{a,b\\}$, say the length-$3$ string $aba$. There are two equally good ways to say what that string <em>is</em>, and they turn out to agree.</p>" +
+      "<p>A string can be viewed both as a function and as a tuple. Consider the length-$3$ string $aba$ over the alphabet $\\{a,b\\}$.</p>" +
       "<p><strong>First view: a string is a function from its positions to its characters.</strong> Number the positions of a length-$3$ string $0$, $1$, $2$. The string $aba$ simply records which character sits at each position — an $a$ at position $0$, a $b$ at position $1$, an $a$ at position $2$. That is exactly a function $f : \\{0,1,2\\} \\to \\{a,b\\}$ with $f(0)=a$, $f(1)=b$, and $f(2)=a$:</p>" +
       "<div style=\"display:flex;justify-content:center;margin:16px 0\">" +
         "<figure style=\"margin:0;text-align:center\">" +
@@ -275,13 +375,13 @@ Reading.init({
           "<figcaption style=\"font-size:14px;margin-top:2px\">The string $aba$ as a function $f : \\{0,1,2\\} \\to \\{a,b\\}$.</figcaption>" +
         "</figure>" +
       "</div>" +
-      "<p>This works in both directions. Every function of type $\\{0,1,2\\} \\to \\{a,b\\}$ names a character for each of the three positions, so it <em>is</em> a length-$3$ string over $\\{a,b\\}$; and every such string gives back a function. The length-$3$ strings over $\\{a,b\\}$ and the functions $\\{0,1,2\\} \\to \\{a,b\\}$ are the very same objects.</p>" +
-      "<p>So counting strings is really counting functions. A string of length $n$ over an alphabet $\\Sigma$ is a function from its $n$ positions $\\{0,1,\\dots,n-1\\}$ to $\\Sigma$, and we already counted those: there are $|\\Sigma|^{\\,n}$ of them, one independent choice of character per position.</p>"
+      "<p>Every function of type $\\{0,1,2\\} \\to \\{a,b\\}$ names one character for each position and therefore determines a length-$3$ string. Conversely, every such string determines one function.</p>" +
+      "<p>More generally, a string of length $n$ over an alphabet $\\Sigma$ is a function from its positions $\\{0,1,\\dots,n-1\\}$ to $\\Sigma$. There are $|\\Sigma|^{\\,n}$ such strings because each of the $n$ positions can contain any member of $\\Sigma$.</p>"
     },
     { type: "prose", html:
       "<p><strong>Second view: a string is a tuple.</strong> Read $aba$ from left to right and it is just the ordered triple $(a, b, a)$ — a member of $\\{a,b\\} \\times \\{a,b\\} \\times \\{a,b\\}$. In the same way, a string of length $n$ over $\\Sigma$ is an $n$-tuple whose every entry is drawn from $\\Sigma$: a member of the Cartesian product</p>" +
       "<p style=\"text-align:center\">$\\underbrace{\\Sigma \\times \\Sigma \\times \\cdots \\times \\Sigma}_{n \\text{ factors}} = \\Sigma^{\\,n}.$</p>" +
-      "<p>By the product rule this set has $|\\Sigma| \\cdot |\\Sigma| \\cdots |\\Sigma| = |\\Sigma|^{\\,n}$ members — the <em>same</em> count as before. That agreement is no coincidence: the two views are exactly the counting-functions rule and the Cartesian-product rule from earlier in this reading, reaching $|\\Sigma|^{\\,n}$ from two directions. From now on we write $\\Sigma^{n}$ for the set of all length-$n$ strings over $\\Sigma$.</p>"
+      "<p>By the product rule this set has $|\\Sigma| \\cdot |\\Sigma| \\cdots |\\Sigma| = |\\Sigma|^{\\,n}$ members, agreeing with the function count. We write $\\Sigma^{n}$ for the set of all length-$n$ strings over $\\Sigma$.</p>"
     },
     { type: "shortnum", id: "q5",
       prompt: "How many binary strings (over $\\{0,1\\}$) have length $6$?",
@@ -294,10 +394,7 @@ Reading.init({
       "<h2>Restricting a choice</h2>" +
       "<p>When one choice is limited, count how many options it still has and multiply by the free choices as usual. Forbidding some values just shrinks that stage&rsquo;s count; <em>forcing</em> one specific value makes that stage contribute a factor of $1$, while the other positions stay free. And when &ldquo;at least one …&rdquo; is awkward to count directly, it is often easier to count the outcomes you <em>don&rsquo;t</em> want and subtract them from the total.</p>"
     },
-    { type: "prose", html:
-      "<h2>Apply it</h2>" +
-      "<p>This one restricts a single choice — count that choice under its restriction, then multiply by the free ones.</p>"
-    },
+    { type: "prose", html: "<h2>Apply it</h2>" },
     { type: "shortnum", id: "t1", badge: "Apply it",
       prompt: "How many functions $f : \\{a,b,c\\} \\to \\{0,1,2\\}$ satisfy $f(a) \\ne 0$?",
       answer: 18,
@@ -349,6 +446,18 @@ Reading.init({
       answers: [0, 1],
       hint: "A string assigns a character to each position, so the positions form the domain.",
       explain: "A length-$n$ string is a function from the $n$ positions to $\\Sigma$, and there are $|\\Sigma|^{n}$ of them. $\\Sigma$ is the range, not the domain."
+    },
+    { type: "selectall", id: "e7", practice: true,
+      prompt: "Let $A=\\{a,b,c\\}$ and $B=\\{c,d\\}$. Select <strong>all</strong> true statements.",
+      choices: [
+        "$A\\cup B=\\{a,b,c,d\\}$",
+        "$A\\cap B=\\{c\\}$",
+        "$A$ and $B$ are disjoint",
+        "$|A\\cup B|=|A|+|B|-|A\\cap B|$"
+      ],
+      answers: [0, 1, 3],
+      hint: "List what belongs to either set and what belongs to both sets.",
+      explain: "The union is $\\{a,b,c,d\\}$ and the intersection is $\\{c\\}$. Since the intersection is not empty, the sets are not disjoint. Their cardinalities satisfy $4=3+2-1$."
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
     { type: "shortnum", id: "m1", practice: true,
@@ -413,6 +522,18 @@ Reading.init({
       hint: "Say what determines a function, count each independent choice, then multiply.",
       explain: "Each input independently chooses one of two outputs, and the product rule multiplies those independent choices to give $2^3$."
     },
+    { type: "shortnum", id: "m9", practice: true,
+      prompt: "A test suite generates every combination of one of $5$ operating systems, one of $4$ browsers, and one of $3$ network settings. How many tests use Windows <strong>or</strong> Firefox? A test can use both.",
+      answer: 24,
+      hint: "Count the Windows tests and the Firefox tests. Then subtract the tests counted in both groups.",
+      explain: "There are $1\\cdot4\\cdot3=12$ Windows tests and $5\\cdot1\\cdot3=15$ Firefox tests. Their intersection has $1\\cdot1\\cdot3=3$ tests, so the union has $12+15-3=24$."
+    },
+    { type: "shortnum", id: "m10", practice: true,
+      prompt: "A three-character identifier uses symbols from $\\{A,B,C,1,2\\}$, with repetition allowed. How many identifiers begin with $A$ or end with $1$?",
+      answer: 45,
+      hint: "Each condition describes $5^2$ identifiers. How many satisfy both conditions?",
+      explain: "There are $25$ that begin with $A$ and $25$ that end with $1$. The five identifiers of the form $A\\_1$ are in both sets, so the answer is $25+25-5=45$."
+    },
     { type: "shortnum", id: "mn1", practice: true,
       prompt: "<strong>Diner.</strong> A dinner special is one of $5$ entr&eacute;es, one of $4$ sides, and one of $3$ drinks. How many different dinner specials are there?",
       answer: 60,
@@ -452,9 +573,13 @@ Reading.init({
       prompt: "<strong>Value meal (product and sum together).</strong> A caf&eacute;'s value meal is <strong>either</strong> a burger (one of $3$ kinds) with a drink (one of $4$), <strong>or</strong> a wrap (one of $2$ kinds) with a side (one of $3$) and a drink (one of $4$). How many value meals are possible?",
       solution: "Handle each kind of meal with the product rule, then combine the two kinds with the sum rule. <ul><li>Burger meals: a burger and a drink, $3 \\cdot 4 = 12$.</li><li>Wrap meals: a wrap, a side, and a drink, $2 \\cdot 3 \\cdot 4 = 24$.</li></ul> A value meal is one kind <em>or</em> the other and never both, so the two groups are disjoint and we add: $12 + 24 = 36$. $\\blacksquare$ <br><br>The pattern is the two rules working together: <strong>multiply the choices within each case, then add across the cases.</strong>"
     },
+    { type: "challenge", id: "ch6",
+      prompt: "Count the three-character identifiers over $\\{A,B,C,1,2\\}$ that begin with $A$ or end with $1$ in two different ways: first by subtracting an intersection, and then by splitting the desired identifiers into disjoint cases. Explain why the two counts agree.",
+      solution: "<strong>Subtract an intersection:</strong> $25$ identifiers begin with $A$, and $25$ end with $1$. The five of the form $A\\_1$ satisfy both conditions, so the count is $25+25-5=45$. <br><br><strong>Use disjoint cases:</strong> take all $25$ identifiers beginning with $A$, then add the identifiers that do not begin with $A$ and do end with $1$. The latter have four possibilities for the first symbol and five for the middle symbol, giving $4\\cdot5=20$. Thus $25+20=45$. <br><br>The first method removes the extra copy of every shared identifier. The second prevents any shared identifier from being counted twice in the first place. $\\blacksquare$"
+    },
     { type: "prose", html:
       "<h2>Where this is headed</h2>" +
-      "<p>The instinct you just practiced — build a big answer from independent small choices — returns constantly, and it is the seed of recursion and induction later on. Next, we study <strong>sets</strong> and their operations, and use these same two rules to count subsets and to fix the double-counting that happens when groups overlap.</p>"
+      "<p>Counting begins by describing a collection precisely: how its members are built, whether each construction is unique, and whether cases overlap. These habits will return when we study recursion and induction. Next, we study sets more systematically.</p>"
     }
   ]
 });
