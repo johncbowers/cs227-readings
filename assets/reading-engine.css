@@ -112,6 +112,7 @@ code, .r-mono { font-family: var(--r-mono); font-size: .92em; background: var(--
 
 /* ---- Choices ---- */
 .r-choices { display: flex; flex-direction: column; gap: 8px; }
+.r-choices + .r-row { margin-top: 12px; }
 .r-choice {
   text-align: left; width: 100%;
   background: var(--r-bg); color: var(--r-text);
