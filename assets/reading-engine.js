@@ -251,6 +251,7 @@
     var inp = el("input", "r-input");
     inp.type = "text";
     inp.setAttribute("inputmode", "text");
+    inp.setAttribute("aria-label", plainText(b.prompt));
     inp.placeholder = b.placeholder || "your answer";
     var btn = el("button", "r-btn", "Check");
     btn.type = "button";
@@ -284,6 +285,7 @@
     var row = el("div", "r-row");
     var inp = el("input", "r-input");
     inp.type = "text"; inp.style.width = "260px";
+    inp.setAttribute("aria-label", plainText(b.prompt));
     inp.placeholder = b.placeholder || "your answer";
     var btn = el("button", "r-btn", "Check");
     btn.type = "button";
