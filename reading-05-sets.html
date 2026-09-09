@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CS 227 · Reading 5 — Sets and Operations</title>
+<title>CS 227 · Reading 5 — Permutations and Combinations</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
 <link rel="stylesheet" href="assets/reading-engine.css" />
 </head>
@@ -14,233 +14,307 @@
 <script src="assets/reading-engine.js"></script>
 <script>
 Reading.init({
-  id: "05-sets",
+  id: "05-permutations-combinations",
   crumb: '<a href="index.html">CS 227 Readings</a> · Reading 5',
-  title: "Reading 5 — Sets and Operations",
-  subtitle: "Sets package collections of objects — each set is a condition in disguise, and counting them reuses the product and sum rules.",
+  title: "Reading 5 — Permutations and Combinations",
+  subtitle: "Count selections without repetition by deciding whether positions—and therefore order—are part of the outcome.",
   prev: { href: "reading-04-counting.html", label: "Reading 4 — Sets, Functions, and Basic Counting" },
   next: { href: "reading-06-predicate-logic.html", label: "Reading 6 — Predicate Logic" },
   blocks: [
     { type: "prose", html:
-      "<p>A <strong>set</strong> is an unordered collection of distinct <strong>elements</strong>. Write $x \\in A$ for &ldquo;$x$ is in $A$,&rdquo; list small sets in braces ($\\{1,2,3\\}$), and write $|A|$ for the number of elements (the <strong>cardinality</strong>). Because a set is unordered and has no repeats, $\\{1,2,3\\}$, $\\{3,2,1\\}$, and $\\{1,1,2,3\\}$ all name the same set — unlike the ordered tuples of the last reading. We write $A \\subseteq B$ (&ldquo;$A$ is a subset of $B$&rdquo;) when every element of $A$ is also in $B$ — note the hidden &ldquo;for all.&rdquo;</p>"
+      "<p>The product rule counts an object by counting the choices that specify it. When a choice cannot be reused, the number of options decreases from one stage to the next. Suppose five students are available to fill three presentation positions: first, second, and third. There are five choices for the first position, four remaining choices for the second, and three for the third. Thus there are $5\\cdot4\\cdot3=60$ presentation orders.</p>" +
+      "<p>The positions matter. If Ari, Bo, and Cy present in that order, then switching Ari and Bo produces a different presentation order. This is an <strong>ordered selection without repetition</strong>.</p>"
     },
-    { type: "def", title: "Three operations", html:
-      "<ul>" +
-      "<li><strong>Union</strong> $A \\cup B$: everything in $A$ or $B$ (or both).</li>" +
-      "<li><strong>Intersection</strong> $A \\cap B$: everything in both.</li>" +
-      "<li><strong>Difference</strong> $A \\setminus B$: everything in $A$ that is not in $B$.</li>" +
-      "</ul>" +
-      "<p>The <strong>complement</strong> of a set (relative to some understood universe) collects everything <em>not</em> in it.</p>"
+    { type: "shortnum", id: "q1",
+      prompt: "Seven runners compete for first, second, and third place. How many possible ordered results are there if no runner can occupy two places?",
+      answer: 210,
+      placeholder: "a whole number",
+      hint: "Count the choices for first place, then second, then third. One fewer runner remains after each choice.",
+      explain: "$7\\cdot6\\cdot5=210$. The result records three distinct positions, so order matters and no runner is reused."
     },
-    { type: "mc", id: "q1",
-      prompt: "Let $A = \\{1,2,3,4,5,6\\}$ and $B = \\{2,4,6\\}$. What is $A \\cap B$?",
-      choices: ["$\\{2, 4, 6\\}$", "$\\{1, 3, 5\\}$", "$\\{1, 2, 3, 4, 5, 6\\}$", "$\\{\\,\\}$ (empty)"],
+    { type: "prose", html:
+      "<h2>Factorials and permutations</h2>" +
+      "<p>The product $n(n-1)(n-2)\\cdots2\\cdot1$ occurs whenever all $n$ objects are arranged in order. We abbreviate it by $n!$, read &ldquo;$n$ factorial.&rdquo; For example, $5!=5\\cdot4\\cdot3\\cdot2\\cdot1=120$.</p>" +
+      "<p>Often we fill only $r$ positions using $n$ available objects. The first position has $n$ options, the next has $n-1$, and the $r$th position has $n-r+1$. This gives a descending product of exactly $r$ factors.</p>"
+    },
+    { type: "def", title: "Permutations", html:
+      "<p>An <strong>$r$-permutation of $n$ objects</strong> is an ordered selection of $r$ different objects from $n$ available objects. For $0\\le r\\le n$, the number of such selections is</p>" +
+      "<p style='text-align:center'>$P(n,r)=n(n-1)\\cdots(n-r+1)=\\dfrac{n!}{(n-r)!}.$</p>" +
+      "<p>We use the convention $0!=1$. It makes the quotient agree with the descending product when $r=n$: $P(n,n)=n!/0!=n!$.</p>"
+    },
+    { type: "mc", id: "q2",
+      prompt: "Which expression counts ordered selections of $4$ different objects from $10$ available objects?",
+      choices: [
+        "$10\\cdot9\\cdot8\\cdot7$",
+        "$10^{4}$",
+        "$4\\cdot3\\cdot2\\cdot1$",
+        "$10\\cdot4$"
+      ],
       answer: 0,
       choiceFeedback: [
         null,
-        "Those are the elements of $A$ <em>not</em> in $B$ — that is $A \\setminus B$.",
-        "That is the union $A \\cup B$. Intersection keeps only what is in both.",
-        "The sets overlap ($2, 4, 6$ are in both), so the intersection is not empty."
+        "$10^4$ allows the same object to be selected more than once.",
+        "$4!$ arranges four objects after they have already been chosen; it does not choose them from ten.",
+        "There are four stages, but their option counts are $10,9,8,7$, not ten and four."
       ],
-      explain: "Intersection keeps what is in both sets; since $B \\subseteq A$, that is all of $B$."
-    },
-    { type: "prose", html:
-      "<h2>Sets and conditions are two sides of a coin</h2>" +
-      "<p>Every condition carves out a set — the objects that satisfy it — and every set is the condition &ldquo;belongs to this set.&rdquo; <strong>Set-builder notation</strong> writes this directly: $\\{x : P(x)\\}$ is &ldquo;the set of all $x$ for which $P(x)$ holds,&rdquo; and $\\{x \\in A : P(x)\\}$ narrows that to the elements of $A$ satisfying $P$. For instance, $\\{n : n \\text{ is even}\\}$ is the set of even integers.</p>" +
-      "<p>The operations line up with the connectives you already use in words: union with &ldquo;or,&rdquo; intersection with &ldquo;and,&rdquo; and complement with &ldquo;not.&rdquo; Combining conditions with &ldquo;and,&rdquo; &ldquo;or,&rdquo; &ldquo;not&rdquo; is the same as combining their sets with $\\cap$, $\\cup$, and complement. There is one twist: taking a complement flips the connective. &ldquo;Not (even <em>and</em> positive)&rdquo; becomes &ldquo;odd <em>or</em> not positive&rdquo; — the &ldquo;and&rdquo; turns into an &ldquo;or.&rdquo;</p>"
-    },
-    { type: "selectall", id: "q2",
-      prompt: "Select <strong>all</strong> correct correspondences between a set operation and a connective.",
-      choices: [
-        "Union $A \\cup B$ corresponds to &ldquo;or.&rdquo;",
-        "Intersection $A \\cap B$ corresponds to &ldquo;and.&rdquo;",
-        "Complement corresponds to &ldquo;not.&rdquo;",
-        "Union $A \\cup B$ corresponds to &ldquo;and.&rdquo;",
-        "Intersection $A \\cap B$ corresponds to &ldquo;or.&rdquo;"
-      ],
-      answers: [0, 1, 2],
-      hint: "Write out what $x \\in A \\cup B$ and $x \\in A \\cap B$ each mean in words.",
-      explain: "$x \\in A \\cup B$ means $x \\in A$ <em>or</em> $x \\in B$; $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$; the complement collects what is <em>not</em> in the set. So union goes with &ldquo;or,&rdquo; intersection with &ldquo;and,&rdquo; complement with &ldquo;not.&rdquo;"
-    },
-    { type: "def", title: "Counting subsets", html:
-      "<p>How many subsets does an $n$-element set have? Building a subset means deciding, for each element, a single yes/no question: <em>in</em> or <em>out</em>. That is $n$ independent two-way choices, so by the product rule there are $2^{n}$ subsets.</p>" +
-      "<p>Said another way, a subset corresponds exactly to its <strong>indicator function</strong> — the function sending each member to $1$ and each non-member to $0$. Subsets of an $n$-set and functions from that set to $\\{0,1\\}$ are two views of the same thing, which is why both count $2^{n}$.</p>"
+      explain: "There are $10$ choices for the first position, then $9$, $8$, and $7$: $P(10,4)=10\\cdot9\\cdot8\\cdot7$."
     },
     { type: "shortnum", id: "q3",
-      prompt: "How many subsets does a set of $5$ elements have?",
-      answer: 32,
+      prompt: "Eight students are available to serve as president, recorder, and presenter, with no student holding two roles. How many assignments are possible?",
+      answer: 336,
       placeholder: "a whole number",
-      hint: "Each element is independently in or out: $2^5$.",
-      explain: "$2^5 = 32$ — one two-way choice per element."
+      hint: "The roles are three distinct positions. Count an ordered selection of three students from eight.",
+      explain: "$P(8,3)=8\\cdot7\\cdot6=336$. Giving the same students different roles produces a different assignment."
     },
     { type: "prose", html:
-      "<h2>Counting a union</h2>" +
-      "<p>Two sets are <strong>disjoint</strong> when they share no elements ($A \\cap B$ is empty). For disjoint sets nothing is double-counted, so $|A \\cup B| = |A| + |B|$ — this is the sum rule again. When the sets <em>overlap</em>, adding $|A| + |B|$ counts each shared element twice, so we subtract the overlap back out:</p>" +
-      "<p style='text-align:center'>$|A \\cup B| = |A| + |B| - |A \\cap B|.$</p>" +
-      "<p>This is the <strong>inclusion&ndash;exclusion</strong> fix for the double-counting we first met with overlapping groups in the counting reading.</p>"
+      "<h2>Permutations and one-to-one functions</h2>" +
+      "<p>A role assignment can also be viewed as a function. The domain is the set of roles, and the range is the set of people. Requiring different people in different roles requires the function to be <strong>one-to-one</strong>.</p>" +
+      "<p>More generally, if a domain has $r$ elements and a range has $n$ elements, then a one-to-one function from the domain to the range is specified by choosing $r$ different outputs in the order fixed by the domain elements. There are $P(n,r)$ such functions. By contrast, if outputs may be reused, Reading 4 showed that there are $n^r$ functions.</p>"
     },
-    { type: "shortnum", id: "q4",
-      prompt: "Suppose $|A| = 10$, $|B| = 7$, and $|A \\cap B| = 3$. What is $|A \\cup B|$?",
-      answer: 14,
-      placeholder: "a whole number",
-      hint: "Add the two sizes, then subtract the overlap you counted twice.",
-      explain: "$|A \\cup B| = |A| + |B| - |A \\cap B| = 10 + 7 - 3 = 14$."
+    { type: "selectall", id: "q4",
+      prompt: "Let $X=\\{x_1,x_2,x_3\\}$ and let $Y$ have five elements. Select <strong>all</strong> true statements about one-to-one functions $f:X\\to Y$.",
+      choices: [
+        "There are $5\\cdot4\\cdot3=60$ such functions.",
+        "Once $f(x_1)$ is chosen, only four outputs remain available for $f(x_2)$.",
+        "The values $f(x_1),f(x_2),f(x_3)$ must all be different.",
+        "There are $5^3=125$ such functions."
+      ],
+      answers: [0, 1, 2],
+      hint: "One-to-one means that distinct inputs cannot share an output.",
+      explain: "Choose a different output for each of the three named inputs: $5$, then $4$, then $3$ options. The count is $P(5,3)=60$. The count $5^3$ includes functions that reuse outputs."
     },
-    { type: "def", title: "Subset is entailment in set language", html:
-      "<p>Let $\\mathrm{Sol}(P)$ be the set of objects satisfying a condition $P$. Then $P \\models Q$ exactly when $\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$. Saying &ldquo;every object satisfying $P$ also satisfies $Q$&rdquo; and saying &ldquo;the solution set of $P$ is a subset of the solution set of $Q$&rdquo; describe the same relationship.</p>"
+    { type: "prose", html:
+      "<h2>What information defines the outcome?</h2>" +
+      "<p>Now suppose four students—Ari (A), Bo (B), Cy (C), and Di (D)—must form a two-person team. The ordered sequences $AB$ and $BA$ are different sequences, but they name the same team: both record only that Ari and Bo were selected.</p>" +
+      "<p>This is the question to ask before choosing a counting method: <strong>what information determines whether two outcomes are the same?</strong> A presentation order records positions, so swapping two people changes the outcome. A team records only membership, so writing the same members in a different order does not create a new team.</p>"
     },
     { type: "mc", id: "q5",
-      prompt: "If $P \\models Q$, which set relationship must hold?",
+      prompt: "Which situation treats the list Ava, Ben, Chen and the list Ben, Ava, Chen as the same outcome?",
       choices: [
-        "$\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$",
-        "$\\mathrm{Sol}(Q) \\subseteq \\mathrm{Sol}(P)$",
-        "$\\mathrm{Sol}(P) \\cap \\mathrm{Sol}(Q) = \\{\\,\\}$",
-        "$\\mathrm{Sol}(P) = \\mathrm{Sol}(Q)$ always"
+        "Choosing a three-person committee",
+        "Assigning gold, silver, and bronze medals",
+        "Choosing a president, vice president, and secretary",
+        "Scheduling three speakers into first, second, and third slots"
       ],
       answer: 0,
-      choiceFeedback: [null, "That reverses the entailment.", "Entailment does not require disjoint solution sets.", "Entailment is one-directional; the solution sets need not be equal."],
-      explain: "Every solution of $P$ must also be a solution of $Q$, which is exactly $\\mathrm{Sol}(P) \\subseteq \\mathrm{Sol}(Q)$."
+      choiceFeedback: [
+        null,
+        "Medal types distinguish the positions, so exchanging Ava and Ben changes the outcome.",
+        "The offices distinguish the positions, so exchanging Ava and Ben changes the assignment.",
+        "The time slots distinguish the positions, so exchanging Ava and Ben changes the schedule."
+      ],
+      explain: "A committee records which people belong to it, not an ordering of those people. The other situations assign distinct positions or roles."
     },
     { type: "prose", html:
-      "<h2>Apply it</h2>" +
-      "<p>One computation — mind the elements of $C$ that aren&rsquo;t even in $A$.</p>"
+      "<h2>From ordered lists to unordered selections</h2>" +
+      "<p>The twelve ordered selections of two students from $\\{A,B,C,D\\}$ can be grouped as follows:</p>" +
+      "<ul><li>$AB$ and $BA$ describe the team $\\{A,B\\}$.</li><li>$AC$ and $CA$ describe the team $\\{A,C\\}$.</li><li>$AD$ and $DA$ describe the team $\\{A,D\\}$.</li><li>$BC$ and $CB$ describe the team $\\{B,C\\}$.</li><li>$BD$ and $DB$ describe the team $\\{B,D\\}$.</li><li>$CD$ and $DC$ describe the team $\\{C,D\\}$.</li></ul>" +
+      "<p>Each team appears exactly twice in the ordered count—once in each of its $2!$ orders. Dividing $P(4,2)=12$ by $2!$ leaves the six teams.</p>"
     },
-    { type: "shortnum", id: "t1", badge: "Apply it",
-      prompt: "With $A = \\{1,2,3,4,5,6\\}$ and $C = \\{5,6,7\\}$, what is $|A \\setminus C|$?",
-      answer: 4,
+    { type: "shortnum", id: "q6",
+      prompt: "Five students form a three-person team. The ordered count is $P(5,3)=60$. How many different orders list the members of any one fixed team?",
+      answer: 6,
       placeholder: "a whole number",
-      hint: "Remove from $A$ only the elements actually in both $A$ and $C$. ($7$ isn&rsquo;t in $A$.)",
-      explain: "$A \\setminus C = \\{1,2,3,4\\}$ (remove $5$ and $6$; $7$ was never in $A$), so the count is $4$."
+      hint: "Arrange the three already-selected people in three positions.",
+      explain: "$3!=3\\cdot2\\cdot1=6$. Every fixed three-person team appears in six orders among the 60 ordered selections."
+    },
+    { type: "prose", html:
+      "<p>A set $S$ is a <strong>subset</strong> of a set $A$, written $S\\subseteq A$, when every member of $S$ is also a member of $A$. An <strong>$r$-element subset</strong> of $A$ is therefore a selection of $r$ distinct members of $A$ with no positions attached. If $A=\\{A,B,C,D\\}$, then $\\{A,B\\}$ and $\\{B,A\\}$ are the same two-element subset because order does not matter in a set.</p>"
+    },
+    { type: "def", title: "Combinations", html:
+      "<p>An <strong>$r$-combination of $n$ objects</strong> is an unordered selection of $r$ different objects from $n$ available objects. Equivalently, it is an $r$-element subset of an $n$-element set. The number of these selections is read &ldquo;$n$ choose $r$&rdquo; and written</p>" +
+      "<p style='text-align:center'>$\\displaystyle \\binom{n}{r}=\\frac{P(n,r)}{r!}=\\frac{n!}{r!(n-r)!}.$</p>" +
+      "<p>The division by $r!$ is justified because the permutation count represents every $r$-element subset in exactly $r!$ different orders.</p>"
+    },
+    { type: "shortnum", id: "q7",
+      prompt: "How many three-person committees can be chosen from eight students?",
+      answer: 56,
+      placeholder: "a whole number",
+      hint: "A committee has members but no positions. Count ordered selections, then divide by the orders of each three-person group.",
+      explain: "$\\binom{8}{3}=\\dfrac{8\\cdot7\\cdot6}{3\\cdot2\\cdot1}=56$. Each committee was represented by $3!=6$ ordered lists."
+    },
+    { type: "selectall", id: "q8",
+      prompt: "Select <strong>all</strong> statements that correctly explain $\\binom{n}{r}=P(n,r)/r!$.",
+      choices: [
+        "$P(n,r)$ counts ordered selections of $r$ different objects.",
+        "Each unordered selection appears in exactly $r!$ orders.",
+        "Dividing by $r!$ leaves one count for each $r$-element subset.",
+        "Dividing by $r!$ is appropriate whenever a problem uses the word choose."
+      ],
+      answers: [0, 1, 2],
+      hint: "The formula depends on exactly how many ordered representations correspond to one unordered outcome.",
+      explain: "The ordered count includes all $r!$ arrangements of each selected group, so division removes those repeated representations. Wording alone does not decide the method; the information recorded by an outcome does."
+    },
+    { type: "prose", html:
+      "<h2>Do not divide merely because order is ignored</h2>" +
+      "<p>Division works here for a precise reason: every unordered selection is counted the same number of times—exactly $r!$ times—by the ordered count. Before correcting an overcount by division, identify what one desired outcome is and verify that every desired outcome has the same number of representations.</p>" +
+      "<p>Some problems contain both unordered and ordered choices. Count each stage according to the information it records, then combine the stages with the product rule.</p>"
+    },
+    { type: "shortnum", id: "q9",
+      prompt: "Eight students form a three-person team and then choose one member of that team as spokesperson. How many outcomes are possible?",
+      answer: 168,
+      placeholder: "a whole number",
+      hint: "First choose the unordered team. Then choose one of its three members for the distinguished role.",
+      explain: "$\\binom{8}{3}\\cdot3=56\\cdot3=168$. Team membership is unordered, but the spokesperson is distinguished from the other members."
+    },
+    { type: "prose", html:
+      "<h2>Choosing members and choosing omissions</h2>" +
+      "<p>Choosing $r$ members to include in a group automatically determines the $n-r$ members left out. Conversely, choosing the omitted members determines the included members. This exact pairing gives</p>" +
+      "<p style='text-align:center'>$\\displaystyle \\binom{n}{r}=\\binom{n}{n-r}.$</p>" +
+      "<p>For example, choosing seven members of a nine-person group is equivalent to choosing the two people omitted. The second description is often easier to calculate.</p>"
+    },
+    { type: "shortnum", id: "q10",
+      prompt: "How many seven-person groups can be chosen from nine people?",
+      answer: 36,
+      placeholder: "a whole number",
+      hint: "Choosing the seven included people is equivalent to choosing the two omitted people.",
+      explain: "$\\binom{9}{7}=\\binom{9}{2}=\\dfrac{9\\cdot8}{2}=36$."
+    },
+    { type: "prose", html:
+      "<h2>Counting all subsets</h2>" +
+      "<p>An $n$-element set has subsets of sizes $0,1,\\ldots,n$. For each original element, constructing a subset requires one of two choices: include it or leave it out. By the product rule there are $2^n$ subsets in all.</p>" +
+      "<p>Equivalently, each subset determines a function to $\\{0,1\\}$: send an element to $1$ when it is included and to $0$ when it is omitted. This is the same function-counting idea from Reading 4.</p>" +
+      "<p>The subsets can also be grouped by size: there are $\\binom{n}{0}$ subsets of size $0$, $\\binom{n}{1}$ subsets of size $1$, and so on through $\\binom{n}{n}$ subsets containing every element. Therefore adding the combination counts for sizes $0$ through $n$ also gives $2^n$.</p>"
+    },
+    { type: "prose", html: "<h2>Apply it</h2>" },
+    { type: "shortnum", id: "t1", badge: "Apply it",
+      prompt: "Ten students form a four-person project team and then choose one member of the team to give its presentation. How many outcomes are possible?",
+      answer: 840,
+      placeholder: "a whole number",
+      hint: "Choose the four team members without order, then choose the presenter from those four.",
+      explain: "$\\binom{10}{4}\\cdot4=210\\cdot4=840$. The team is an unordered selection; the presenter is a distinguished role."
     },
 
     { type: "prose", html: "<div class='r-practice-head'></div><h2>Exam practice</h2><p>Extra problems for review. These are <em>not</em> graded and don&rsquo;t affect your progress bar. Challenge-problem solutions are hidden until you click.</p>" },
     { type: "prose", html: "<h3 class='r-diff-head'>Easy</h3>" },
-    { type: "mc", id: "e1", practice: true,
-      prompt: "Let $A = \\{1,2,3\\}$ and $B = \\{3,4,5\\}$. What is $A \\cup B$?",
-      choices: ["$\\{1, 2, 3, 4, 5\\}$", "$\\{3\\}$", "$\\{1, 2, 4, 5\\}$", "$\\{\\,\\}$ (empty)"],
-      answer: 0,
-      choiceFeedback: [null, "That is the intersection — union keeps everything in either set.", "Union keeps the shared $3$ too.", "The sets are non-empty, so their union is too."],
-      explain: "Union collects everything in $A$ or $B$ (or both); the shared $3$ is listed once."
+    { type: "shortnum", id: "e1", practice: true,
+      prompt: "Evaluate $5!$.",
+      answer: 120,
+      hint: "Multiply the positive integers from $5$ down to $1$.",
+      explain: "$5!=5\\cdot4\\cdot3\\cdot2\\cdot1=120$."
     },
     { type: "shortnum", id: "e2", practice: true,
-      prompt: "What is $|\\{2,4,6,8,10\\}|$?",
-      answer: 5,
-      hint: "Cardinality counts the distinct elements.",
-      explain: "There are five distinct elements, so the cardinality is $5$."
+      prompt: "Evaluate $P(7,2)$.",
+      answer: 42,
+      hint: "Use two descending factors beginning with $7$.",
+      explain: "$P(7,2)=7\\cdot6=42$."
     },
-    { type: "mc", id: "e3", practice: true,
-      prompt: "Let $A = \\{1,2,3,4\\}$ and $B = \\{2,4\\}$. What is $A \\setminus B$?",
-      choices: ["$\\{1, 3\\}$", "$\\{2, 4\\}$", "$\\{1, 2, 3, 4\\}$", "$\\{\\,\\}$ (empty)"],
+    { type: "shortnum", id: "e3", practice: true,
+      prompt: "Evaluate $\\binom{7}{2}$.",
+      answer: 21,
+      hint: "Divide the ordered count $7\\cdot6$ by the $2!$ orders of each pair.",
+      explain: "$\\binom{7}{2}=\\dfrac{7\\cdot6}{2}=21$."
+    },
+    { type: "mc", id: "e4", practice: true,
+      prompt: "Which expression counts the ways to award first and second place to two different people chosen from six?",
+      choices: ["$P(6,2)$", "$\\binom{6}{2}$", "$6^2$", "$2^6$"],
       answer: 0,
-      choiceFeedback: [null, "That is $A \\cap B$ — difference removes those.", "That is $A$ itself; difference removes the elements of $B$.", "$A$ and $B$ overlap, so the difference is not empty."],
-      explain: "$A \\setminus B$ keeps the elements of $A$ not in $B$: $\\{1,3\\}$."
+      choiceFeedback: [null, "This ignores which winner receives which place.", "This permits one person to occupy both places.", "This counts yes/no choices for six people."],
+      explain: "First and second place are distinct positions, so order matters and repetition is forbidden: $P(6,2)$."
     },
-    { type: "shortnum", id: "e4", practice: true,
-      prompt: "How many subsets does a set of $4$ elements have?",
-      answer: 16,
-      hint: "Each element is independently in or out: $2^4$.",
-      explain: "$2^4 = 16$."
+    { type: "shortnum", id: "e5", practice: true,
+      prompt: "How many ways are there to choose no members from a six-person group?",
+      answer: 1,
+      hint: "There is one subset with no members.",
+      explain: "$\\binom{6}{0}=1$: the only choice is the empty set."
     },
-    { type: "shorttext", id: "e5", practice: true,
-      prompt: "Is $\\{1,2\\}$ a subset of $\\{1,2,3\\}$? Answer yes or no.",
-      answer: "yes",
-      accept: ["y", "Yes"],
-      explain: "Every element of $\\{1,2\\}$ is also in $\\{1,2,3\\}$, so $\\{1,2\\} \\subseteq \\{1,2,3\\}$."
+    { type: "shortnum", id: "e6", practice: true,
+      prompt: "How many one-to-one functions are there from a two-element set to a five-element set?",
+      answer: 20,
+      hint: "Choose different outputs for the two distinct inputs.",
+      explain: "$P(5,2)=5\\cdot4=20$."
     },
-    { type: "selectall", id: "e6", practice: true,
-      prompt: "Select <strong>all</strong> quantities that equal the number of subsets of an $n$-element set.",
-      choices: [
-        "$2^{n}$",
-        "The number of functions from the set to $\\{0,1\\}$",
-        "The number of indicator functions on the set",
-        "$n^{2}$",
-        "$|A| \\cdot |A|$"
-      ],
-      answers: [0, 1, 2],
-      hint: "Each element is independently in or out; a subset is the same as its indicator function to $\\{0,1\\}$.",
-      explain: "Subsets, functions to $\\{0,1\\}$, and indicator functions all count $2^{n}$. Neither $n^2$ nor $|A| \\cdot |A|$ matches."
+    { type: "shortnum", id: "e7", practice: true,
+      prompt: "How many six-person groups can be chosen from eight people?",
+      answer: 28,
+      hint: "Choosing six people to include is equivalent to choosing two people to omit.",
+      explain: "$\\binom{8}{6}=\\binom{8}{2}=28$."
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Medium</h3>" },
     { type: "shortnum", id: "m1", practice: true,
-      prompt: "Let $A = \\{1,2,3,4,5,6\\}$, $B = \\{2,4,6\\}$, $C = \\{5,6,7\\}$. What is $|A \\cap (B \\cup C)|$?",
-      answer: 4,
-      hint: "First build $B \\cup C$, then keep only its elements that are in $A$ (watch out for $7$).",
-      explain: "$B \\cup C = \\{2,4,5,6,7\\}$; intersecting with $A$ drops the $7$, leaving $\\{2,4,5,6\\}$, so the count is $4$."
+      prompt: "A four-character code uses four different letters from the 26-letter alphabet. How many such codes are possible?",
+      answer: 358800,
+      hint: "A code has four ordered positions, and a letter cannot be reused.",
+      explain: "$P(26,4)=26\\cdot25\\cdot24\\cdot23=358{,}800$."
     },
-    { type: "matching", id: "m2", practice: true,
-      prompt: "Match each set expression to its meaning.",
-      pairs: [
-        { left: "$A \\cap B$", right: "elements in both A and B" },
-        { left: "$A \\cup B$", right: "elements in A or B or both" },
-        { left: "$A \\setminus B$", right: "elements in A but not in B" },
-        { left: "$|A|$", right: "the number of elements in A" }
-      ],
-      explain: "Intersection = both, union = either, difference = in the first but not the second, and $|A|$ is the cardinality."
+    { type: "shortnum", id: "m2", practice: true,
+      prompt: "How many four-person committees can be chosen from ten people?",
+      answer: 210,
+      hint: "Committee membership has no positions.",
+      explain: "$\\binom{10}{4}=210$."
     },
-    { type: "selectall", id: "m3", practice: true,
-      prompt: "Let $A = \\{1,2,3,4,5\\}$. Select <strong>all</strong> expressions that equal $\\{1,3,5\\}$.",
-      choices: [
-        "$A \\setminus \\{2,4\\}$",
-        "$A \\cap \\{1,3,5,7\\}$",
-        "$\\{n \\in A : n \\text{ is odd}\\}$",
-        "$A \\cup \\{1,3,5\\}$",
-        "$A \\setminus \\{1,3,5\\}$"
-      ],
-      answers: [0, 1, 2],
-      hint: "Compute each set explicitly and compare to $\\{1,3,5\\}$.",
-      explain: "$A \\setminus \\{2,4\\} = \\{1,3,5\\}$; $A \\cap \\{1,3,5,7\\} = \\{1,3,5\\}$ (the $7$ isn&rsquo;t in $A$); the odd elements of $A$ are $\\{1,3,5\\}$. But $A \\cup \\{1,3,5\\} = A$, and $A \\setminus \\{1,3,5\\} = \\{2,4\\}$."
+    { type: "shortnum", id: "m3", practice: true,
+      prompt: "Twelve finalists compete for gold, silver, and bronze medals. How many medal assignments are possible?",
+      answer: 1320,
+      hint: "The medals distinguish three positions.",
+      explain: "$P(12,3)=12\\cdot11\\cdot10=1320$."
     },
     { type: "shortnum", id: "m4", practice: true,
-      prompt: "How many subsets of $\\{a,b,c,d,e\\}$ contain the element $a$?",
-      answer: 16,
-      hint: "Fix $a$ as &ldquo;in&rdquo;; each of the other four elements is still free to be in or out.",
-      explain: "With $a$ forced in, the remaining $4$ elements are each independently in or out: $2^4 = 16$."
+      prompt: "A pizza shop offers nine toppings. How many pizzas have exactly three different toppings?",
+      answer: 84,
+      hint: "A pizza records which toppings appear, not an order for them.",
+      explain: "$\\binom{9}{3}=84$."
     },
     { type: "shortnum", id: "m5", practice: true,
-      prompt: "$A$ and $B$ are disjoint with $|A| = 3$ and $|B| = 4$. What is $|A \\cup B|$?",
-      answer: 7,
-      hint: "With no overlap, nothing is double-counted.",
-      explain: "Disjoint means $|A \\cap B| = 0$, so $|A \\cup B| = |A| + |B| = 7$."
+      prompt: "Ten students form a four-person team and select one team member as captain. How many outcomes are possible?",
+      answer: 840,
+      hint: "Choose the team, then choose its captain.",
+      explain: "$\\binom{10}{4}\\cdot4=210\\cdot4=840$."
     },
-    { type: "selectall", id: "m6", practice: true,
-      prompt: "Over the integers, consider the complement of $\\{n : n \\text{ is even and } n > 0\\}$ (complement read as &ldquo;not&rdquo;). Select <strong>all</strong> true statements.",
-      choices: [
-        "The complement is $\\{n : n \\text{ is odd or } n \\le 0\\}$.",
-        "$-4$ belongs to the complement.",
-        "$3$ belongs to the complement.",
-        "The complement is $\\{n : n \\text{ is odd and } n \\le 0\\}$.",
-        "$6$ belongs to the complement."
-      ],
-      answers: [0, 1, 2],
-      hint: "Complementing an &ldquo;and&rdquo; gives an &ldquo;or&rdquo;: negate each part and switch the connective.",
-      explain: "Not (even and positive) = (not even) or (not positive) = odd or $n \\le 0$. So $-4$ (even but $\\le 0$) and $3$ (odd) belong, while $6$ (even and positive) does not. The &ldquo;odd and $n \\le 0$&rdquo; version is wrong — complementing an &ldquo;and&rdquo; must give an &ldquo;or.&rdquo;"
+    { type: "shortnum", id: "m6", practice: true,
+      prompt: "Eight students fill the distinct roles of president, recorder, and presenter. How many assignments are possible?",
+      answer: 336,
+      hint: "The three roles distinguish positions.",
+      explain: "$P(8,3)=8\\cdot7\\cdot6=336$."
     },
     { type: "shortnum", id: "m7", practice: true,
-      prompt: "How many subsets of $\\{1,2,3,4,5,6\\}$ contain $1$ but do <strong>not</strong> contain $2$?",
-      answer: 16,
-      hint: "Force $1$ in and $2$ out; the other four elements are free.",
-      explain: "Two elements are decided ($1$ in, $2$ out); the remaining $\\{3,4,5,6\\}$ are each free: $2^4 = 16$."
+      prompt: "A student chooses two different electives from six offerings and one lab from three offerings. How many schedules are possible?",
+      answer: 45,
+      hint: "Choose the two electives without order, then choose the lab.",
+      explain: "$\\binom{6}{2}\\cdot3=15\\cdot3=45$."
+    },
+    { type: "matching", id: "m8", practice: true,
+      prompt: "Match each situation to the expression that counts it.",
+      pairs: [
+        { left: "Arrange all 6 books on a shelf", right: "$6!$" },
+        { left: "Choose 3 of 8 books to borrow", right: "$\\binom{8}{3}$" },
+        { left: "Assign 3 distinct prizes among 8 people", right: "$P(8,3)$" },
+        { left: "Build a length-3 string from 8 symbols, allowing repeats", right: "$8^3$" }
+      ],
+      explain: "An arrangement or role assignment records order; a borrowed set does not; allowing repeated symbols gives the same number of choices at every string position."
+    },
+    { type: "selectall", id: "m9", practice: true,
+      prompt: "Select <strong>all</strong> true statements for $0\\le r\\le n$.",
+      choices: [
+        "$P(n,r)=\\binom{n}{r}r!$",
+        "$\\binom{n}{r}=\\binom{n}{n-r}$",
+        "$P(n,n)=n!$",
+        "$P(n,r)=n^r$ for every $r$"
+      ],
+      answers: [0, 1, 2],
+      hint: "Distinguish ordered selections without repetition from strings that allow repetition.",
+      explain: "Ordering each $r$-element subset in its $r!$ ways gives $P(n,r)=\\binom{n}{r}r!$; choosing inclusions pairs with choosing omissions; and ordering all $n$ objects gives $n!$. The expression $n^r$ allows reuse."
     },
     { type: "prose", html: "<h3 class='r-diff-head'>Challenge</h3>" },
     { type: "challenge", id: "ch1",
-      prompt: "Prove that $A \\cap B \\subseteq A$ for any sets $A$ and $B$.",
-      solution: "To show $A \\cap B \\subseteq A$, show every element of $A \\cap B$ is also in $A$ (the definition of $\\subseteq$). <br><br>Let $x$ be an arbitrary element of $A \\cap B$. By definition of intersection, $x \\in A \\cap B$ means $x \\in A$ <em>and</em> $x \\in B$. In particular, $x \\in A$. <br><br>Since $x$ was arbitrary, every element of $A \\cap B$ is in $A$, so $A \\cap B \\subseteq A$. $\\blacksquare$ <br><br>The proof just drops the &ldquo;and $x \\in B$&rdquo; half — membership in an intersection is stronger than membership in either set alone."
+      prompt: "Explain why $P(n,r)=\\binom{n}{r}r!$ without relying only on algebraic manipulation of the formulas.",
+      solution: "Build an ordered selection in two stages. First choose its $r$ members; there are $\\binom{n}{r}$ choices. Then arrange those selected members in the $r$ ordered positions; there are $r!$ arrangements. The two stages produce every ordered selection exactly once, so the product rule gives $P(n,r)=\\binom{n}{r}r!$."
     },
     { type: "challenge", id: "ch2",
-      prompt: "Explain the inclusion–exclusion formula $|A \\cup B| = |A| + |B| - |A \\cap B|$.",
-      solution: "Adding $|A| + |B|$ counts each element of the overlap $A \\cap B$ <em>twice</em> — once as a member of $A$ and once as a member of $B$ — while every other element is counted once. Subtracting $|A \\cap B|$ removes exactly the one extra copy of each shared element, leaving each element of $A \\cup B$ counted once. $\\blacksquare$ <br><br>When $A$ and $B$ are disjoint, $|A \\cap B| = 0$ and this reduces to the plain sum rule $|A \\cup B| = |A| + |B|$."
+      prompt: "An $n$-element set has $2^n$ subsets. Explain why adding the numbers of subsets of sizes $0,1,\\ldots,n$ must also give $2^n$.",
+      solution: "Every subset has exactly one size. The size classes are disjoint and together contain every subset. There are $\\binom{n}{r}$ subsets of size $r$, so the sum rule says that adding the counts for $r=0,1,\\ldots,n$ counts every subset exactly once. The product-rule description—include or omit each element—counts the same collection as $2^n$, so the two totals agree."
     },
     { type: "challenge", id: "ch3",
-      prompt: "Prove that a set of $n$ elements has exactly $2^{n}$ subsets.",
-      solution: "List the elements as $x_1, x_2, \\dots, x_n$. A subset is completely determined by answering, for each element, one yes/no question: &ldquo;is $x_i$ in the subset?&rdquo; <br><br>Each of the $n$ answers is an independent two-way choice, different answer-patterns give different subsets, and every subset arises from exactly one pattern. By the product rule the number of patterns is $\\underbrace{2 \\cdot 2 \\cdots 2}_{n} = 2^{n}$. <br><br>Equivalently, a subset corresponds exactly to a function $\\{x_1,\\dots,x_n\\} \\to \\{0,1\\}$ (its indicator function), and there are $2^{n}$ such functions. $\\blacksquare$"
+      prompt: "Count the outcomes when eight students form a three-person team and select a spokesperson in two different ways. Explain why the two expressions agree.",
+      solution: "Team first: choose three members, then choose one of them as spokesperson, giving $\\binom{8}{3}\\cdot3=56\\cdot3=168$. Spokesperson first: choose one of eight students, then choose two teammates from the remaining seven, giving $8\\binom{7}{2}=8\\cdot21=168$. Both procedures describe every team-with-spokesperson exactly once."
     },
     { type: "challenge", id: "ch4",
-      prompt: "Using the &ldquo;sets are conditions&rdquo; idea, argue that the complement of $A \\cup B$ equals (complement of $A$) $\\cap$ (complement of $B$).",
-      solution: "An element $x$ is in the complement of $A \\cup B$ exactly when $x \\notin A \\cup B$, i.e. it is <em>not</em> the case that ($x \\in A$ or $x \\in B$). <br><br>The complement of an &ldquo;or&rdquo; is an &ldquo;and&rdquo; of the complements: this says $x \\notin A$ <strong>and</strong> $x \\notin B$. <br><br>That is precisely the condition for $x$ to be in (complement of $A$) $\\cap$ (complement of $B$). Since both sides are carved out by equivalent conditions, they are the same set. $\\blacksquare$"
+      prompt: "Ten students include Ari and Bo. How many four-person teams contain at least one of Ari or Bo? Count by subtracting the teams you do not want.",
+      solution: "There are $\\binom{10}{4}=210$ four-person teams in all. A team containing neither Ari nor Bo must choose all four members from the other eight students, giving $\\binom{8}{4}=70$. Therefore $210-70=140$ teams contain at least one of Ari or Bo."
     },
     { type: "prose", html:
       "<h2>Where this is headed</h2>" +
-      "<p>You have now seen the hidden &ldquo;for all&rdquo; inside $\\subseteq$ and the &ldquo;and / or / not&rdquo; inside the set operations. Next we make those quantifiers and connectives explicit: <strong>predicate logic</strong> gives us symbols for &ldquo;for all&rdquo; and &ldquo;there exists&rdquo; so we can state precisely the claims we have been making in words.</p>"
+      "<p>Permutations and combinations both begin with the same discipline: identify exactly what one outcome records, and make sure the counting procedure represents every outcome exactly once. The same attention to definitions will matter when we turn from counting mathematical objects to stating precise claims about them in predicate logic.</p>"
     }
   ]
 });

@@ -30,7 +30,7 @@ interactive-readings/
 ├── reading-02-conditions.html              conditions, types, arity
 ├── reading-03-truth.html                   satisfiable/…/contradictory; entailment; complement
 ├── reading-04-counting.html                tuples, Cartesian products, product/sum rules, functions, strings
-├── reading-05-sets.html                    sets & operations; set-builder; counting subsets & unions
+├── reading-05-sets.html                    permutations, combinations, and ordered vs. unordered selections
 ├── reading-06-predicate-logic.html         ∀/∃; formalization (matching)
 ├── reading-07-implication.html             truth conditions; vacuous truth; converse
 ├── reading-08-proofs-1.html                instantiation & detachment (guided proof)
